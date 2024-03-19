@@ -1,5 +1,5 @@
 
-import { GAMETYPE, MATCH_STATUS } from "./enum";
+import { GAMETYPE, MATCH_STATUS } from "../enum";
 import { model, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
 
