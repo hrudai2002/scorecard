@@ -5,24 +5,19 @@ import { Button } from "../../../@generics/components/Button";
 import { useEffect, useState } from "react";
 import ImageSlider from 'react-native-image-slider';
 
-export const AuthPage = () => {
+export const SplashScreen = () => {
     const imageSource = [
         require('../../../assets/badminton-boy.png'), 
         require('../../../assets/table-tennis.png'),
         require('../../../assets/bat_ball.png'),
     ]
-    const getAngle = {
-        0: '0deg', 
-        1: '0deg', 
-        2: '340deg'
-    }
     const [position, setPosition] = useState(0);
     useEffect(() => {
         const toggle = setInterval(() => {
             setPosition(position === imageSource.length - 1 ? 0 : position + 1);
         }, 2000);
         return () => clearInterval(toggle);
-    });
+    }, []);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.container}>
@@ -32,8 +27,8 @@ export const AuthPage = () => {
                         autoPlayWithInterval={3000}
                         images={imageSource}
                         customSlide={({ index, item, style, width }) => (
-                            <View style={[style]}>
-                                <Image key={index} style={[styles.image, { transform: [{ rotate: getAngle[index] }] }]} source={item} />
+                            <View key={index} style={[style]}>
+                                <Image style={[styles.image, { transform: [{ rotate: index == 2 ? '340deg': '0deg' }] }]} source={item} />
                             </View>
                         )}
                     />
