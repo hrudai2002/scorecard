@@ -7,8 +7,8 @@ const Stack = createStackNavigator();
 export const AuthStack = () => {
     return (
         <Stack.Navigator>
-            {/* <Stack.Screen name="Splash Screen" component={SplashScreen} options={{ headerShown: false }} /> */}
-            <Stack.Screen name="Sign In" component={AuthPage} options={{ headerShown: false }}  />
+            <Stack.Screen name="Splash Screen" component={SplashScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Auth" component={AuthPage} options={{ headerShown: false }}  />
         </Stack.Navigator>
     )
 }

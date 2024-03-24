@@ -1,91 +1,111 @@
 import { StyleSheet, TextInput, TouchableOpacity, View} from "react-native"
-import { useForm, Controller } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../../../@generics/components/text"
 import { ProjectColors } from "../../../@generics/enums/colors";
 import { Button } from "../../../@generics/components/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
+interface AuthDetails {
+    name: string, 
+    email: string, 
+    password: string
+}
 
-export const SignUp = (props: any) => {
-    const {
-        register,
-        handleSubmit,
-        control,
-        formState: { errors }
-    } = useForm();
+export const AuthPage = ({ navigation }) => {
+    const [signIn, setSignIn] = useState<boolean>(true);
     const [hidePassoword, setHidePassword] = useState<boolean>(true);
+    const [authDetails, setAuthDetails] = useState<AuthDetails>();
+    useEffect(() => {
+        setAuthDetails({ 
+            name: '', 
+            email: '',
+            password: '' 
+        })
+    }, [signIn]);
+    const validateFields = (data): boolean => {
+        if (!signIn && !data.name) {
+            console.log('name canoot be empty!');
+            return false;
+        }
+        if (!data.email) {
+            console.log('email cannot be empty!');
+            return false;
+        }
+        if (!data.password) {
+            console.log('password cannot be empty!');
+            return false;
+        }
+        if (!signIn && data.name.length < 3) {
+            console.log('name cannot be less than 3 characters');
+            return false;
+        }
+        if (!/^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(data.email)) {
+            console.log('not valid email');
+            return false;
+        }
+        if (data.password.length < 6) {
+            console.log('Password cannot be less than 6 characters');
+            return false;
+        }
+        return true;
+    }
+    const onSubmit = () => {
+        if (!validateFields(authDetails)) {
+            return;
+        }
+        console.log(authDetails);
+    }
     return (
         <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.heading}>
                 <Text fontWeight={700} style={{ color: ProjectColors.Secondary, fontSize: 36 }}>ScoreCard</Text>
-                <Text style={{ color: ProjectColors.Secondary, fontSize: 15 }}>Create a new account</Text>
+                {signIn ? <Text style={{ color: ProjectColors.Secondary, fontSize: 15 }}>Login to your account</Text> : 
+                <Text style={{ color: ProjectColors.Secondary, fontSize: 15 }}>Create a new account</Text> }
             </View>
             <View style={styles.loginDetails}>
                 <View style={styles.inputFields}>
-                    <View style={styles.email}>
-                        <Text fontWeight={700} style={{ fontSize: 16 }}>Full Name</Text>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <TextInput
-                                    style={styles.input}
-                                    onBlur={onBlur}
-                                    onChange={value => onChange(value)}
-                                    value={value}
-                                />
-                            )}
-                            name="name"
-                            rules={{ required: true }}
-                        />
-                    </View>
+                    { !signIn && <View style={styles.email}>
+                            <Text fontWeight={700} style={{ fontSize: 16 }}>Full Name</Text>
+                            <TextInput
+                                autoCapitalize="none"
+                                style={styles.input}
+                                onChangeText={value => setAuthDetails((prev) => ({ ...prev, name: value }))}
+                                value={authDetails?.name}
+                            />
+                        </View>
+                    }
                     <View style={styles.email}>
                         <Text fontWeight={700} style={{ fontSize: 16 }}>Email</Text>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <TextInput
-                                    style={styles.input}
-                                    onBlur={onBlur}
-                                    onChange={value => onChange(value)}
-                                    value={value}
-                                />
-                            )}
-                            name="email"
-                            rules={{ required: true }}
+                        <TextInput
+                            autoCapitalize="none"
+                            style={styles.input}
+                            onChangeText={value => setAuthDetails((prev) => ({ ...prev, email: value }))}
+                            value={authDetails?.email}
                         />
                     </View>
                     <View style={styles.password}>
                         <Text fontWeight={700} style={{ fontSize: 16 }}>Password</Text>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <View style={styles.passwordInputField}>
-                                    <TextInput
-                                        secureTextEntry={hidePassoword}
-                                        style={[styles.input, {flex: 0.88}]}
-                                        onBlur={onBlur}
-                                        onChange={value => onChange(value)}
-                                        value={value}
-                                    />
-                                    {
-                                        hidePassoword ? 
-                                        <Ionicons onPress={() => setHidePassword((prev) => !prev)} style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }}  name="eye" size={24} color="black" /> :
-                                        <Ionicons onPress={() => setHidePassword((prev) => !prev)} style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }} name="eye-off" size={24} color="black" />
-                                    }
-                                </View>
-                            )}
-                            name="password"
-                            rules={{ required: true }}
-                        />
-                        <TouchableOpacity onPress={() => props.setSignIn((prev) => !prev)}>
-                            <Text style={styles.alreadyHaveAccount}>already have an account?</Text>
+                        <View style={styles.passwordInputField}>
+                            <TextInput
+                                autoCapitalize="none"
+                                secureTextEntry={hidePassoword}
+                                style={[styles.input, { flex: 0.88 }]}
+                                onChangeText={value => setAuthDetails((prev) => ({ ...prev, password: value }))}
+                                value={authDetails?.password}
+                            />
+                            { hidePassoword ? <Ionicons onPress={() => setHidePassword((prev) => !prev)} style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }} name="eye" size={24} color="black" /> :
+                              <Ionicons onPress={() => setHidePassword((prev) => !prev)} style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }} name="eye-off" size={24} color="black" /> }
+                        </View>
+                        <TouchableOpacity onPress={() => setSignIn((prev) => !prev)}>
+                            { signIn ? <Text style={styles.alreadyHaveAccount}>create a new account?</Text> : 
+                             <Text style={styles.alreadyHaveAccount}>already have an account?</Text> }
                         </TouchableOpacity>
                     </View>
                 </View>
                 <Button
+                    onPress={onSubmit}
                     style={styles.btn}
-                    text={"Sign Up"}
+                    text={signIn ? "Sign In" : "Sign Up"}
                     color={ProjectColors.Secondary}
                     fontSize={24}
                     fontWeight={700}
@@ -94,85 +114,6 @@ export const SignUp = (props: any) => {
             </View>
         </SafeAreaView>
     )
-}
-
-export const SignIn = (props: any) => {
-    const {
-        register,
-        handleSubmit,
-        control,
-        formState: { errors }
-    } = useForm();
-    const [hidePassoword, setHidePassword] = useState<boolean>(true);
-    return (
-        <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
-            <View style={styles.heading}>
-                <Text fontWeight={700} style={{ color: ProjectColors.Secondary, fontSize: 36 }}>ScoreCard</Text>
-                <Text style={{ color: ProjectColors.Secondary, fontSize: 15 }}>Login to your account</Text>
-            </View>
-            <View style={styles.loginDetails}>
-                <View style={styles.inputFields}>
-                    <View style={styles.email}>
-                        <Text fontWeight={700} style={{ fontSize: 16 }}>Email</Text>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <TextInput
-                                    style={styles.input}
-                                    onBlur={onBlur}
-                                    onChange={value => onChange(value)}
-                                    value={value}
-                                />
-                            )}
-                            name="email"
-                            rules={{ required: true }}
-                        />
-                    </View>
-                    <View style={styles.password}>
-                        <Text fontWeight={700} style={{ fontSize: 16 }}>Password</Text>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <View style={styles.passwordInputField}>
-                                    <TextInput
-                                        secureTextEntry={hidePassoword}
-                                        style={[styles.input, { flex: 0.88 }]}
-                                        onBlur={onBlur}
-                                        onChange={value => onChange(value)}
-                                        value={value}
-                                    />
-                                    {
-                                        hidePassoword ?
-                                            <Ionicons onPress={() => setHidePassword((prev) => !prev)} style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }} name="eye" size={24} color="black" /> :
-                                            <Ionicons onPress={() => setHidePassword((prev) => !prev)} style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }} name="eye-off" size={24} color="black" />
-                                    }
-                                </View>
-                            )}
-                            name="password"
-                            rules={{ required: true }}
-                        />
-                        <TouchableOpacity onPress={() => props.setSignIn((prev) => !prev)}>
-                            <Text style={styles.alreadyHaveAccount}>create a new account?</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <Button
-                    style={styles.btn}
-                    text={"Sign In"}
-                    color={ProjectColors.Secondary}
-                    fontSize={24}
-                    fontWeight={700}
-                    backgroundColor={ProjectColors.Primary}
-                />
-            </View>
-        </SafeAreaView>
-    )
-}
-
-export const AuthPage = () => {
-    const [signIn, setSignIn] = useState<boolean>(false);
-    if (signIn) return <SignIn setSignIn={setSignIn} />
-    return <SignUp setSignIn={setSignIn} />
 }
 
 const styles = StyleSheet.create({

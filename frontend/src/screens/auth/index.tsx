@@ -5,7 +5,7 @@ import { Button } from "../../../@generics/components/Button";
 import { useEffect, useState } from "react";
 import ImageSlider from 'react-native-image-slider';
 
-export const SplashScreen = () => {
+export const SplashScreen = ({ navigation }) => {
     const imageSource = [
         require('../../../assets/badminton-boy.png'), 
         require('../../../assets/table-tennis.png'),
@@ -43,6 +43,7 @@ export const SplashScreen = () => {
                     </View>
                     <View>
                         <Button
+                            onPress={() => navigation.navigate('Auth')}
                             text='Get Started' 
                             backgroundColor="#FFFFFF" 
                             fontWeight={700}
