@@ -3,8 +3,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../../../@generics/components/text"
 import { ProjectColors } from "../../../@generics/enums/colors";
 import { Button } from "../../../@generics/components/Button";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
+import { AuthContext } from "../../contexts/auth";
 interface AuthDetails {
     name: string, 
     email: string, 
@@ -15,6 +16,7 @@ export const AuthPage = ({ navigation }) => {
     const [signIn, setSignIn] = useState<boolean>(true);
     const [hidePassoword, setHidePassword] = useState<boolean>(true);
     const [authDetails, setAuthDetails] = useState<AuthDetails>();
+    const { signIn: signInService, register: registerService } = useContext(AuthContext); 
     useEffect(() => {
         setAuthDetails({ 
             name: '', 
@@ -49,11 +51,14 @@ export const AuthPage = ({ navigation }) => {
         }
         return true;
     }
-    const onSubmit = () => {
+    const onSubmit = async () => {
         if (!validateFields(authDetails)) {
             return;
         }
-        console.log(authDetails);
+        
+        signIn ? 
+            await signInService(authDetails) : 
+            await registerService(authDetails)
     }
     return (
         <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>

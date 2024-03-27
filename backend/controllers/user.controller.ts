@@ -33,10 +33,12 @@ export const registerUser = async (req, res) => {
         const token = await generateToken(user._id);
 
         return res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            token,
+            data: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                token,
+            },
             success: true, 
         });
 
@@ -63,10 +65,12 @@ export const loginUser = async (req, res) => {
 
         const token = await generateToken(user._id);
         return res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            token,
+            data: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                token
+            },
             success: true,
         });
         

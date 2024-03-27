@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { environments } from "../../environments/environments";
+import axios from "axios";
 
 type AuthData = {
     token: string,
@@ -10,7 +12,8 @@ type AuthData = {
 type AuthContextData = {
     authData?: AuthData, 
     loading: boolean, 
-    signIn(): Promise<void>, 
+    signIn(data): Promise<void>, 
+    register(data): Promise<void>,
     signOut(): void;
 }
 
@@ -23,7 +26,7 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         (async () => {
             // await signIn();
-            await signOut();
+            // await signOut();
             await loadStorageData();
         })()
     }, []);
@@ -31,6 +34,7 @@ const AuthProvider = ({ children }) => {
     async function loadStorageData(): Promise<void> {
         try {
             const authDataSerialized = await AsyncStorage.getItem('@AuthData');
+            console.log(authDataSerialized);
             if (authDataSerialized) {
                 const _authData: AuthData = JSON.parse(authDataSerialized);
                 setAuthData(_authData);
@@ -41,14 +45,29 @@ const AuthProvider = ({ children }) => {
         }
     }
 
-    const signIn = async () => {
-        const _authData = { 
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikx1Y2FzIEdhcmNleiIsImlhdCI6MTUxNjIzOTAyMn0.oK5FZPULfF-nfZmiumDGiufxf10Fe2KiGe9G5Njoa64", 
-            name: "hrudai", 
-            email: "hrudai2002@gmail.com"
-         };
-        setAuthData(_authData);
-        AsyncStorage.setItem('@AuthData', JSON.stringify(_authData));
+    const register = async (authData) => {
+        axios.post(environments.apiUrl + '/user/register', {
+            name: authData.name, 
+            email: authData.email, 
+            password: authData.password
+        }).then((res: any) => {
+            if(res.data.success) {
+                setAuthData(res.data.data); 
+                AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
+            }
+        })
+    }
+
+    const signIn = async (authData) => {
+        axios.put(environments.apiUrl + '/user/login', {
+            email: authData.email, 
+            password: authData.password
+        }).then((res: any) => {
+            if(res.data.success) {
+                setAuthData(res.data.data);
+                AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
+            }
+        });
     };
 
     const signOut = async () => {
@@ -57,7 +76,7 @@ const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ authData, loading, signIn, signOut }}>
+        <AuthContext.Provider value={{ authData, loading, register, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     );
