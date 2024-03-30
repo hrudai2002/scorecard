@@ -6,6 +6,7 @@ import { Button } from "../../../@generics/components/Button";
 import { useContext, useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from "../../contexts/auth";
+import Toast from "react-native-toast-message";
 interface AuthDetails {
     name: string, 
     email: string, 
@@ -26,27 +27,51 @@ export const AuthPage = ({ navigation }) => {
     }, [signIn]);
     const validateFields = (data): boolean => {
         if (!signIn && !data.name) {
-            console.log('name canoot be empty!');
+            Toast.show({
+                type: 'error', 
+                text1: 'name canoot be empty!',
+                swipeable: true
+            });
             return false;
         }
         if (!data.email) {
-            console.log('email cannot be empty!');
+            Toast.show({
+                type: 'error',
+                text1: 'email cannot be empty!',
+                swipeable: true
+            });
             return false;
         }
         if (!data.password) {
-            console.log('password cannot be empty!');
+            Toast.show({
+                type: 'error',
+                text1: 'password cannot be empty!',
+                swipeable: true
+            });
             return false;
         }
         if (!signIn && data.name.length < 3) {
-            console.log('name cannot be less than 3 characters');
+            Toast.show({
+                type: 'error',
+                text1: 'name cannot be less than 3 characters',
+                swipeable: true
+            });
             return false;
         }
         if (!/^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(data.email)) {
-            console.log('not valid email');
+            Toast.show({
+                type: 'error',
+                text1: 'not valid email',
+                swipeable: true
+            });
             return false;
         }
         if (data.password.length < 6) {
-            console.log('Password cannot be less than 6 characters');
+            Toast.show({
+                type: 'error',
+                text1: 'Password cannot be less than 6 characters',
+                swipeable: true
+            });
             return false;
         }
         return true;
@@ -55,10 +80,11 @@ export const AuthPage = ({ navigation }) => {
         if (!validateFields(authDetails)) {
             return;
         }
-        
-        signIn ? 
-            await signInService(authDetails) : 
-            await registerService(authDetails)
+        if(signIn) {
+            await signInService(authDetails);
+        } else {
+            await registerService(authDetails);
+        }
     }
     return (
         <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>

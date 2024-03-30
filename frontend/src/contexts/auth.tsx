@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { environments } from "../../environments/environments";
 import axios from "axios";
+import Toast from "react-native-toast-message";
 
 type AuthData = {
     token: string,
@@ -26,7 +27,7 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         (async () => {
             // await signIn();
-            // await signOut();
+            await signOut();
             await loadStorageData();
         })()
     }, []);
@@ -34,7 +35,6 @@ const AuthProvider = ({ children }) => {
     async function loadStorageData(): Promise<void> {
         try {
             const authDataSerialized = await AsyncStorage.getItem('@AuthData');
-            console.log(authDataSerialized);
             if (authDataSerialized) {
                 const _authData: AuthData = JSON.parse(authDataSerialized);
                 setAuthData(_authData);
@@ -54,8 +54,12 @@ const AuthProvider = ({ children }) => {
             if(res.data.success) {
                 setAuthData(res.data.data); 
                 AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
+                Toast.show({ type: 'success', text1: 'Welcome to ScoreCard!', swipeable: true })
+            } else {
+                Toast.show({ type: 'error', text1: res.data.error });
+                console.log(res.data);
             }
-        })
+        }).catch(err => console.log(err));
     }
 
     const signIn = async (authData) => {
@@ -66,8 +70,9 @@ const AuthProvider = ({ children }) => {
             if(res.data.success) {
                 setAuthData(res.data.data);
                 AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
+                Toast.show({ type: 'success', text1: 'Logged In Successfully', swipeable: true })
             }
-        });
+        }).catch(err => console.log(err));
     };
 
     const signOut = async () => {

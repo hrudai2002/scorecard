@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
         
         const userExists = await User.findOne({ email }).lean();
         if(userExists)
-            throw new Error("User already exists!");
+            throw new Error("Email Id already exists!");
 
         const salt = await bcrypt.genSalt(10); 
         const hashedPassword = await bcrypt.hash(password, salt); 

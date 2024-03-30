@@ -9,7 +9,7 @@ export const SplashScreen = ({ navigation }) => {
     const imageSource = [
         require('../../../assets/badminton-boy.png'), 
         require('../../../assets/table-tennis.png'),
-        require('../../../assets/bat_ball.png'),
+        require('../../../assets/bat_ball_rotate.png'),
     ]
     const [position, setPosition] = useState(0);
     useEffect(() => {
@@ -22,16 +22,7 @@ export const SplashScreen = ({ navigation }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.container}>
                 <View style={styles.imageSlider}>
-                    <ImageSlider
-                        style={{ backgroundColor: ProjectColors.Primary }}
-                        autoPlayWithInterval={3000}
-                        images={imageSource}
-                        customSlide={({ index, item, style, width }) => (
-                            <View key={index} style={[style]}>
-                                <Image style={[styles.image, { transform: [{ rotate: index == 2 ? '340deg': '0deg' }] }]} source={item} />
-                            </View>
-                        )}
-                    />
+                    <Image style={[styles.image]} source={require('../../../assets/badminton-boy.png')} />
                 </View>
                 <View style={styles.letsStart}>
                     <View style={{ gap: 5 }}>
@@ -68,11 +59,10 @@ const styles = StyleSheet.create({
         flex: 2.5, 
         justifyContent: 'center', 
         alignItems: 'center',
-        gap: 10
     }, 
     image: {
-        width: '90%',
-        height: '80%',
+        width: '100%',
+        height: '100%',
     },
     circle: {
         width: 8, 
