@@ -9,7 +9,7 @@ export const SplashScreen = ({ navigation }) => {
     const imageSource = [
         require('../../../assets/badminton-boy.png'), 
         require('../../../assets/table-tennis.png'),
-        require('../../../assets/bat_ball_rotate.png'),
+        require('../../../assets/bat_ball.png'),
     ]
     const [position, setPosition] = useState(0);
     useEffect(() => {
@@ -22,7 +22,16 @@ export const SplashScreen = ({ navigation }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.container}>
                 <View style={styles.imageSlider}>
-                    <Image style={[styles.image]} source={require('../../../assets/badminton-boy.png')} />
+                    <ImageSlider
+                        style={{ backgroundColor: ProjectColors.Primary }}
+                        autoPlayWithInterval={3000}
+                        images={imageSource}
+                        customSlide={({ index, item, style, width }) => (
+                            <View key={index} style={[style]}>
+                                <Image style={[styles.image, { transform: [{ rotate: index == 2 ? '340deg' : '0deg' }] }]} source={item} />
+                            </View>
+                        )}
+                    />
                 </View>
                 <View style={styles.letsStart}>
                     <View style={{ gap: 5 }}>
@@ -36,10 +45,10 @@ export const SplashScreen = ({ navigation }) => {
                         <Button
                             onPress={() => navigation.navigate('Auth')}
                             text='Get Started' 
-                            backgroundColor="#FFFFFF" 
+                            backgroundColor={ProjectColors.Secondary}
                             fontWeight={700}
                             fontSize={24}
-                            color="#00B562"
+                            color={ProjectColors.Primary}
                         />
                     </View>
                 </View>
@@ -61,14 +70,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     }, 
     image: {
-        width: '100%',
-        height: '100%',
+        width: '90%',
+        height: '80%',
     },
     circle: {
         width: 8, 
         height: 8, 
         borderRadius: 4,
-        backgroundColor: '#fff'
+        backgroundColor: ProjectColors.Secondary
     },
     slideShow: {
         backgroundColor: ProjectColors.Primary
@@ -80,11 +89,11 @@ const styles = StyleSheet.create({
     },
     font: {
         fontSize: 36, 
-        color: '#fff'
+        color: ProjectColors.Secondary
     },
     subHeading: {
         width: '80%', 
         fontSize: 20, 
-        color: '#fff'
+        color: ProjectColors.Secondary
     }
 })
