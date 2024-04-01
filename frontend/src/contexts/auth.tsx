@@ -27,7 +27,7 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         (async () => {
             // await signIn();
-            await signOut();
+            // await signOut();
             await loadStorageData();
         })()
     }, []);
