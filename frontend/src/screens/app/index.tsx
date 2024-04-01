@@ -41,7 +41,7 @@ export const HomePage = () => {
     const SportsIcon = (props) => {
         return (
             <TouchableOpacity onPress={() => setSelectedSportId(props.sport._id)}>
-                <View style={{ marginRight: 15, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+                <View style={styles.sportsSlider}>
                     <View style={[styles.circle, { backgroundColor: props.sport._id === selectedSportId ? ProjectColors.Primary : ProjectColors.Secondary }]}>
                         <Image style={styles.sportIcon}  source={props.sport.src} />
                     </View>
@@ -63,7 +63,7 @@ export const HomePage = () => {
                 </View>
                 <Entypo name="dots-three-vertical" size={18} color={ProjectColors.Secondary} />
             </View>
-            <View style={styles.sportsSlider}>
+            <View style={styles.sportsContainer}>
                 <Text fontWeight={600} style={{ fontSize: 16 }}>Sports</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <FlatList 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 0.8,
     },
-    sportsSlider: {
+    sportsContainer: {
         flex: 0.2, 
         paddingLeft: 15,
         paddingVertical: 20,
@@ -126,4 +126,10 @@ const styles = StyleSheet.create({
         width: 60, 
         height: 60
     },
+    sportsSlider: {
+        marginRight: 20, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        gap: 10
+    }
 })
