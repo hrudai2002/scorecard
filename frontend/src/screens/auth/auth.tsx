@@ -1,6 +1,6 @@
 import { StyleSheet, TextInput, TouchableOpacity, View} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "../../../@generics/components/text"
+import { Text } from "../../../@generics/components/Text"
 import { ProjectColors } from "../../../@generics/enums/colors";
 import { Button } from "../../../@generics/components/Button";
 import { useContext, useEffect, useState } from "react";

@@ -1,5 +1,5 @@
 import { Image, SafeAreaView, StyleSheet, View } from "react-native";
-import { Text } from "../../../@generics/components/text";
+import { Text } from "../../../@generics/components/Text";
 import { ProjectColors } from "../../../@generics/enums/colors";
 import { Button } from "../../../@generics/components/Button";
 import { useEffect, useState } from "react";

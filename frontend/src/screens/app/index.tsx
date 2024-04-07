@@ -1,14 +1,17 @@
-import { StyleSheet,View, Image, ScrollView, FlatList } from "react-native";
+import { StyleSheet,View, Image, ScrollView, FlatList, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../../@generics/enums/colors";
 import { Entypo } from '@expo/vector-icons';
-import { Text } from "../../../@generics/components/text";
+import { AntDesign } from '@expo/vector-icons';
+import { Text } from "../../../@generics/components/Text";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { MatchCard } from "../../../@generics/components/MatchCard";
 
 
 
 export const HomePage = () => {
+    const { width } = Dimensions.get('window');
     const sports = [
         {  
             name: 'Football', 
@@ -36,13 +39,55 @@ export const HomePage = () => {
             _id: 5
         }
     ];
+    const liveMatchDetails = [
+        {
+            date: new Date(), 
+            teamA: {
+                name: 'Titans', 
+                score: 21
+            },
+            teamB: {
+                name: 'Patans', 
+                score: 18
+            },
+            matchType: 'Singles', 
+        },
+        {
+            date: new Date(), 
+            teamA: {
+                name: 'Titans', 
+                score: 21
+            },
+            teamB: {
+                name: 'Patans', 
+                score: 18
+            },
+            matchType: 'Singles', 
+        },
+        {
+            date: new Date(), 
+            teamA: {
+                name: 'Titans', 
+                score: 21
+            },
+            teamB: {
+                name: 'Patans', 
+                score: 18
+            },
+            matchType: 'Singles', 
+        },
+    ];
     const [selectedSportId, setSelectedSportId] = useState<number>(1);
 
     const SportsIcon = (props) => {
         return (
             <TouchableOpacity onPress={() => setSelectedSportId(props.sport._id)}>
                 <View style={styles.sportsSlider}>
-                    <View style={[styles.circle, { backgroundColor: props.sport._id === selectedSportId ? ProjectColors.Primary : ProjectColors.Secondary }]}>
+                    <View style={[
+                        styles.circle, 
+                        { backgroundColor: props.sport._id === selectedSportId ? ProjectColors.Primary : ProjectColors.Secondary },
+                        { opacity: props.sport._id === selectedSportId ? 0.8 : 1 }
+                    ]}>
                         <Image style={styles.sportIcon}  source={props.sport.src} />
                     </View>
                     <Text>{props.sport.name}</Text>
@@ -74,7 +119,68 @@ export const HomePage = () => {
                     />
                 </View>
             </View>
-            <View style={styles.container}></View>
+            <ScrollView style={styles.container}>
+
+                {/* Live Matches */}
+                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
+                        <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
+                        <AntDesign name="arrowright" size={24} color="black" />
+                    </View>
+                    <FlatList 
+                     horizontal
+                     data={liveMatchDetails}
+                     renderItem={({ item }) => (
+                         <TouchableOpacity style={{ width: width / 1.2 }}>
+                            <MatchCard data={item} live={true} showPlayButton={true} />
+                        </TouchableOpacity>
+                     )} 
+                     ItemSeparatorComponent={() => (
+                        <View style={{ width: 10 }} />
+                     )}
+                     showsHorizontalScrollIndicator={false}
+                    />
+                </View>
+
+                {/* Finished Matches */}
+                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
+                        <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
+                        <AntDesign name="arrowright" size={24} color="black" />
+                    </View>
+                    <FlatList 
+                     horizontal
+                     data={liveMatchDetails}
+                     renderItem={({ item }) => (
+                         <TouchableOpacity style={{ width: width / 1.2 }}>
+                            <MatchCard data={item} live={false} showPlayButton={false} />
+                        </TouchableOpacity>
+                     )} 
+                     ItemSeparatorComponent={() => (
+                        <View style={{ width: 10 }} />
+                     )}
+                     showsHorizontalScrollIndicator={false}
+                    />
+                </View>
+               
+                {/* Rating  */}
+                <TouchableOpacity style={{ flex: 1, marginTop: 20, paddingHorizontal: 15  }}>
+                    <View style={{
+                        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: ProjectColors.Secondary, padding: 15, borderRadius: 10
+                    }}>
+                        <View style={{ flexDirection: 'row', flex: 1, gap: 15 }}>
+                            <View style={styles.ratingCircle}>
+                                <Image style={{ width: '80%', height: '80%' }} source={ require('../../../assets/star.png') } />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ fontSize: 16, color: ProjectColors.LightBlack }}>Rate Us</Text>
+                                <Text style={{ fontSize: 12, color: ProjectColors.LightBlack, opacity: 0.6 }}>If you love the app, Please rate us on google playstore.</Text>
+                            </View>
+                        </View>
+                        <AntDesign name="right" size={24} color="black" />
+                    </View>
+                </TouchableOpacity>
+            </ScrollView>
         </SafeAreaView>
     )
 }
@@ -86,7 +192,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: 'space-between',
         alignItems: 'center', 
-        paddingHorizontal: 10,
+        padding: 10
     }, 
     profile: {
         flexDirection: 'row', 
@@ -105,6 +211,8 @@ const styles = StyleSheet.create({
     } , 
     container: {
         flex: 0.8,
+        marginTop: 20,
+        paddingVertical: 10
     },
     sportsContainer: {
         flex: 0.2, 
@@ -131,5 +239,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         gap: 10
+    },
+    ratingCircle: {
+        width: 60, 
+        height: 60, 
+        borderRadius: 30,
+        backgroundColor: ProjectColors.Grey,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })

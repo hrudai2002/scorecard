@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from "react-native"
-import { Text } from "../text"
+import { Text } from "../Text"
 
 interface ButtonProps extends TouchableOpacityProps {
     text: string, 
