@@ -33,30 +33,27 @@ export const MatchCard = (props: IMatchDetailsProps) => {
                     {
                         props.live ? <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
                             <View style={styles.circle}></View>
-                            <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Live</Text>
-                        </View> : null
+                            <Text fontWeight={400} style={{ color: ProjectColors.Red, fontSize: 12 }}>Live</Text>
+                        </View> : <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>{props.data.matchType}</Text>
                     }
                   
                 </View>
                 <View style={styles.middleSection}>
-                    <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 5 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
-                            <Text fontWeight={700} style={{ fontSize: 24, color: ProjectColors.Primary }}>{props.data.teamA.score}</Text>
-                            <Text fontWeight={700} style={{ fontSize: 22 }}>:</Text>
-                            <Text fontWeight={700} style={{fontSize: 24}}>{props.data.teamB.score}</Text>
+                    <View style={{ flexDirection: 'column', gap: 5 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                            <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
+                            <Text fontWeight={700} style={{ fontSize: 20, color: ProjectColors.Primary }}>{ !props.live && "🏆"} {props.data.teamA.score}</Text>
                         </View>
-                        <Text>Singles</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
+                            <Text fontWeight={700} style={{ fontSize: 20 }}>{props.data.teamB.score}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                         <Text fontWeight={400} style={{ fontSize: 14 }}>{ props.live ? props.data.matchType : "Titans Won" }</Text>
+                        </View>
                     </View>
                 </View>
             </View>
-            {
-                props.showPlayButton ? <TouchableOpacity>
-                    <View style={styles.playCirlcle}>
-                        <AntDesign name="caretright" size={26} color={ProjectColors.Secondary} style={{ borderRadius: 20 }} />
-                    </View>
-                </TouchableOpacity> : null
-            }
-           
         </View>
     )
 }
@@ -68,6 +65,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5, 
         borderRadius: 10,
         padding: 15,
+        gap: 15
     }, 
     matchDetails: {
         flexDirection: 'column',

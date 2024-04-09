@@ -8,9 +8,7 @@ import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../../@generics/components/MatchCard";
 
-
-
-export const HomePage = () => {
+export const HomePage = ({ navigation }) => {
     const { width } = Dimensions.get('window');
     const sports = [
         {  
@@ -98,16 +96,17 @@ export const HomePage = () => {
 
     return (
         <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1, backgroundColor: ProjectColors.Grey}}>
+            
             <View style={styles.profileHeader}>
-                <View style={styles.profile}>
-                    <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
-                    <View style={styles.profileText}>
-                       <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary}}>Welcome, Greg!</Text> 
-                       <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
-                    </View>
+                <View style={styles.profileText}>
+                    <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary}}>Welcome, Greg!</Text> 
+                    <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
                 </View>
-                <Entypo name="dots-three-vertical" size={18} color={ProjectColors.Secondary} />
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                    <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
+                </TouchableOpacity>
             </View>
+
             <View style={styles.sportsContainer}>
                 <Text fontWeight={600} style={{ fontSize: 16 }}>Sports</Text>
                 <View style={{ flexDirection: 'row' }}>
@@ -119,52 +118,60 @@ export const HomePage = () => {
                     />
                 </View>
             </View>
+
+
             <ScrollView style={styles.container}>
 
                 {/* Live Matches */}
-                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15 }}>
+                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 30 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
                         <AntDesign name="arrowright" size={24} color="black" />
                     </View>
-                    <FlatList 
-                     horizontal
-                     data={liveMatchDetails}
-                     renderItem={({ item }) => (
-                         <TouchableOpacity style={{ width: width / 1.2 }}>
-                            <MatchCard data={item} live={true} showPlayButton={true} />
-                        </TouchableOpacity>
-                     )} 
-                     ItemSeparatorComponent={() => (
-                        <View style={{ width: 10 }} />
-                     )}
-                     showsHorizontalScrollIndicator={false}
-                    />
+                    {
+                        liveMatchDetails.length ? <FlatList
+                            horizontal
+                            data={liveMatchDetails}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity style={{ width: width / 1.4 }}>
+                                    <MatchCard data={item} live={true} showPlayButton={true} />
+                                </TouchableOpacity>
+                            )}
+                            ItemSeparatorComponent={() => (
+                                <View style={{ width: 10 }} />
+                            )}
+                            showsHorizontalScrollIndicator={false}
+                        /> : <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}><Image style={styles.noData} source={require('../../../assets/no-data.png')} /></View>
+                    }
+                   
                 </View>
 
                 {/* Finished Matches */}
-                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15 }}>
+                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
                         <AntDesign name="arrowright" size={24} color="black" />
                     </View>
-                    <FlatList 
-                     horizontal
-                     data={liveMatchDetails}
-                     renderItem={({ item }) => (
-                         <TouchableOpacity style={{ width: width / 1.2 }}>
-                            <MatchCard data={item} live={false} showPlayButton={false} />
-                        </TouchableOpacity>
-                     )} 
-                     ItemSeparatorComponent={() => (
-                        <View style={{ width: 10 }} />
-                     )}
-                     showsHorizontalScrollIndicator={false}
-                    />
+                    {
+                        liveMatchDetails.length ? <FlatList
+                            horizontal
+                            data={liveMatchDetails}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity style={{ width: width / 1.4 }}>
+                                    <MatchCard data={item} live={false} showPlayButton={false} />
+                                </TouchableOpacity>
+                            )}
+                            ItemSeparatorComponent={() => (
+                                <View style={{ width: 10 }} />
+                            )}
+                            showsHorizontalScrollIndicator={false}
+                        /> : <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}><Image style={styles.noData} source={require('../../../assets/no-data.png')} /></View>
+                    }
+                  
                 </View>
                
                 {/* Rating  */}
-                <TouchableOpacity style={{ flex: 1, marginTop: 20, paddingHorizontal: 15  }}>
+                {/* <TouchableOpacity style={{ flex: 1, marginTop: 20, paddingHorizontal: 15  }}>
                     <View style={{
                         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: ProjectColors.Secondary, padding: 15, borderRadius: 10
                     }}>
@@ -179,7 +186,8 @@ export const HomePage = () => {
                         </View>
                         <AntDesign name="right" size={24} color="black" />
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+
             </ScrollView>
         </SafeAreaView>
     )
@@ -192,23 +200,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: 'space-between',
         alignItems: 'center', 
-        padding: 10
+        padding: 15
     }, 
-    profile: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        gap: 10
+    profileText: {
+        flexDirection: 'column',
+        alignItems: 'flex-start'
     },
     profileImg: {
         width: 50, 
         height: 50,
         borderRadius: 25, 
         backgroundColor: ProjectColors.Grey
-    },  
-    profileText: {
-        flexDirection: 'column', 
-        alignItems: 'flex-start'
-    } , 
+    }, 
+    noData: {
+       width: 200,
+       height: 200,
+       textAlign: 'center'
+    },
     container: {
         flex: 0.8,
         marginTop: 20,
