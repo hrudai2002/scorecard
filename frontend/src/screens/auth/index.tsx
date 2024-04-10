@@ -1,11 +1,11 @@
 import { Image, SafeAreaView, StyleSheet, View } from "react-native";
-import { Text } from "../../../@generics/components/Text";
+import { Text } from "../../../@generics/components/text";
 import { ProjectColors } from "../../../@generics/enums/colors";
-import { Button } from "../../../@generics/components/Button";
+import { Button } from "../../../@generics/components/button";
 import { useEffect, useState } from "react";
 import ImageSlider from 'react-native-image-slider';
 
-export const SplashScreen = ({ navigation }) => {
+export function SplashScreen ({ navigation }) {
     const imageSource = [
         require('../../../assets/badminton-boy.png'), 
         require('../../../assets/table-tennis.png'),

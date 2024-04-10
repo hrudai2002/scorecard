@@ -1,13 +1,13 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "../../../../@generics/components/Text";
+import { Text } from "../../../../@generics/components/text";
 import { Image, StyleSheet, View } from "react-native";
 import { ProjectColors } from "../../../../@generics/enums/colors";
-import { Button } from "../../../../@generics/components/Button";
+import { Button } from "../../../../@generics/components/button";
 import { AuthContext, useAuth } from "../../../contexts/auth";
 import { useContext } from "react";
 import { Feather } from '@expo/vector-icons';
 
-export const Profile = ({ navigation }) => {
+export function Profile ({ navigation }) {
     const context = useAuth();
     const { signOut} = useContext(AuthContext)
 

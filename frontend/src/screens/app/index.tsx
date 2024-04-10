@@ -3,12 +3,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../../@generics/enums/colors";
 import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import { Text } from "../../../@generics/components/Text";
+import { Text } from "../../../@generics/components/text";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { MatchCard } from "../../../@generics/components/MatchCard";
+import { MatchCard } from "../../../@generics/components/match-card";
 
-export const HomePage = ({ navigation }) => {
+export function HomePage({ navigation }) {
     const { width } = Dimensions.get('window');
     const sports = [
         {  
@@ -126,7 +126,7 @@ export const HomePage = ({ navigation }) => {
                 <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 30 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" />
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigation.navigate("Matches")} />
                     </View>
                     {
                         liveMatchDetails.length ? <FlatList

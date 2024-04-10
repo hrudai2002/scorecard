@@ -37,7 +37,7 @@ interface Props extends TextProps {
     fontWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 ,
 }
 
-export const Text = ({ fontWeight, ...textProps }: Props) => {
+export function Text({ fontWeight, ...textProps }: Props) {
     let [fontsLoaded] = useFonts({
         OpenSans_300Light,
         OpenSans_400Regular,

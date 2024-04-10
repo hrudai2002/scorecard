@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { AppStack } from "./app-stack";
 import { AuthStack } from "./auth-stack";
 
-export const Router = () => {
+export function Router () {
     const { authData, loading } = useAuth(); 
 
     if(loading) {} 

@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from "react-native"
-import { Text } from "../Text"
+import { Text } from "../text"
 
 interface ButtonProps extends TouchableOpacityProps {
     text: string, 
@@ -9,7 +9,7 @@ interface ButtonProps extends TouchableOpacityProps {
     color: string,
 }
 
-export const Button = ({ text, color, fontSize, fontWeight, backgroundColor, ...touchableOpacityProps }: ButtonProps) => {
+export function Button({ text, color, fontSize, fontWeight, backgroundColor, ...touchableOpacityProps }: ButtonProps) {
     return (
         <TouchableOpacity {...touchableOpacityProps} style={[styles.container, { backgroundColor }, touchableOpacityProps.style]}>
             <Text style={{ color, fontSize }} fontWeight={fontWeight}>{ text }</Text>

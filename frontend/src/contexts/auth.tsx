@@ -20,7 +20,7 @@ type AuthContextData = {
 
 const AuthContext = createContext<AuthContextData>(null); 
 
-const AuthProvider = ({ children }) => {
+function AuthProvider({ children }) {
     const [authData, setAuthData] = useState<AuthData>();
     const [loading, setLoading] = useState(true);
 

@@ -1,8 +1,6 @@
 import { StyleSheet, View } from "react-native"
 import { ProjectColors } from "../../enums/colors"
-import { Text } from "../Text"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import { AntDesign } from '@expo/vector-icons';
+import { Text } from "../text"
 
 interface IMatchDetailsProps {
     data: {
@@ -21,7 +19,7 @@ interface IMatchDetailsProps {
     showPlayButton?: boolean
 }
 
-export const MatchCard = (props: IMatchDetailsProps) => {
+export function MatchCard(props: IMatchDetailsProps) {
     return (
         <View>
             <View style={styles.container}>

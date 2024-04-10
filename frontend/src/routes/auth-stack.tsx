@@ -4,7 +4,7 @@ import { AuthPage } from "../screens/auth/auth";
 
 const Stack = createStackNavigator();
 
-export const AuthStack = () => {
+export function AuthStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Splash Screen" component={SplashScreen} options={{ headerShown: false }} />
