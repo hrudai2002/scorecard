@@ -47,15 +47,15 @@ export function ViewMatches({ navigation }) {
             matchType: 'Singles',
         },
     ];
-    useEffect(() => {
-        console.log(searchString);
-    }, [searchString])
+    // useEffect(() => {
+    //     console.log(searchString); 
+    // }, [searchString])
     return (
         <View style={{ flex: 1 }}>
             <Header title={"Live Matches"} navigation={navigation} />
                 <View style={styles.container}>
                    <SearchBar placeholder="Search" setSearchString={setSearchString} width={'75%'} />
-                   <TouchableOpacity>
+                   <TouchableOpacity onPress={() => navigation.navigate("Create-Match")}>
                       <View style={styles.createBtn}>
                         <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
                         <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>

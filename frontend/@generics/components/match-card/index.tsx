@@ -47,7 +47,7 @@ export function MatchCard(props: IMatchDetailsProps) {
                             <Text fontWeight={700} style={{ fontSize: 20 }}>{props.data.teamB.score}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                         <Text fontWeight={400} style={{ fontSize: 14 }}>{ props.live ? props.data.matchType : "Titans Won" }</Text>
+                         <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType : "Titans Won" }</Text>
                         </View>
                     </View>
                 </View>
