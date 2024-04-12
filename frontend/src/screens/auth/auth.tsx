@@ -7,17 +7,22 @@ import { useContext, useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from "../../contexts/auth";
 import Toast from "react-native-toast-message";
+import { validateEmail, validatePassword } from "../../utils/helpers";
 interface AuthDetails {
     name: string, 
     email: string, 
     password: string
 }
 
-export function AuthPage ({ navigation }) {
+export function AuthPage () {
     const [signIn, setSignIn] = useState<boolean>(true);
     const [hidePassoword, setHidePassword] = useState<boolean>(true);
     const [authDetails, setAuthDetails] = useState<AuthDetails>();
-    const { signIn: signInService, register: registerService } = useContext(AuthContext); 
+    const { 
+        signIn: signInService, 
+        register: registerService 
+    } = useContext(AuthContext);
+    
     useEffect(() => {
         setAuthDetails({ 
             name: '', 
@@ -25,6 +30,7 @@ export function AuthPage ({ navigation }) {
             password: '' 
         })
     }, [signIn]);
+
     const validateFields = (data): boolean => {
         if (!signIn && !data.name) {
             Toast.show({
@@ -58,7 +64,7 @@ export function AuthPage ({ navigation }) {
             });
             return false;
         }
-        if (!/^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(data.email)) {
+        if (!validateEmail(data.email)) {
             Toast.show({
                 type: 'error',
                 text1: 'not valid email',
@@ -66,7 +72,7 @@ export function AuthPage ({ navigation }) {
             });
             return false;
         }
-        if (data.password.length < 6) {
+        if (!validatePassword(data.password)) {
             Toast.show({
                 type: 'error',
                 text1: 'Password cannot be less than 6 characters',
@@ -76,6 +82,7 @@ export function AuthPage ({ navigation }) {
         }
         return true;
     }
+
     const onSubmit = async () => {
         if (!validateFields(authDetails)) {
             return;
@@ -86,6 +93,7 @@ export function AuthPage ({ navigation }) {
             await registerService(authDetails);
         }
     }
+
     return (
         <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.heading}>

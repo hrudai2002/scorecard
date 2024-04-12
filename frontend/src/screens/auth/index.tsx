@@ -4,20 +4,24 @@ import { ProjectColors } from "../../../@generics/enums/colors";
 import { Button } from "../../../@generics/components/button";
 import { useEffect, useState } from "react";
 import ImageSlider from 'react-native-image-slider';
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-export function SplashScreen ({ navigation }) {
+export function SplashScreen () {
     const imageSource = [
         require('../../../assets/badminton-boy.png'), 
         require('../../../assets/table-tennis.png'),
         require('../../../assets/bat_ball.png'),
     ]
-    const [position, setPosition] = useState(0);
+    const [position, setPosition] = useState<number>(0);
+    const { navigate }: NavigationProp<any> = useNavigation();
+    
     useEffect(() => {
         const toggle = setInterval(() => {
             setPosition(position === imageSource.length - 1 ? 0 : position + 1);
         }, 2000);
         return () => clearInterval(toggle);
     }, []);
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.container}>
@@ -43,7 +47,7 @@ export function SplashScreen ({ navigation }) {
                     </View>
                     <View>
                         <Button
-                            onPress={() => navigation.navigate('Auth')}
+                            onPress={() => navigate('Auth')}
                             text='Get Started' 
                             backgroundColor={ProjectColors.Secondary}
                             fontWeight={700}

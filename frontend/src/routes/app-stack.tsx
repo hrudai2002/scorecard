@@ -1,8 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import { HomePage } from "../screens/app";
 import { Profile } from "../screens/app/profile";
-import { ViewMatches } from "../screens/app/matches";
-import { CreateMatch } from "../screens/app/matches/create-match";
+import { ViewMatches } from "../screens/app/home";
+import { CreateMatch } from "../screens/app/home/create-match";
 
 const Stack = createStackNavigator();
 

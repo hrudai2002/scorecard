@@ -7,9 +7,9 @@ import { Text } from "../../../../@generics/components/text";
 import { MaterialIcons } from '@expo/vector-icons';
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "../../../../@generics/components/button";
-import { sets, matchTypeData, gamePoints } from "../../../match-data";
+import { badmintonMatchType, badmintonGameSets, badmintonGamePoints } from "../../../constants/match-data";
 
-export function CreateMatch({ navigation }) {
+export function CreateMatch() {
     const [matchType, setMatchType] = useState(null);
     const [numberOfSets, setNumberOfSets] = useState(null);
     const [gamePoint, setGamePoint] = useState(null);
@@ -17,13 +17,11 @@ export function CreateMatch({ navigation }) {
 
 
     const [team, setTeam] = useState(null);
-
     const [teamA, setTeamA] = useState({
         name: '', 
         playerOne: '', 
         playerTwo: ''
     })
-
     const [teamB, setTeamB] = useState({
         name: '',
         playerOne: '',
@@ -36,13 +34,13 @@ export function CreateMatch({ navigation }) {
 
     const saveTeamDetails = () => {
         selectTeam == "TeamA" ? setTeamA(team) : setTeamB(team);
-        setSelectedTeam("");
+        setSelectedTeam(null);
     }
 
     if(selectTeam) {
         return (
             <View style={{ flex: 1 }}>
-                <Header title={'New Match'} navigation={navigation} setBack={setSelectedTeam} /> 
+                <Header title={'New Match'} setBack={setSelectedTeam} /> 
                 <View style={styles.container}>
                   <View style={styles.groupInputField}>
                     <View style={styles.inputField}>
@@ -77,22 +75,22 @@ export function CreateMatch({ navigation }) {
 
     return (
         <View style={{ flex: 1 }}>
-            <Header title={'New Match'} navigation={navigation} />
+            <Header title={'New Match'}  />
             <View style={styles.container}>
                 <View style={styles.groupInputField}>
                     <View style={styles.inputField}>
                         <Text fontWeight={400}>Game Type</Text>
                         <Dropdown 
-                        data={matchTypeData} 
+                        data={badmintonMatchType} 
                         value={matchType} 
                         setValue={setMatchType} 
-                        placeholder={"Select Game type"}
+                        placeholder={"Select game type"}
                         />
                     </View>
                     <View style={styles.inputField}>
                         <Text fontWeight={400}>Number of Sets</Text>
                         <Dropdown 
-                        data={sets} 
+                        data={badmintonGameSets} 
                         value={numberOfSets} 
                         setValue={setNumberOfSets} 
                         placeholder={"Select number of sets"}
@@ -101,10 +99,10 @@ export function CreateMatch({ navigation }) {
                     <View style={styles.inputField}>
                         <Text fontWeight={400}>Game Points</Text>
                         <Dropdown 
-                        data={gamePoints} 
+                        data={badmintonGamePoints} 
                         value={gamePoint} 
                         setValue={setGamePoint} 
-                        placeholder={""}
+                        placeholder={"Select game points"}
                         />
                     </View>
                     <TouchableOpacity onPress={() => setSelectedTeam("TeamA")}>

@@ -5,9 +5,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { Text } from "../text";
 import { useEffect } from "react";
 import { useBackHandler } from "@react-native-community/hooks";
+import { useNavigation } from "@react-navigation/native";
 
 interface IHeaderProps {
-    navigation: any,
     title: string,
     subTitle?: string,
     setBack?: any
@@ -34,6 +34,8 @@ export function Header(props: IHeaderProps) {
         console.log('came here..');
         return true;
     });
+    
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -43,7 +45,7 @@ export function Header(props: IHeaderProps) {
                         if(props.setBack) {
                             props.setBack(null);
                         } else {
-                            props.navigation.goBack();
+                            navigation.goBack();
                         }
                     }} />
                     <View style={styles.headerContext}>

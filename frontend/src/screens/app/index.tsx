@@ -1,81 +1,19 @@
 import { StyleSheet,View, Image, ScrollView, FlatList, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../../@generics/enums/colors";
-import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Text } from "../../../@generics/components/text";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../../@generics/components/match-card";
+import { liveMatchDetails, sports } from "../../constants/match-data";
+import { useDimensions } from "../../hooks/useDimensions";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-export function HomePage({ navigation }) {
-    const { width } = Dimensions.get('window');
-    const sports = [
-        {  
-            name: 'Football', 
-            src: require('../../../assets/icon=Football.png'), 
-            _id: 1,
-        },
-        {
-            name: 'Badminton', 
-            src: require('../../../assets/Badminton.png'),  
-            _id: 2, 
-        },
-        {
-            name: 'Table Tennis', 
-            src: require('../../../assets//Table_tennis.png'),
-            _id: 3,
-        },
-        {
-            name: 'Rugby', 
-            src: require('../../../assets/Rugby.png'),
-            _id: 4,
-        },
-        {
-            name: 'BasketBall', 
-            src: require('../../../assets/Basketball.png'),
-            _id: 5
-        }
-    ];
-    const liveMatchDetails = [
-        {
-            date: new Date(), 
-            teamA: {
-                name: 'Titans', 
-                score: 21
-            },
-            teamB: {
-                name: 'Patans', 
-                score: 18
-            },
-            matchType: 'Singles', 
-        },
-        {
-            date: new Date(), 
-            teamA: {
-                name: 'Titans', 
-                score: 21
-            },
-            teamB: {
-                name: 'Patans', 
-                score: 18
-            },
-            matchType: 'Singles', 
-        },
-        {
-            date: new Date(), 
-            teamA: {
-                name: 'Titans', 
-                score: 21
-            },
-            teamB: {
-                name: 'Patans', 
-                score: 18
-            },
-            matchType: 'Singles', 
-        },
-    ];
+export function HomePage() {
+    const { width } = useDimensions();
     const [selectedSportId, setSelectedSportId] = useState<number>(1);
+    const { navigate }: NavigationProp<any> = useNavigation();
 
     const SportsIcon = (props) => {
         return (
@@ -102,7 +40,7 @@ export function HomePage({ navigation }) {
                     <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary}}>Welcome, Greg!</Text> 
                     <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
                 </View>
-                <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                <TouchableOpacity onPress={() => navigate('Profile')}>
                     <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
                 </TouchableOpacity>
             </View>
@@ -126,10 +64,10 @@ export function HomePage({ navigation }) {
                 <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 30 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigation.navigate("Matches")} />
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches")} />
                     </View>
                     {
-                        liveMatchDetails.length ? <FlatList
+                        liveMatchDetails.length ? (<FlatList
                             horizontal
                             data={liveMatchDetails}
                             renderItem={({ item }) => (
@@ -141,7 +79,9 @@ export function HomePage({ navigation }) {
                                 <View style={{ width: 10 }} />
                             )}
                             showsHorizontalScrollIndicator={false}
-                        /> : <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}><Image style={styles.noData} source={require('../../../assets/no-data.png')} /></View>
+                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                              <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
+                            </View>)
                     }
                    
                 </View>
@@ -153,7 +93,7 @@ export function HomePage({ navigation }) {
                         <AntDesign name="arrowright" size={24} color="black" />
                     </View>
                     {
-                        liveMatchDetails.length ? <FlatList
+                        liveMatchDetails.length ? (<FlatList
                             horizontal
                             data={liveMatchDetails}
                             renderItem={({ item }) => (
@@ -165,29 +105,12 @@ export function HomePage({ navigation }) {
                                 <View style={{ width: 10 }} />
                             )}
                             showsHorizontalScrollIndicator={false}
-                        /> : <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}><Image style={styles.noData} source={require('../../../assets/no-data.png')} /></View>
+                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
+                            </View>)
                     }
                   
                 </View>
-               
-                {/* Rating  */}
-                {/* <TouchableOpacity style={{ flex: 1, marginTop: 20, paddingHorizontal: 15  }}>
-                    <View style={{
-                        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: ProjectColors.Secondary, padding: 15, borderRadius: 10
-                    }}>
-                        <View style={{ flexDirection: 'row', flex: 1, gap: 15 }}>
-                            <View style={styles.ratingCircle}>
-                                <Image style={{ width: '80%', height: '80%' }} source={ require('../../../assets/star.png') } />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{ fontSize: 16, color: ProjectColors.LightBlack }}>Rate Us</Text>
-                                <Text style={{ fontSize: 12, color: ProjectColors.LightBlack, opacity: 0.6 }}>If you love the app, Please rate us on google playstore.</Text>
-                            </View>
-                        </View>
-                        <AntDesign name="right" size={24} color="black" />
-                    </View>
-                </TouchableOpacity> */}
-
             </ScrollView>
         </SafeAreaView>
     )

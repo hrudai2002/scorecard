@@ -6,16 +6,18 @@ import { Button } from "../../../../@generics/components/button";
 import { AuthContext, useAuth } from "../../../contexts/auth";
 import { useContext } from "react";
 import { Feather } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-export function Profile ({ navigation }) {
+export function Profile () {
     const context = useAuth();
-    const { signOut} = useContext(AuthContext)
+    const { navigate }: NavigationProp<any> = useNavigation();
+    const { signOut } = useContext(AuthContext)
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flex: 1}}>
                 <View style={styles.profileView}>
-                    <Feather style={{ alignSelf: 'flex-start', }} name="arrow-left" size={24} color={ProjectColors.LightBlack} onPress={() => navigation.navigate('Home')}/>
+                    <Feather style={{ alignSelf: 'flex-start', }} name="arrow-left" size={24} color={ProjectColors.LightBlack} onPress={() => navigate('Home')}/>
                     <Image source={require('../../../../assets/profile-dp.png')} style={styles.profileImg} />
                 </View>
                 <View style={{ flex: 1, padding: 10 }}>

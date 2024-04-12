@@ -6,56 +6,19 @@ import { SearchBar } from "../../../../@generics/components/search-bar";
 import { AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
 import { MatchCard } from "../../../../@generics/components/match-card";
+import { liveMatchDetails } from "../../../constants/match-data";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-export function ViewMatches({ navigation }) {
-    const [searchString, setSearchString] = useState<string>("");
-    const liveMatchDetails = [
-        {
-            date: new Date(),
-            teamA: {
-                name: 'Titans',
-                score: 21
-            },
-            teamB: {
-                name: 'Patans',
-                score: 18
-            },
-            matchType: 'Singles',
-        },
-        {
-            date: new Date(),
-            teamA: {
-                name: 'Titans',
-                score: 21
-            },
-            teamB: {
-                name: 'Patans',
-                score: 18
-            },
-            matchType: 'Singles',
-        },
-        {
-            date: new Date(),
-            teamA: {
-                name: 'Titans',
-                score: 21
-            },
-            teamB: {
-                name: 'Patans',
-                score: 18
-            },
-            matchType: 'Singles',
-        },
-    ];
-    // useEffect(() => {
-    //     console.log(searchString); 
-    // }, [searchString])
+export function ViewMatches() {
+    const [searchString, setSearchString] = useState<string>(null);
+    const { navigate }: NavigationProp<any> = useNavigation();
+
     return (
         <View style={{ flex: 1 }}>
-            <Header title={"Live Matches"} navigation={navigation} />
+            <Header title={"Live Matches"} />
                 <View style={styles.container}>
                    <SearchBar placeholder="Search" setSearchString={setSearchString} width={'75%'} />
-                   <TouchableOpacity onPress={() => navigation.navigate("Create-Match")}>
+                   <TouchableOpacity onPress={() => navigate("Create-Match")}>
                       <View style={styles.createBtn}>
                         <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
                         <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
