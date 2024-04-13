@@ -1,11 +1,11 @@
-import { Text } from "../../../../@generics/components/text";
+import { Text } from "../../../components/text";
 import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Header } from "../../../../@generics/components/header";
-import { ProjectColors } from "../../../../@generics/enums/colors";
-import { SearchBar } from "../../../../@generics/components/search-bar";
+import { Header } from "../../../components/header";
+import { ProjectColors } from "../../../constants/colors";
+import { SearchBar } from "../../../components/search-bar";
 import { AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
-import { MatchCard } from "../../../../@generics/components/match-card";
+import { MatchCard } from "../../../components/match-card";
 import { liveMatchDetails } from "../../../constants/match-data";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 

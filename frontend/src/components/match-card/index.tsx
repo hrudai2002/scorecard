@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native"
-import { ProjectColors } from "../../enums/colors"
+import { ProjectColors } from "../../constants/colors"
 import { Text } from "../text"
 
 interface IMatchDetailsProps {

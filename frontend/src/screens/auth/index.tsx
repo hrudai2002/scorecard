@@ -1,7 +1,7 @@
 import { Image, SafeAreaView, StyleSheet, View } from "react-native";
-import { Text } from "../../../@generics/components/text";
-import { ProjectColors } from "../../../@generics/enums/colors";
-import { Button } from "../../../@generics/components/button";
+import { Text } from "../../components/text";
+import { ProjectColors } from "../../constants/colors";
+import { Button } from "../../components/button";
 import { useEffect, useState } from "react";
 import ImageSlider from 'react-native-image-slider';
 import { NavigationProp, useNavigation } from "@react-navigation/native";

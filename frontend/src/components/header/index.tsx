@@ -1,6 +1,6 @@
 import { BackHandler, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ProjectColors } from "../../enums/colors";
+import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
 import { Text } from "../text";
 import { useEffect } from "react";

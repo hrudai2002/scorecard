@@ -1,8 +1,8 @@
 import { StyleSheet, TextInput, TouchableOpacity, View} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "../../../@generics/components/text"
-import { ProjectColors } from "../../../@generics/enums/colors";
-import { Button } from "../../../@generics/components/button";
+import { Text } from "../../components/text"
+import { ProjectColors } from "../../constants/colors";
+import { Button } from "../../components/button";
 import { useContext, useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from "../../contexts/auth";

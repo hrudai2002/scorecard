@@ -7,7 +7,8 @@ import Toast from "react-native-toast-message";
 type AuthData = {
     token: string,
     email: string,
-    name: string
+    name: string,
+    _id: string,
 }
 
 type AuthContextData = {

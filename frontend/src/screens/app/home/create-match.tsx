@@ -1,20 +1,24 @@
 import { StyleSheet, View } from "react-native";
-import { Header } from "../../../../@generics/components/header";
+import { Header } from "../../../components/header";
 import { useEffect, useState } from "react";
-import { ProjectColors } from "../../../../@generics/enums/colors";
-import { Dropdown } from "../../../../@generics/components/dropdown";
-import { Text } from "../../../../@generics/components/text";
+import { ProjectColors } from "../../../constants/colors";
+import { Dropdown } from "../../../components/dropdown";
+import { Text } from "../../../components/text";
 import { MaterialIcons } from '@expo/vector-icons';
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
-import { Button } from "../../../../@generics/components/button";
+import { Button } from "../../../components/button";
+import { toast } from "../../../utils/toast";
+import { BadmintonMatchType, Team } from "../../../constants/enum";
+import axios from "../../../utils/fetcher";
 import { badmintonMatchType, badmintonGameSets, badmintonGamePoints } from "../../../constants/match-data";
+import { useAuth } from "../../../contexts/auth";
 
 export function CreateMatch() {
+    const { authData } = useAuth();
     const [matchType, setMatchType] = useState(null);
     const [numberOfSets, setNumberOfSets] = useState(null);
     const [gamePoint, setGamePoint] = useState(null);
     const [selectTeam, setSelectedTeam] = useState(null);
-
 
     const [team, setTeam] = useState(null);
     const [teamA, setTeamA] = useState({
@@ -29,12 +33,46 @@ export function CreateMatch() {
     });
 
     useEffect(() => {
-        selectTeam == "TeamA" ? setTeam(teamA) : setTeam(teamB);
+        selectTeam == Team.TEAM_A ? setTeam(teamA) : setTeam(teamB);
     }, [selectTeam])
 
     const saveTeamDetails = () => {
-        selectTeam == "TeamA" ? setTeamA(team) : setTeamB(team);
+        selectTeam == Team.TEAM_A ? setTeamA(team) : setTeamB(team);
         setSelectedTeam(null);
+    }
+
+    const startGame = async () => {
+        if(!matchType) {
+            toast.error("Match type cannot be empty!");
+            return;
+        } 
+        if(!numberOfSets) {
+            toast.error("Number of sets cannot be empty!");
+            return;
+        }
+        if(!gamePoint) {
+            toast.error("Game point cannot be empty!");
+            return;
+        }
+        if (!teamA.name || !teamA.playerOne || (matchType == BadmintonMatchType.DOUBLES && !teamA.playerTwo)) {
+            toast.error("Fill all the fields of Team A");
+            return;
+        }
+        if (!teamB.name || !teamB.playerOne || (matchType == BadmintonMatchType.DOUBLES && !teamB.playerTwo)) {
+            toast.error("Fill all the fields of Team B");
+            return;
+        }
+
+        const { data } = await axios.post('/badminton/create', {
+            gameType: matchType, 
+            sets: numberOfSets, 
+            gamePoints: gamePoint, 
+            teamA, 
+            teamB,
+            user: authData._id
+        })
+
+        console.log('all details filled completly!');
     }
 
     if(selectTeam) {
@@ -52,7 +90,7 @@ export function CreateMatch() {
                         <TextInput style={styles.textInput} value={team.playerOne} onChangeText={(data) => setTeam({...team, playerOne: data})} />
                     </View>
                     {
-                        matchType == 'Doubles' ? <View style={styles.inputField}>
+                        matchType == BadmintonMatchType.DOUBLES ? <View style={styles.inputField}>
                             <Text>Player 2</Text>
                             <TextInput style={styles.textInput} value={team.playerTwo} onChangeText={(data) => setTeam({...team, playerTwo: data})} />
                         </View> : null
@@ -61,7 +99,6 @@ export function CreateMatch() {
                   </View>
                     <Button
                         onPress={saveTeamDetails}
-                        style={{ marginTop: 'auto' }}
                         text={'Save Details'}
                         color={ProjectColors.Secondary}
                         backgroundColor={ProjectColors.Primary}
@@ -105,13 +142,25 @@ export function CreateMatch() {
                         placeholder={"Select game points"}
                         />
                     </View>
-                    <TouchableOpacity onPress={() => setSelectedTeam("TeamA")}>
+                    <TouchableOpacity onPress={() => {
+                        if(!matchType) {
+                            toast.error("Match type cannot be empty!");
+                            return;
+                        } 
+                        setSelectedTeam(Team.TEAM_A);
+                    }}>
                         <View style={styles.teamInputField}>
                             <Text>Team A</Text>
                             <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectedTeam("TeamB")}>
+                    <TouchableOpacity onPress={() =>{ 
+                        if(!matchType) {
+                            toast.error("Match type cannot be empty!");
+                            return;
+                        }
+                        setSelectedTeam(Team.TEAM_B);
+                    }}>
                         <View style={styles.teamInputField}>
                             <Text>Team B</Text>
                             <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
@@ -119,7 +168,7 @@ export function CreateMatch() {
                     </TouchableOpacity>
                 </View>
                 <Button 
-                 style={{ marginTop: 'auto' }}
+                 onPress={startGame}
                  text={'Start Game'} 
                  color={ProjectColors.Secondary} 
                  backgroundColor={ProjectColors.Primary} 
@@ -140,6 +189,7 @@ const styles = StyleSheet.create({
     },
     groupInputField: {
         flexDirection: 'column', 
+        flexGrow: 1,
         gap: 30,
     },
     inputField: {

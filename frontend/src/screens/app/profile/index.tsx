@@ -1,8 +1,8 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "../../../../@generics/components/text";
+import { Text } from "../../../components/text";
 import { Image, StyleSheet, View } from "react-native";
-import { ProjectColors } from "../../../../@generics/enums/colors";
-import { Button } from "../../../../@generics/components/button";
+import { ProjectColors } from "../../../constants/colors";
+import { Button } from "../../../components/button";
 import { AuthContext, useAuth } from "../../../contexts/auth";
 import { useContext } from "react";
 import { Feather } from '@expo/vector-icons';

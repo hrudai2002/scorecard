@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { ProjectColors } from '../../enums/colors';
+import { ProjectColors } from '../../constants/colors';
 import { Dispatch, SetStateAction } from 'react';
 
 interface ISearchBarProps {

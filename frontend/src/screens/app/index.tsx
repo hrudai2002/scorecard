@@ -1,11 +1,11 @@
 import { StyleSheet,View, Image, ScrollView, FlatList, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ProjectColors } from "../../../@generics/enums/colors";
+import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
-import { Text } from "../../../@generics/components/text";
+import { Text } from "../../components/text";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { MatchCard } from "../../../@generics/components/match-card";
+import { MatchCard } from "../../components/match-card";
 import { liveMatchDetails, sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
 import { NavigationProp, useNavigation } from "@react-navigation/native";

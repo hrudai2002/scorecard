@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { ProjectColors } from "../../enums/colors";
+import { ProjectColors } from "../../constants/colors";
 import { Dropdown as NativeDropdown } from "react-native-element-dropdown";
 import { Dispatch, SetStateAction, useState } from "react";
 
