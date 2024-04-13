@@ -26,8 +26,6 @@ function AuthProvider({ children }) {
 
     useEffect(() => {
         (async () => {
-            // await signIn();
-            // await signOut();
             await loadStorageData();
         })()
     }, []);
