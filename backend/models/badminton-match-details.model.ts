@@ -6,12 +6,11 @@ import { IUser } from "./user.model";
 export interface IBadmintonMatchDetails {
     status: MATCH_STATUS.LIVE | MATCH_STATUS.COMPLETED, 
     user:  Schema.Types.ObjectId | IUser, 
-    gametype: GAMETYPE.SINGLES | GAMETYPE.DOUBLES, 
+    gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES, 
     date: Date, 
     totalSets: number, 
     completedSets: number, 
     summary: string[], 
-    rules: string[], 
     teamA: Schema.Types.ObjectId, 
     teamB: Schema.Types.ObjectId
 }
@@ -19,7 +18,7 @@ export interface IBadmintonMatchDetails {
 const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({ 
     status: {
         type: Schema.Types.String,
-        enum: Object.keys(MATCH_STATUS),
+        enum: Object.values(MATCH_STATUS),
         required: true
     },
     user: {
@@ -27,9 +26,9 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
         required: true, 
         ref: 'User'
     }, 
-    gametype: {
+    gameType: {
         type: Schema.Types.String, 
-        enum: Object.keys(GAMETYPE), 
+        enum: Object.values(GAMETYPE), 
         required: true,
     }, 
     date: {
@@ -45,10 +44,7 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
         required: true
     }, 
     summary: [{
-        type: Schema.Types.ObjectId, 
-    }],
-    rules: [{
-        type: Schema.Types.ObjectId, 
+        type: Schema.Types.String, 
     }],
     teamA: {
         type: Schema.Types.ObjectId, 

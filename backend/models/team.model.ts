@@ -2,15 +2,14 @@ import { Model, Schema, model } from "mongoose"
 
 export interface Sets {
     score: number, 
-    server: boolean
+    serve: boolean
 }
 
 export interface ITeam {
     name: string, 
     playerOne: string, 
     playerTwo: string, 
-    sets: Sets[], 
-    matchDetails: string
+    sets: Sets[],
 }
 
 const teamSchema = new Schema<ITeam>({
@@ -23,8 +22,7 @@ const teamSchema = new Schema<ITeam>({
         required: true
     }, 
     playerTwo: {
-        type: Schema.Types.String, 
-        required: true
+        type: Schema.Types.String,
     }, 
     sets: [new Schema({
         score: {
