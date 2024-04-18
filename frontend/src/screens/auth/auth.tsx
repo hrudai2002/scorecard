@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, TouchableOpacity, View} from "react-native"
+import { Image, StyleSheet, TextInput, TouchableOpacity, View} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../../components/text"
 import { ProjectColors } from "../../constants/colors";
@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from "../../contexts/auth";
 import Toast from "react-native-toast-message";
 import { validateEmail, validatePassword } from "../../utils/helpers";
+import { LoadingComponent } from "../../components/loading";
 interface AuthDetails {
     name: string, 
     email: string, 
@@ -18,6 +19,7 @@ export function AuthPage () {
     const [signIn, setSignIn] = useState<boolean>(true);
     const [hidePassoword, setHidePassword] = useState<boolean>(true);
     const [authDetails, setAuthDetails] = useState<AuthDetails>();
+    const [loading, setLoading] = useState<boolean>(false);
     const { 
         signIn: signInService, 
         register: registerService 
@@ -87,15 +89,18 @@ export function AuthPage () {
         if (!validateFields(authDetails)) {
             return;
         }
+        setLoading(true);
         if(signIn) {
-            await signInService(authDetails);
+            await signInService(authDetails); 
         } else {
             await registerService(authDetails);
         }
+        setLoading(false);
     }
 
     return (
         <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
+            <LoadingComponent loading={loading} />
             <View style={styles.heading}>
                 <Text fontWeight={700} style={{ color: ProjectColors.Secondary, fontSize: 36 }}>ScoreCard</Text>
                 {signIn ? <Text style={{ color: ProjectColors.Secondary, fontSize: 15 }}>Login to your account</Text> : 
