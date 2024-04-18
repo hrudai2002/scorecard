@@ -9,9 +9,9 @@ import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "../../../components/button";
 import { toast } from "../../../utils/toast";
 import { BadmintonMatchType, Team } from "../../../constants/enum";
-import axios from "../../../utils/fetcher";
 import { badmintonMatchType, badmintonGameSets, badmintonGamePoints } from "../../../constants/match-data";
 import { useAuth } from "../../../contexts/auth";
+import { createMatch } from "../../../services/badminton.service";
 
 export function CreateMatch() {
     const { authData } = useAuth();
@@ -63,16 +63,14 @@ export function CreateMatch() {
             return;
         }
 
-        const { data } = await axios.post('/badminton/create', {
-            gameType: matchType, 
-            sets: numberOfSets, 
-            gamePoints: gamePoint, 
-            teamA, 
+        await createMatch({
+            gameType: matchType,
+            sets: numberOfSets,
+            gamePoints: gamePoint,
+            teamA,
             teamB,
             user: authData._id
-        })
-
-        console.log('all details filled completly!');
+        });
     }
 
     if(selectTeam) {

@@ -8,10 +8,20 @@ import { useEffect, useState } from "react";
 import { MatchCard } from "../../../components/match-card";
 import { liveMatchDetails } from "../../../constants/match-data";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { getLiveMatches } from "../../../services/badminton.service";
+import { useAuth } from "../../../contexts/auth";
 
 export function ViewMatches() {
     const [searchString, setSearchString] = useState<string>(null);
     const { navigate }: NavigationProp<any> = useNavigation();
+    const { authData } = useAuth();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getLiveMatches({ user: authData._id });
+        }
+        fetchData();
+    }, []);
 
     return (
         <View style={{ flex: 1 }}>
