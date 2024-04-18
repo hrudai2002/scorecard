@@ -3,6 +3,22 @@ import { GAMETYPE, MATCH_STATUS } from "../enum";
 import { Mongoose, Schema, Types } from "mongoose";
 import { Team } from "../models/team.model";
 
+
+// @get badminton/live
+export const getLiveMatches = async (req, res) => {
+    try {
+        let { user } = req.query;
+        user = new Types.ObjectId(user);
+        const matches = await badmintonMatchDetails.find({
+            status: MATCH_STATUS.LIVE, 
+            user
+        })
+        return res.json({ success: true, data: matches });
+    } catch (error) {
+        return res.json({ success: false, error: error });
+    }
+}
+
 // @post badminton/create
 export const createMatch = async (req, res) => {
     try {
