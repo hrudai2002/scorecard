@@ -13,9 +13,12 @@ interface IMatchDetailsProps {
             name: string, 
             score: number
         },
+        totalSets: number,
         matchType: string,
+        currentSet: number
     },
-    live: boolean
+    live: boolean, 
+    matchNo: number
     showPlayButton?: boolean
 }
 
@@ -25,7 +28,7 @@ export function MatchCard(props: IMatchDetailsProps) {
             <View style={styles.container}>
                 <View style={styles.topSection}>
                     <View style={styles.matchDetails}>
-                        <Text fontWeight={600} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Match - 01</Text>
+                        <Text fontWeight={600} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Match - { props.matchNo }</Text>
                         <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>15 March 2023</Text>
                     </View>
                     {
@@ -40,14 +43,14 @@ export function MatchCard(props: IMatchDetailsProps) {
                     <View style={{ flexDirection: 'column', gap: 5 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
-                            <Text fontWeight={700} style={{ fontSize: 20, color: ProjectColors.Primary }}>{ !props.live && "🏆"} {props.data.teamA.score}</Text>
+                            <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && "🏆"} {props.data.teamA.score}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
-                            <Text fontWeight={700} style={{ fontSize: 20 }}>{props.data.teamB.score}</Text>
+                            <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamB.score}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                         <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType : "Titans Won" }</Text>
+                         <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType + ` (${props.data.currentSet} / ${props.data.totalSets}) ` : "Titans Won" }</Text>
                         </View>
                     </View>
                 </View>

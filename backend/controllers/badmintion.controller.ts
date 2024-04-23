@@ -12,10 +12,26 @@ export const getLiveMatches = async (req, res) => {
         const matches = await badmintonMatchDetails.find({
             status: MATCH_STATUS.LIVE, 
             user
-        })
-        return res.json({ success: true, data: matches });
+        }).populate('teamA teamB');
+
+        const result = matches.map((doc: any) => ({
+            date: doc.date, 
+            totalSets: doc.totalSets,
+            teamA: {
+                name: doc.teamA.name, 
+                score: doc.teamA.sets[doc.teamA.sets.length - 1].score
+            }, 
+            teamB: {
+                name: doc.teamB.name, 
+                score: doc.teamB.sets[doc.teamB.sets.length - 1].score
+            },
+            currentSet: doc.teamA.sets.length,
+            matchType: doc.gameType
+        }))
+
+        return res.json({ success: true, data: result });
     } catch (error) {
-        return res.json({ success: false, error: error });
+        return res.json({ success: false, error: error.message });
     }
 }
 
@@ -62,7 +78,7 @@ export const createMatch = async (req, res) => {
             }]
         })
 
-        await badmintonMatchDetails.create({
+        const result = await badmintonMatchDetails.create({
             status: MATCH_STATUS.LIVE, 
             user: new Types.ObjectId(user),
             gameType, 
@@ -73,8 +89,9 @@ export const createMatch = async (req, res) => {
             teamA: TeamA._id, 
             teamB: TeamB._id
         });
+        console.log(result);
         return res.json({ success: true, data: null });
     } catch (error) {
-        return res.json({ success: false, error: error })
+        return res.json({ success: false, error: error.message })
     }
 }

@@ -12,6 +12,7 @@ import { BadmintonMatchType, Team } from "../../../constants/enum";
 import { badmintonMatchType, badmintonGameSets, badmintonGamePoints } from "../../../constants/match-data";
 import { useAuth } from "../../../contexts/auth";
 import { createMatch } from "../../../services/badminton.service";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 export function CreateMatch() {
     const { authData } = useAuth();
@@ -19,6 +20,7 @@ export function CreateMatch() {
     const [numberOfSets, setNumberOfSets] = useState(null);
     const [gamePoint, setGamePoint] = useState(null);
     const [selectTeam, setSelectedTeam] = useState(null);
+    const navigation: NavigationProp<any> = useNavigation();
 
     const [team, setTeam] = useState(null);
     const [teamA, setTeamA] = useState({
@@ -71,6 +73,9 @@ export function CreateMatch() {
             teamB,
             user: authData._id
         });
+
+        navigation.goBack();
+
     }
 
     if(selectTeam) {

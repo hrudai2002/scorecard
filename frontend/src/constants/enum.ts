@@ -1,6 +1,6 @@
 export enum BadmintonMatchType {
-    SINGLES = 'SINGLES', 
-    DOUBLES = 'DOUBLES'
+    SINGLES = 'Singles', 
+    DOUBLES = 'Doubles'
 }
 
 export enum Team {

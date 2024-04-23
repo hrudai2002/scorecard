@@ -3,17 +3,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
 import { Text } from "../../components/text";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../components/match-card";
 import { liveMatchDetails, sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { getLiveMatches } from "../../services/badminton.service";
+import { useAuth } from "../../contexts/auth";
 
 export function HomePage() {
     const { width } = useDimensions();
+    const [matchesData, setMatchesData] = useState(null);
     const [selectedSportId, setSelectedSportId] = useState<number>(1);
     const { navigate }: NavigationProp<any> = useNavigation();
+    const { authData } = useAuth();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getLiveMatches({ user: authData._id });
+            setMatchesData(data);
+        }
+        fetchData();
+    }, []);
 
     const SportsIcon = (props) => {
         return (
@@ -69,10 +81,10 @@ export function HomePage() {
                     {
                         liveMatchDetails.length ? (<FlatList
                             horizontal
-                            data={liveMatchDetails}
-                            renderItem={({ item }) => (
+                            data={matchesData}
+                            renderItem={({ item, index }) => (
                                 <TouchableOpacity style={{ width: width / 1.4 }}>
-                                    <MatchCard data={item} live={true} showPlayButton={true} />
+                                    <MatchCard data={item} live={true} matchNo={index + 1} showPlayButton={true} />
                                 </TouchableOpacity>
                             )}
                             ItemSeparatorComponent={() => (
@@ -95,10 +107,10 @@ export function HomePage() {
                     {
                         liveMatchDetails.length ? (<FlatList
                             horizontal
-                            data={liveMatchDetails}
-                            renderItem={({ item }) => (
+                            data={matchesData}
+                            renderItem={({ item, index }) => (
                                 <TouchableOpacity style={{ width: width / 1.4 }}>
-                                    <MatchCard data={item} live={false} showPlayButton={false} />
+                                    <MatchCard data={item} live={false} matchNo={index + 1} showPlayButton={false} />
                                 </TouchableOpacity>
                             )}
                             ItemSeparatorComponent={() => (

@@ -13,12 +13,14 @@ import { useAuth } from "../../../contexts/auth";
 
 export function ViewMatches() {
     const [searchString, setSearchString] = useState<string>(null);
+    const [matchesData, setMatchesData] = useState(null);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
             const data = await getLiveMatches({ user: authData._id });
+            setMatchesData(data);
         }
         fetchData();
     }, []);
@@ -37,10 +39,10 @@ export function ViewMatches() {
                 </View>
             <View style={{ padding: 10 }}>
                 <FlatList
-                    data={liveMatchDetails}
-                    renderItem={({ item }) => (
+                    data={matchesData}
+                    renderItem={({ item, index }) => (
                         <TouchableOpacity style={{ marginBottom: 15 }}>
-                            <MatchCard data={item} live={true} showPlayButton={true} />
+                            <MatchCard data={item} live={true} matchNo={index + 1} showPlayButton={true} />
                         </TouchableOpacity>
                     )}
                 />
