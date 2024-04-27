@@ -22,6 +22,19 @@ export const getLiveMatches = async (params) => {
     }
 }
 
+export const getFinishedMatches = async (params) => {
+    try {
+        const res: response = await axios.get(apiUrl + '/finished', { params });
+        if(!res.data.success) {
+            toast.error(res.data.error);
+            return;
+        }
+        return res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+} 
+
 export const createMatch = async (payload) => {
     try {
         const res: response = await axios.post(apiUrl + '/create', payload ); 

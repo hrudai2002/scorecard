@@ -3,29 +3,44 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
 import { Text } from "../../components/text";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../components/match-card";
 import { liveMatchDetails, sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { getLiveMatches } from "../../services/badminton.service";
+import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
+import { getFinishedMatches, getLiveMatches } from "../../services/badminton.service";
 import { useAuth } from "../../contexts/auth";
 
 export function HomePage() {
     const { width } = useDimensions();
-    const [matchesData, setMatchesData] = useState(null);
+    const [liveMatchesData, setLiveMatchesData] = useState(null); 
+    const [finishedMatchesData, setFinishedMatchesData] = useState(null);
     const [selectedSportId, setSelectedSportId] = useState<number>(1);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
+    
+    const fetchLiveMatchesData = async () => {
+        const data = await getLiveMatches({ user: authData._id });
+        setLiveMatchesData(data);
+    }
+
+    const fetchFinishedMatchesData = async () => {
+        const data = await getFinishedMatches({ user: authData._id }); 
+        setFinishedMatchesData(data);
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await getLiveMatches({ user: authData._id });
-            setMatchesData(data);
-        }
-        fetchData();
+        fetchLiveMatchesData();
+        fetchFinishedMatchesData();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchLiveMatchesData();
+            fetchFinishedMatchesData();
+        }, [])
+    )
 
     const SportsIcon = (props) => {
         return (
@@ -76,12 +91,12 @@ export function HomePage() {
                 <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 30 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches")} />
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live' })} />
                     </View>
                     {
                         liveMatchDetails.length ? (<FlatList
                             horizontal
-                            data={matchesData}
+                            data={liveMatchesData}
                             renderItem={({ item, index }) => (
                                 <TouchableOpacity style={{ width: width / 1.4 }}>
                                     <MatchCard data={item} live={true} matchNo={index + 1} showPlayButton={true} />
@@ -102,12 +117,12 @@ export function HomePage() {
                 <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" />
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished' })} />
                     </View>
                     {
-                        liveMatchDetails.length ? (<FlatList
+                        finishedMatchesData?.length ? (<FlatList
                             horizontal
-                            data={matchesData}
+                            data={finishedMatchesData}
                             renderItem={({ item, index }) => (
                                 <TouchableOpacity style={{ width: width / 1.4 }}>
                                     <MatchCard data={item} live={false} matchNo={index + 1} showPlayButton={false} />

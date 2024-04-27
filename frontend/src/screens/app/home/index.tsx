@@ -4,30 +4,40 @@ import { Header } from "../../../components/header";
 import { ProjectColors } from "../../../constants/colors";
 import { SearchBar } from "../../../components/search-bar";
 import { AntDesign } from '@expo/vector-icons';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MatchCard } from "../../../components/match-card";
-import { liveMatchDetails } from "../../../constants/match-data";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { getLiveMatches } from "../../../services/badminton.service";
+import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { getFinishedMatches, getLiveMatches } from "../../../services/badminton.service";
 import { useAuth } from "../../../contexts/auth";
+import { MatchStatus } from "../../../constants/enum";
 
 export function ViewMatches() {
     const [searchString, setSearchString] = useState<string>(null);
     const [matchesData, setMatchesData] = useState(null);
     const { navigate }: NavigationProp<any> = useNavigation();
+    const route: RouteProp<any>  = useRoute();
     const { authData } = useAuth();
-
+    
+    const fetchData = async (status: string) => {
+        let data = [];
+        data = status == MatchStatus.LIVE ? await getLiveMatches({ user: authData._id }) : 
+                                            await getFinishedMatches({ user: authData._id });
+        setMatchesData(data);
+    }
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await getLiveMatches({ user: authData._id });
-            setMatchesData(data);
-        }
-        fetchData();
+        fetchData(route.params.status);
     }, []);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchData(route.params.status);
+        }, [])
+    )
 
     return (
         <View style={{ flex: 1 }}>
-            <Header title={"Live Matches"} />
+            <Header title={`${route?.params?.status} Matches`} />
                 <View style={styles.container}>
                    <SearchBar placeholder="Search" setSearchString={setSearchString} width={'75%'} />
                    <TouchableOpacity onPress={() => navigate("Create-Match")}>
