@@ -13,30 +13,8 @@ interface IHeaderProps {
     setBack?: any
 }
 
-export function Header(props: IHeaderProps) {
-
-    // useEffect(() => {
-    //     BackHandler.addEventListener("hardwareBackPress", () => {
-    //         props.setBack(null);
-    //         console.log('came here');
-    //         return true;
-    //     });
-    //     return () => {
-    //         BackHandler.removeEventListener("hardwareBackPress", () => {
-    //             props.setBack(null)
-    //             return true;
-    //         });
-    //     };
-    // }, []);
-
-    useBackHandler(() => {
-        props.setBack(null);
-        console.log('came here..');
-        return true;
-    });
-    
+export function Header(props: IHeaderProps) {    
     const navigation = useNavigation();
-
     return (
         <View style={styles.container}>
             <SafeAreaView edges={['top']}>
@@ -49,7 +27,10 @@ export function Header(props: IHeaderProps) {
                         }
                     }} />
                     <View style={styles.headerContext}>
-                    <Text fontWeight={600} style={{ fontSize: 20, color: ProjectColors.Secondary }}>{props.title}</Text>
+                        <Text fontWeight={600} style={{ fontSize: 20, color: ProjectColors.Secondary }}>{props.title}</Text>
+                        {
+                            props.subTitle ? <Text fontWeight={400} style={{ color: ProjectColors.Secondary }}>{props.subTitle}</Text> : null
+                        }
                   </View>
                 </View>
             </SafeAreaView>
@@ -65,12 +46,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center', 
         backgroundColor: ProjectColors.Primary,
-        padding: 15, 
+        padding: 10,
     },
     headerContext: {
-        position: 'absolute', 
-        left: '50%', top: '50%', 
-        marginLeft: -50, 
-        marginRight: -50
+        flex: 1, 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        marginRight: 20
     }
 })

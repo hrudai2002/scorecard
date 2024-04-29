@@ -26,7 +26,8 @@ export const getLiveMatches = async (req, res) => {
                 score: doc.teamB.sets[doc.teamB.sets.length - 1].score
             },
             currentSet: doc.teamA.sets.length,
-            matchType: doc.gameType
+            matchType: doc.gameType, 
+            _id: doc._id
         }))
 
         return res.json({ success: true, data: result });
@@ -62,9 +63,42 @@ export const getFinishedMatches = async (req, res) => {
                 score: doc.teamB.sets[doc.teamB.sets.length - 1].score
             },
             currentSet: doc.teamA.sets.length,
-            matchType: doc.gameType
+            matchType: doc.gameType,
+            _id: doc._id
         })); 
 
+        return res.json({ success: true, data: result });
+    } catch (error) {
+        return res.json({ success: false, error: error.message });
+    }
+}
+
+// @get badminton/:id
+export const getMatchDetails = async (req, res) => {
+    try {
+        console.log('came here ..');
+        let { matchId } = req.params; 
+        if(!matchId) {
+            throw new Error("Invalid Request!");
+        }
+        matchId = new Types.ObjectId(matchId);
+        const doc: any = await badmintonMatchDetails.findOne({ _id: matchId }).populate('teamA teamB');
+        console.log(doc);
+        const result = {
+            date: doc.date,
+            totalSets: doc.totalSets,
+            teamA: {
+                name: doc.teamA.name,
+                score: doc.teamA.sets[doc.teamA.sets.length - 1].score
+            },
+            teamB: {
+                name: doc.teamB.name,
+                score: doc.teamB.sets[doc.teamB.sets.length - 1].score
+            },
+            currentSet: doc.teamA.sets.length,
+            matchType: doc.gameType,
+            _id: doc._id
+        }
         return res.json({ success: true, data: result });
     } catch (error) {
         return res.json({ success: false, error: error.message });
@@ -96,7 +130,7 @@ export const createMatch = async (req, res) => {
             }]
         })
 
-        const result = await badmintonMatchDetails.create({
+        await badmintonMatchDetails.create({
             status: MATCH_STATUS.LIVE, 
             user: new Types.ObjectId(user),
             gameType, 

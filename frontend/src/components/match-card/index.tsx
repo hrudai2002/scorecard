@@ -1,6 +1,8 @@
 import { StyleSheet, View } from "react-native"
 import { ProjectColors } from "../../constants/colors"
 import { Text } from "../text"
+import { month } from "../../constants/enum"
+import { AntDesign } from '@expo/vector-icons';
 
 interface IMatchDetailsProps {
     data: {
@@ -29,7 +31,7 @@ export function MatchCard(props: IMatchDetailsProps) {
                 <View style={styles.topSection}>
                     <View style={styles.matchDetails}>
                         <Text fontWeight={600} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Match - { props.matchNo }</Text>
-                        <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>15 March 2023</Text>
+                        <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>{(new Date(props.data.date).getDate())} {month[new Date(props.data.date).getMonth()]} {new Date(props.data.date).getFullYear()}</Text>
                     </View>
                     {
                         props.live ? <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
@@ -43,11 +45,19 @@ export function MatchCard(props: IMatchDetailsProps) {
                     <View style={{ flexDirection: 'column', gap: 5 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
-                            <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && "🏆"} {props.data.teamA.score}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                <AntDesign name="minuscircle" size={20} color={ProjectColors.LightBlack} />
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && "🏆"} {props.data.teamA.score} </Text>
+                                <AntDesign name="pluscircle" size={20} color={ProjectColors.LightBlack} />
+                            </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
-                            <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamB.score}</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                               <AntDesign name="minuscircle" size={20} color={ProjectColors.LightBlack} />
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && "🏆"} {props.data.teamB.score } </Text>
+                               <AntDesign name="pluscircle" size={20} color={ProjectColors.LightBlack} />
+                            </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                          <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType + ` (${props.data.currentSet} / ${props.data.totalSets}) ` : "Titans Won" }</Text>

@@ -75,7 +75,6 @@ export function CreateMatch() {
         });
 
         navigation.goBack();
-
     }
 
     if(selectTeam) {
