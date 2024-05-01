@@ -10,7 +10,7 @@ export interface IBadmintonMatchDetails {
     date: Date, 
     totalSets: number, 
     completedSets: number, 
-    summary: string[], 
+    summary: { text: string, date: Date }[], 
     teamA: Schema.Types.ObjectId, 
     teamB: Schema.Types.ObjectId
 }
@@ -43,9 +43,16 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
         type: Schema.Types.Number, 
         required: true
     }, 
-    summary: [{
-        type: Schema.Types.String, 
-    }],
+    summary: [new Schema({
+       text: {
+         type: Schema.Types.String, 
+         required: true
+       },
+       date: {
+         type: Schema.Types.Date,
+         required: true
+       }
+    })],
     teamA: {
         type: Schema.Types.ObjectId, 
         required: true, 
@@ -63,5 +70,5 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
     teamB: 1
  }, {unique: true})
 
-export const badmintonMatchDetails: Model<IBadmintonMatchDetails> = model<IBadmintonMatchDetails>('BadmintonMatchDetails', badmintonMatchDetailsSchema);
+export const BadmintonMatchDetails: Model<IBadmintonMatchDetails> = model<IBadmintonMatchDetails>('BadmintonMatchDetails', badmintonMatchDetailsSchema);
 

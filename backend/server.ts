@@ -2,7 +2,7 @@ require('dotenv').config({ path: ".env" });
 import express from 'express';
 import cors from 'cors';
 import userRouter from "./routes/user.router"; 
-import badmintonRouter from "./routes/badmintion.router"
+import badmintonRouter from "./routes/badminton.router"
 
 import connectDb from './config/db';
 connectDb(); 
