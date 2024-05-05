@@ -1,5 +1,6 @@
 import axios from './fetcher';
 import { toast } from '../utils/toast';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const apiUrl = '/badminton';
 
@@ -8,6 +9,7 @@ interface response {
     success: boolean, 
     data: any,
 }
+
 
 export const getLiveMatches = async (params) => {
     try {
@@ -18,7 +20,7 @@ export const getLiveMatches = async (params) => {
         }
         return res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.error('Something went wrong!');
     }
 }
 
@@ -31,13 +33,12 @@ export const getFinishedMatches = async (params) => {
         }
         return res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.error('Something went wrong!');
     }
 } 
 
 export const getMatchDetails = async (params) => {
     try {
-        console.log(params)
         const res: response = await axios.get(apiUrl + `/${params}`); 
         if(!res.data.success) {
             toast.error(res.data.error); 
@@ -45,7 +46,7 @@ export const getMatchDetails = async (params) => {
         }
         return res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.error('Something went wrong!');
     }
 }
 
@@ -58,6 +59,6 @@ export const createMatch = async (payload) => {
         }
         return res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.error('Something went wrong!');
     }
 }
