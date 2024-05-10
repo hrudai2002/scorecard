@@ -1,27 +1,32 @@
 import { StyleSheet, View } from "react-native"
 import { ProjectColors } from "../../constants/colors"
 import { Text } from "../text"
-import { month } from "../../constants/enum"
+import { month, Team } from "../../constants/enum"
 import { AntDesign } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 interface IMatchDetailsProps {
     data: {
         date: Date, 
         teamA: {
             name: string, 
-            score: number
+            score: number, 
+            winner?: boolean
         }, 
         teamB: {
             name: string, 
-            score: number
+            score: number,
+            winner?: boolean
         },
         totalSets: number,
         matchType: string,
-        currentSet: number
+        currentSet: number,
+        _id: string,
     },
     live: boolean, 
     matchNo: number
-    showPlayButton?: boolean
+    showBtn: boolean,
+    updateScore?: (data: any) => void,
 }
 
 export function MatchCard(props: IMatchDetailsProps) {
@@ -46,17 +51,22 @@ export function MatchCard(props: IMatchDetailsProps) {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                <AntDesign name="minuscircle" size={20} color={ProjectColors.LightBlack} />
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && "🏆"} {props.data.teamA.score} </Text>
-                                <AntDesign name="pluscircle" size={20} color={ProjectColors.LightBlack} />
+                                {/* <AntDesign name="minuscircle" size={20} color={ProjectColors.LightBlack} /> */}
+                                {props.live && props.showBtn ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null }
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && props.data.teamA?.score && "🏆"} {props.data.teamA.score} </Text>
+                                {/* <AntDesign name="pluscircle" size={20} color={ProjectColors.LightBlack} /> */}
+                                {props.live && props.showBtn ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score + 1, teamBScore: props.data.teamB.score, whoScored: Team.TEAM_A })} /> : null }
+                                
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                               <AntDesign name="minuscircle" size={20} color={ProjectColors.LightBlack} />
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && "🏆"} {props.data.teamB.score } </Text>
-                               <AntDesign name="pluscircle" size={20} color={ProjectColors.LightBlack} />
+                               {/* <AntDesign name="minuscircle" size={20} color={ProjectColors.LightBlack} /> */}
+                                {props.live && props.showBtn ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score - 1, whoScored: '' })} /> : null}
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && props.data.teamB?.winner && "🏆"} {props.data.teamB.score } </Text>
+                               {/* <AntDesign name="pluscircle" size={20} color={ProjectColors.LightBlack} /> */}
+                                {props.live && props.showBtn ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score + 1, whoScored: Team.TEAM_B })} /> : null}
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>

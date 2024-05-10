@@ -2,25 +2,58 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Header } from "../../../components/header";
 import { useEffect, useState } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { getMatchDetails } from "../../../services/badminton.service";
+import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as getMatchSummaryService } from "../../../services/badminton.service";
 import { MatchCard } from "../../../components/match-card";
 import { Text } from "../../../components/text";
 import { ProjectColors } from "../../../constants/colors";
-import { Tabs } from "../../../constants/enum";
+import { MatchStatus, Tabs } from "../../../constants/enum";
+import { formateDate } from "../../../utils/helpers";
+import { FlatList } from "react-native-gesture-handler";
 
 export function ScoreScreen() {
     const router: RouteProp<any> = useRoute();
     const [matchData, setMatchData] = useState(null);
     const [selectedTab, setSelectedTab] = useState(Tabs.SUMMARY);
+    const [summary, setSummary] = useState(null);
+    const [rules, setRules] = useState(null);
 
     const fetchData = async (matchId) => {
         const data = await getMatchDetails(matchId); 
         setMatchData(data);
     }
 
+    const getMatchSummary = async (matchId) => {
+        const data = await getMatchSummaryService(matchId);
+        setSummary(data);
+    }
+
+    const getMatchRules = async () => {
+
+    }
+
+    const updateScore = async (payload) => {
+        const res = await updateScoreService(payload);
+        if(res) {
+            setMatchData({ 
+                ...matchData, 
+                teamA: { ...matchData.teamA, score: payload.teamAScore },
+                teamB: { ...matchData.teamB, score: payload.teamBScore },
+            });
+            getMatchSummary(payload.matchId);
+        }
+    }
+
     useEffect(() => {
         fetchData(router.params._id);
-    }, [router.params])
+        getMatchSummary(router.params._id);
+    }, [router.params]);
+    
+    // useEffect(() => {
+    //     if(selectedTab == Tabs.SUMMARY) {
+    //     } else {
+    //         getMatchRules();
+    //     }
+    // }, [selectedTab])
 
     return (
        <View style={{ flex: 1 }}>
@@ -28,7 +61,7 @@ export function ScoreScreen() {
            <View style={{ padding: 10 }}>
                 {
                     matchData && 
-                    <MatchCard data={matchData} live={true} matchNo={Number((router.params.matchNo < 10 ? '0' : '') + router.params?.matchNo)} />
+                    <MatchCard data={matchData} live={matchData?.status == MatchStatus.LIVE} matchNo={Number((router.params.matchNo < 10 ? '0' : '') + router.params?.matchNo)} showBtn={true} updateScore={updateScore} />
                 }
            </View>
            <View style={{ flex: 1, padding: 15 }}>
@@ -44,17 +77,16 @@ export function ScoreScreen() {
                     </View>
                 </TouchableOpacity>
               </View>
-              <ScrollView style={{ paddingVertical: 15,  }}>
-                 <View style={{ flexDirection: 'column', gap: 10 }}>
-                    <View style={styles.card}>
-                        <Text>Set 2 , Team A is leading the score,Serve holds by TEAM - AServe from left side of the court</Text>
-                    </View>
-                    <View style={styles.card}>
-                        <Text>Set 2 , Team A is leading the score,Serve holds by TEAM - AServe from left side of the court</Text>
-                    </View>
-                    <View style={styles.card}>
-                        <Text>Set 2 , Team A is leading the score,Serve holds by TEAM - AServe from left side of the court</Text>
-                    </View>
+              <ScrollView style={{ paddingVertical: 10 }} showsVerticalScrollIndicator={false}>
+                 <View style={{ flexDirection: 'column', gap: 10, marginBottom: 30 }}>
+                    {
+                        summary?.map((item, index) => (
+                            <View key={index} style={styles.card} >
+                                <Text>{item.text}</Text>
+                                <Text style={styles.cardDate}>{formateDate(item.date)} </Text>
+                            </View>
+                        ))
+                    }
                 </View>
               </ScrollView>
            </View>
@@ -66,6 +98,12 @@ const styles = StyleSheet.create({
     card: {
         padding: 15, 
         backgroundColor: ProjectColors.Secondary,
+        flexDirection: 'column',
         borderRadius: 10
+    },
+
+    cardDate: {
+        alignSelf: "flex-end", 
+        color: ProjectColors.LightBlack
     }
 });

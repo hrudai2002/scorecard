@@ -98,8 +98,8 @@ export function HomePage() {
                             horizontal
                             data={liveMatchesData}
                             renderItem={({ item, index }) => (
-                                <TouchableOpacity style={{ width: width / 1.4 }}>
-                                    <MatchCard data={item} live={true} matchNo={index + 1} showPlayButton={true} />
+                                <TouchableOpacity style={{ width: width / 1.4 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                    <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
                                 </TouchableOpacity>
                             )}
                             ItemSeparatorComponent={() => (
@@ -124,8 +124,8 @@ export function HomePage() {
                             horizontal
                             data={finishedMatchesData}
                             renderItem={({ item, index }) => (
-                                <TouchableOpacity style={{ width: width / 1.4 }}>
-                                    <MatchCard data={item} live={false} matchNo={index + 1} showPlayButton={false} />
+                                <TouchableOpacity style={{ width: width / 1.4 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                    <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false}  />
                                 </TouchableOpacity>
                             )}
                             ItemSeparatorComponent={() => (
