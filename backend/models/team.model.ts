@@ -2,7 +2,8 @@ import { Model, Schema, model } from "mongoose"
 
 export interface Sets {
     score: number, 
-    serve: boolean
+    serve: boolean, 
+    winner?: boolean
 }
 
 export interface ITeam {
@@ -32,6 +33,9 @@ const teamSchema = new Schema<ITeam>({
         serve: {
             type: Schema.Types.Boolean,
             default: false
+        },
+        winner: {
+            type: Schema.Types.Boolean
         }
     })]
 })
