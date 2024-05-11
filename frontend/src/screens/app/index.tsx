@@ -24,7 +24,7 @@ export function HomePage() {
         let data = [];
         switch(selectedSportId) {
             case 1: 
-                data = await getBadmintonLiveMatches({ user: authData._id });
+                data = await getBadmintonLiveMatches({ user: authData._id, limit: true });
                 setLiveMatchData(data);
                 break;
             case 2: 
@@ -37,7 +37,7 @@ export function HomePage() {
         let data = [];
         switch(selectedSportId) {
             case 1: 
-                data = await getBadmintonFinishedMatches({ user: authData._id });
+                data = await getBadmintonFinishedMatches({ user: authData._id, limit: true });
                 setFinishedMatchesData(data);
                 break;
             case 2: 
@@ -121,8 +121,9 @@ export function HomePage() {
                                 <View style={{ width: 10 }} />
                             )}
                             showsHorizontalScrollIndicator={false}
-                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                              <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
+                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                              {/* <Image style={styles.noData} source={require('../../../assets/no-data.gif')} /> */}
+                              <Text>No Live Matches</Text>
                             </View>)
                     }
                    
@@ -147,8 +148,9 @@ export function HomePage() {
                                 <View style={{ width: 10 }} />
                             )}
                             showsHorizontalScrollIndicator={false}
-                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
+                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                                <Text>No Finished Matches</Text>
+                                {/* <Image style={styles.noData} source={require('../../../assets/no-data.png')} /> */}
                             </View>)
                     }
                   

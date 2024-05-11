@@ -21,9 +21,9 @@ export function ViewMatches() {
     const fetchData = async (status: string) => {
         let data = [];
         if(status == MatchStatus.LIVE) {
-            data = await getBadmintonLiveMatches({ user: authData._id });
+            data = await getBadmintonLiveMatches({ user: authData._id, limit: false });
         } else {
-            data = await getBadmintonFinishedMatches({ user: authData._id })
+            data = await getBadmintonFinishedMatches({ user: authData._id, limit: false })
         }
         setMatchesData(data);
     }
@@ -55,7 +55,7 @@ export function ViewMatches() {
                     data={matchesData}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                            <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
+                            <MatchCard data={item} live={route.params.status == MatchStatus.LIVE ? true : false} matchNo={index + 1} showBtn={false} />
                         </TouchableOpacity>
                     )}
                 />

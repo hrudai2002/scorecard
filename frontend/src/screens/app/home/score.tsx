@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Header } from "../../../components/header";
 import { useEffect, useState } from "react";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as getMatchSummaryService } from "../../../services/badminton.service";
 import { MatchCard } from "../../../components/match-card";
 import { Text } from "../../../components/text";
@@ -9,13 +9,18 @@ import { ProjectColors } from "../../../constants/colors";
 import { MatchStatus, Tabs } from "../../../constants/enum";
 import { formateDate } from "../../../utils/helpers";
 import { FlatList } from "react-native-gesture-handler";
+import { LoadingComponent } from "../../../components/loading";
 
 export function ScoreScreen() {
     const router: RouteProp<any> = useRoute();
     const [matchData, setMatchData] = useState(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [text, setText] = useState<string>('');
     const [selectedTab, setSelectedTab] = useState(Tabs.SUMMARY);
     const [summary, setSummary] = useState(null);
     const [rules, setRules] = useState(null);
+
+    const navigation: NavigationProp<any> = useNavigation();
 
     const fetchData = async (matchId) => {
         const data = await getMatchDetails(matchId); 
@@ -28,18 +33,29 @@ export function ScoreScreen() {
     }
 
     const updateScore = async (payload) => {
-        const res = await updateScoreService(payload);        
-        if(res) {
-            setMatchData({ 
-                ...matchData, 
-                teamA: { ...matchData.teamA, score: payload.teamAScore },
-                teamB: { ...matchData.teamB, score: payload.teamBScore },
-            });
-            if(res.status == MatchStatus.FINISHED) {
-                fetchData(router.params._id);
-            }
-            getMatchSummary(payload.matchId);
+        const res = await updateScoreService(payload);   
+        fetchData(router.params._id);
+        getMatchSummary(payload.matchId);
+
+        if(res.status == MatchStatus.COMPLETED) {
+            console.log('came here');
+            setLoading(true); 
+            setText(`${ matchData.teamA._id == matchData.winner ? matchData.teamA.name : matchData.teamB.name } wins`);
+            setTimeout(() => {
+                setLoading(false);
+                navigation.goBack();
+            }, 2000);
         }
+
+        // if(res) {
+        //     setMatchData({ 
+        //         ...matchData, 
+        //         teamA: { ...matchData.teamA, score: payload.teamAScore },
+        //         teamB: { ...matchData.teamB, score: payload.teamBScore },
+        //     });
+        //     if(res.status == MatchStatus.FINISHED) {
+        //     }
+        // }
     }
 
     useEffect(() => {
@@ -56,6 +72,7 @@ export function ScoreScreen() {
 
     return (
        <View style={{ flex: 1 }}>
+           <LoadingComponent loading={loading} text={text} />
            <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `Badmintion ${matchData.matchType}` : ''} /> 
            <View style={{ padding: 10 }}>
                 {

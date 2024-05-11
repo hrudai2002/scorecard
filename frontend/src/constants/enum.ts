@@ -5,7 +5,7 @@ export enum BadmintonMatchType {
 
 export enum MatchStatus {
     LIVE = 'Live', 
-    FINISHED = 'Finished'
+    COMPLETED = 'Completed'
 }
 
 export enum Team {

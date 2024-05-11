@@ -52,7 +52,7 @@ export function MatchCard(props: IMatchDetailsProps) {
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                                 {props.live && props.showBtn ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null }
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && props.data.teamA?.score && "🏆"} {props.data.teamA.score} </Text>
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>
                                 {props.live && props.showBtn ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score + 1, teamBScore: props.data.teamB.score, whoScored: Team.TEAM_A })} /> : null }
                                 
                             </View>

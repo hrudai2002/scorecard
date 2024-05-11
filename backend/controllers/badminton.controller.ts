@@ -7,12 +7,24 @@ import { Team } from "../models/team.model";
 // @get badminton/live
 export const getLiveMatches = async (req, res) => {
     try {
-        let { user } = req.query;
+        let { user, limit } = req.query;
+        if (!user || !limit) {
+            throw new Error("Invalid Request");
+        }
         user = new Types.ObjectId(user);
-        const matches = await BadmintonMatchDetails.find({
-            status: MATCH_STATUS.LIVE, 
-            user
-        }).populate('teamA teamB');
+        limit = (limit == 'true') ? true : false;
+        let matches = [];
+        if(limit) {
+            matches = await BadmintonMatchDetails.find({
+                status: MATCH_STATUS.LIVE, 
+                user
+            }).populate('teamA teamB').limit(5);
+        } else {
+            matches = await BadmintonMatchDetails.find({
+                status: MATCH_STATUS.LIVE,
+                user
+            }).populate('teamA teamB')
+        }
 
         const result = matches.map((doc: any) => ({
             date: doc.date, 
@@ -39,18 +51,26 @@ export const getLiveMatches = async (req, res) => {
 // @get badminton/finished 
 export const getFinishedMatches = async (req, res) => {
     try {
-        let { user } = req.query; 
-        if(!user) {
+        let { user, limit } = req.query; 
+        if(!user || !limit) {
             throw new Error("Invalid Request"); 
         }
 
         user = new Types.ObjectId(user);
+        limit =  (limit == 'true') ? true : false;
+        let matches = [];
+        if(limit) {
+            matches = await BadmintonMatchDetails.find({
+                status: MATCH_STATUS.COMPLETED,
+                user
+            }).populate('teamA teamB winner').limit(5).lean();
+        } else {
+            matches = await BadmintonMatchDetails.find({
+                status: MATCH_STATUS.COMPLETED,
+                user
+            }).populate('teamA teamB winner')
+        }
 
-        const matches = await BadmintonMatchDetails.find({
-            status: MATCH_STATUS.COMPLETED,
-            user
-        }).populate('teamA teamB winner').lean();
-        
         const result = matches.map((doc: any) => ({
             date: doc.date,
             totalSets: doc.totalSets,
