@@ -1,5 +1,5 @@
 import { BadmintonMatchDetails } from "../models/badminton-match-details.model";
-import { MATCH_STATUS } from "../enum";
+import { MATCH_STATUS, Team as TeamEnum } from "../enum";
 import { Types } from "mongoose";
 import { Team } from "../models/team.model";
 
@@ -49,7 +49,7 @@ export const getFinishedMatches = async (req, res) => {
         const matches = await BadmintonMatchDetails.find({
             status: MATCH_STATUS.COMPLETED,
             user
-        }).populate('teamA teamB').lean();
+        }).populate('teamA teamB winner').lean();
         
         const result = matches.map((doc: any) => ({
             date: doc.date,
@@ -64,6 +64,7 @@ export const getFinishedMatches = async (req, res) => {
                 score: doc.teamB.sets[doc.teamB.sets.length - 1].score,
                 winner: doc.teamB.sets[doc.teamB.sets.length - 1].winner
             },
+            winner: doc?.winner?.name,
             currentSet: doc.teamA.sets.length,
             matchType: doc.gameType,
             _id: doc._id
@@ -83,7 +84,7 @@ export const getMatchDetails = async (req, res) => {
             throw new Error("Invalid Request!");
         }
         matchId = new Types.ObjectId(matchId);
-        const doc: any = await BadmintonMatchDetails.findOne({ _id: matchId }).populate('teamA teamB');
+        const doc: any = await BadmintonMatchDetails.findOne({ _id: matchId }).populate('teamA teamB winner');
         const result = {
             date: doc.date,
             status: doc.status,
@@ -96,6 +97,7 @@ export const getMatchDetails = async (req, res) => {
                 name: doc.teamB.name,
                 score: doc.teamB.sets[doc.teamB.sets.length - 1].score
             },
+            winner: doc?.winner?.name,
             currentSet: doc.teamA.sets.length,
             matchType: doc.gameType,
             _id: doc._id
@@ -117,7 +119,7 @@ export const getMatchSummary = async (req, res) => {
         matchId = new Types.ObjectId(matchId); 
         const result = await BadmintonMatchDetails.findById(matchId).lean();
 
-        return res.json({ success: true, data: result.summary.reverse() });
+        return res.json({ success: true, data: result.summary[result.summary.length - 1].reverse() });
     } catch (error) {
         return res.json({ success: false, error: error.message });
     }
@@ -126,9 +128,9 @@ export const getMatchSummary = async (req, res) => {
 // @post badminton/create
 export const createMatch = async (req, res) => {
     try {
-        const { gameType, sets, gamePoints, teamA, teamB, user } = req.body;
+        const { gameType, sets, gamePoints, serveFirst, teamA, teamB, user } = req.body;
 
-        if (!gameType || !sets || !gamePoints || !teamA || !teamB || !teamA?.name || !teamA?.playerOne || (gameType == "Doubles" && !teamA?.playerTwo) || !teamB || !teamB?.name || !teamB?.playerOne || (gameType == "Doubles" && !teamB?.playerTwo) ) {
+        if (!gameType || !sets || !gamePoints || !serveFirst  || !teamA || !teamB || !teamA?.name || !teamA?.playerOne || (gameType == "Doubles" && !teamA?.playerTwo) || !teamB || !teamB?.name || !teamB?.playerOne || (gameType == "Doubles" && !teamB?.playerTwo) ) {
             throw new Error("Invalid Request!");
         }
 
@@ -136,7 +138,7 @@ export const createMatch = async (req, res) => {
             ...teamA, 
             sets: [{
                 score: 0, 
-                serve: false
+                serve: serveFirst == TeamEnum.TEAM_A ? true : false
             }], 
         });
 
@@ -144,9 +146,12 @@ export const createMatch = async (req, res) => {
             ...teamB, 
             sets: [{
                 score: 0, 
-                serve: false
+                serve: serveFirst == TeamEnum.TEAM_A ? false : true
             }]
         })
+        
+        const name = serveFirst == TeamEnum.TEAM_A ? TeamA.name : TeamB.name;
+        const summary = `Serve holds by ${name}, Serve from right side of the court, ( ${TeamA.name} - 0, ${TeamB.name} - 0 )`
 
         await BadmintonMatchDetails.create({
             status: MATCH_STATUS.LIVE, 
@@ -155,7 +160,9 @@ export const createMatch = async (req, res) => {
             date: new Date(), 
             totalSets: sets, 
             completedSets: 0, 
-            summary: [], 
+            gamePoint: gamePoints,
+            summary: [[{ text: summary, date: new Date() }]], 
+            serveFirst: serveFirst == TeamEnum.TEAM_A ? TeamA._id : TeamB._id,
             teamA: TeamA._id, 
             teamB: TeamB._id
         });
@@ -178,60 +185,71 @@ export const updateScore = async (req, res) => {
             throw new Error('Score cannot be negative!');
         }
 
-        if(teamAScore > 21 || teamAScore > 21) {
-            throw new Error('Score cannot be greater than 21');
-        }
-
         const matchDetails = await BadmintonMatchDetails.findOne({ _id: matchId }); 
         const teamA = await Team.findOne({ _id: matchDetails.teamA }); 
         const teamB = await Team.findOne({ _id: matchDetails.teamB }); 
-
-        if(whoScored) {
-            teamA.sets[matchDetails.completedSets].serve = whoScored == 'TEAMA' ? true : false; 
-            teamB.sets[matchDetails.completedSets].serve = whoScored == 'TEAMA' ? false : true;
-        }
+        const gamePoint = matchDetails.gamePoint;
+        const maximumScore = gamePoint == 21 ? 30 : 16;
 
         teamA.sets[matchDetails.completedSets].score = teamAScore; 
         teamB.sets[matchDetails.completedSets].score = teamBScore; 
+        
+        if(whoScored) {
+            
+            teamA.sets[matchDetails.completedSets].serve = (whoScored == TeamEnum.TEAM_A) ? true : false; 
+            teamB.sets[matchDetails.completedSets].serve = (whoScored == TeamEnum.TEAM_A) ? false : true;
 
-        if(teamAScore == 21 || teamBScore == 21) { // set completed
-            if (matchDetails.completedSets < matchDetails.totalSets - 1) {
-                teamA.sets.push({ score: 0, serve: false }); 
-                teamB.sets.push({ score: 0, serve: false });
-            }
-            const winningTeam = teamAScore == 21 ? teamA.name : teamB.name;
-            matchDetails.summary.push({text: `Set-${matchDetails.completedSets + 1} won by ${winningTeam} 🎉`, date: new Date()});
-            teamA.sets[matchDetails.completedSets].winner = teamAScore == 21 ? true : false;
-            teamB.sets[matchDetails.completedSets].winner = teamBScore == 21 ? true : false;
-
-            matchDetails.completedSets += 1;
-        } else if(whoScored) {
-            let summaryText; 
-            if (teamA.sets[matchDetails.completedSets].serve) {
-                if (teamA.sets[matchDetails.completedSets].score % 2) {
-                    summaryText = `Set-${matchDetails.completedSets + 1}, ${teamA.name} scores a point, Serve holds by ${teamA.name}, Serve from left side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
-                } else {
-                    summaryText = `Set-${matchDetails.completedSets + 1}, ${teamA.name} scores a point, Serve holds by ${teamA.name}, Serve from right side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+            if (
+                (teamAScore == maximumScore || teamBScore == maximumScore) || 
+                ((teamAScore >= gamePoint || teamBScore >= gamePoint) && Math.abs(teamAScore - teamBScore) > 1) 
+            ) { 
+                // set completed
+                const winningTeam = teamAScore > teamBScore ? teamA.name : teamB.name;
+                if (matchDetails.completedSets < matchDetails.totalSets - 1) {
+                    teamA.sets.push({ score: 0, serve: false });
+                    teamB.sets.push({ score: 0, serve: false });
+                    matchDetails.summary.push([{ text: `Serve holds by ${winningTeam}, Serve from right side of the court, ( ${teamA.name} - 0, ${teamB.name} - 0 )`, date: new Date() }])
                 }
-            } else {
-                if (teamB.sets[matchDetails.completedSets].score % 2) {
-                    summaryText = `Set-${matchDetails.completedSets + 1}, ${teamB.name} scores a point Serve holds by ${teamB.name}, Serve from left side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+                matchDetails.summary[matchDetails.completedSets].push({ text: `Set-${matchDetails.completedSets + 1} won by ${winningTeam} 🎉`, date: new Date() });
+                teamA.sets[matchDetails.completedSets].winner = teamAScore > teamBScore ? true : false;
+                teamB.sets[matchDetails.completedSets].winner = teamBScore > teamAScore ? true : false;
+                matchDetails.completedSets += 1;
+            } 
+    
+            else {
+                let summaryText; 
+                if (teamA.sets[matchDetails.completedSets].serve) {
+                    if (teamA.sets[matchDetails.completedSets].score % 2) {
+                        summaryText = `Set-${matchDetails.completedSets + 1}, ${teamA.name} scores a point, Serve holds by ${teamA.name}, Serve from left side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+                    } else {
+                        summaryText = `Set-${matchDetails.completedSets + 1}, ${teamA.name} scores a point, Serve holds by ${teamA.name}, Serve from right side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+                    }
                 } else {
-                    summaryText = `Set-${matchDetails.completedSets + 1}, ${teamB.name} scores a point, Serve holds by ${teamB.name}, Serve from right side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+                    if (teamB.sets[matchDetails.completedSets].score % 2) {
+                        summaryText = `Set-${matchDetails.completedSets + 1}, ${teamB.name} scores a point Serve holds by ${teamB.name}, Serve from left side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+                    } else {
+                        summaryText = `Set-${matchDetails.completedSets + 1}, ${teamB.name} scores a point, Serve holds by ${teamB.name}, Serve from right side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
+                    }
                 }
+                matchDetails.summary[matchDetails.completedSets].push({
+                    text: summaryText, 
+                    date: new Date()
+                })
             }
-            matchDetails.summary.push({ text: summaryText, date: new Date() });
-        }
-
-        if(matchDetails.completedSets == matchDetails.totalSets) {
-            matchDetails.status = MATCH_STATUS.COMPLETED;
+    
+            if(matchDetails.completedSets == matchDetails.totalSets) {
+                const teamASetWinsCount = teamA.sets.reduce((acc, curr) => acc + (curr.winner ? 1 : 0), 0);
+                const teamBSetWinsCount = teamB.sets.reduce((acc, curr) => acc + (curr.winner ? 1 : 0), 0);
+                matchDetails.status = MATCH_STATUS.COMPLETED;
+                matchDetails.winner = teamASetWinsCount > teamBSetWinsCount ? matchDetails.teamA : matchDetails.teamB;
+            }
         }
 
         await teamA.save();
         await teamB.save();
         await matchDetails.save();
 
-        return res.json({ success: true, data: null });
+        return res.json({ success: true, data: matchDetails });
 
     } catch (error) {
         return res.json({ success: false, error: error.message });

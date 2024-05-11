@@ -10,7 +10,10 @@ export interface IBadmintonMatchDetails {
     date: Date, 
     totalSets: number, 
     completedSets: number, 
-    summary: { text: string, date: Date }[], 
+    gamePoint: number,
+    summary: [[{ text: string, date: Date }]], 
+    serveFirst: Schema.Types.ObjectId,
+    winner: Schema.Types.ObjectId,
     teamA: Schema.Types.ObjectId, 
     teamB: Schema.Types.ObjectId
 }
@@ -43,7 +46,11 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
         type: Schema.Types.Number, 
         required: true
     }, 
-    summary: [new Schema({
+    gamePoint: {
+        type: Schema.Types.Number, 
+        required: true
+    },
+    summary: [[ new Schema({
        text: {
          type: Schema.Types.String, 
          required: true
@@ -52,7 +59,16 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
          type: Schema.Types.Date,
          required: true
        }
-    })],
+    })]],
+    serveFirst: {
+        type: Schema.Types.ObjectId, 
+        required: true, 
+        ref: 'Team'
+    },
+    winner: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team'
+    },
     teamA: {
         type: Schema.Types.ObjectId, 
         required: true, 
