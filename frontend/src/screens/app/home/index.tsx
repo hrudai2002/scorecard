@@ -7,7 +7,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from "react";
 import { MatchCard } from "../../../components/match-card";
 import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
-import { getFinishedMatches, getLiveMatches } from "../../../services/badminton.service";
+import { getBadmintonFinishedMatches, getBadmintonLiveMatches } from "../../../services/badminton.service";
 import { useAuth } from "../../../contexts/auth";
 import { MatchStatus } from "../../../constants/enum";
 
@@ -20,8 +20,11 @@ export function ViewMatches() {
     
     const fetchData = async (status: string) => {
         let data = [];
-        data = status == MatchStatus.LIVE ? await getLiveMatches({ user: authData._id }) : 
-                                            await getFinishedMatches({ user: authData._id });
+        if(status == MatchStatus.LIVE) {
+            data = await getBadmintonLiveMatches({ user: authData._id });
+        } else {
+            data = await getBadmintonFinishedMatches({ user: authData._id })
+        }
         setMatchesData(data);
     }
     useEffect(() => {

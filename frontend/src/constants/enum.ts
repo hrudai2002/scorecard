@@ -9,8 +9,8 @@ export enum MatchStatus {
 }
 
 export enum Team {
-    TEAM_A = 'TEAMA', 
-    TEAM_B = 'TEAMB'
+    TEAM_A = 'TeamA', 
+    TEAM_B = 'TeamB'
 }
 
 export const month = {

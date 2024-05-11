@@ -19,6 +19,7 @@ export function CreateMatch() {
     const [matchType, setMatchType] = useState(null);
     const [numberOfSets, setNumberOfSets] = useState(null);
     const [gamePoint, setGamePoint] = useState(null);
+    const [serveFirst, setServeFirst] = useState(null);
     const [selectTeam, setSelectedTeam] = useState(null);
     const navigation: NavigationProp<any> = useNavigation();
 
@@ -56,6 +57,10 @@ export function CreateMatch() {
             toast.error("Game point cannot be empty!");
             return;
         }
+        if(!serveFirst) {
+            toast.error("Serve First cannot be empty!");
+            return;
+        }
         if (!teamA.name || !teamA.playerOne || (matchType == BadmintonMatchType.DOUBLES && !teamA.playerTwo)) {
             toast.error("Fill all the fields of Team A");
             return;
@@ -67,6 +72,7 @@ export function CreateMatch() {
 
         await createMatch({
             gameType: matchType,
+            serveFirst: serveFirst,
             sets: numberOfSets,
             gamePoints: gamePoint,
             teamA,
@@ -142,6 +148,18 @@ export function CreateMatch() {
                         value={gamePoint} 
                         setValue={setGamePoint} 
                         placeholder={"Select game points"}
+                        />
+                    </View>
+                    <View style={styles.inputField}>
+                        <Text fontWeight={400}>Serve First</Text>
+                        <Dropdown
+                            data={[
+                                { label: 'Team A', value: 'TeamA' },
+                                { label: 'Team B', value: 'TeamB' }
+                            ]}
+                            value={serveFirst}
+                            setValue={setServeFirst}
+                            placeholder={"Select Team"}
                         />
                     </View>
                     <TouchableOpacity onPress={() => {

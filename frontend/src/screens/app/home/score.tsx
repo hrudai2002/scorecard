@@ -27,18 +27,17 @@ export function ScoreScreen() {
         setSummary(data);
     }
 
-    const getMatchRules = async () => {
-
-    }
-
     const updateScore = async (payload) => {
-        const res = await updateScoreService(payload);
+        const res = await updateScoreService(payload);        
         if(res) {
             setMatchData({ 
                 ...matchData, 
                 teamA: { ...matchData.teamA, score: payload.teamAScore },
                 teamB: { ...matchData.teamB, score: payload.teamBScore },
             });
+            if(res.status == MatchStatus.FINISHED) {
+                fetchData(router.params._id);
+            }
             getMatchSummary(payload.matchId);
         }
     }

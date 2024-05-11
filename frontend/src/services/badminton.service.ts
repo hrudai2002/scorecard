@@ -8,7 +8,7 @@ interface response {
 
 const apiUrl = '/badminton';
 
-export const getLiveMatches = async (params) => {
+export const getBadmintonLiveMatches = async (params) => {
     try {
         const res: response  = await axios.get(apiUrl + '/live', { params });
         if (!res.data.success) {
@@ -21,7 +21,7 @@ export const getLiveMatches = async (params) => {
     }
 }
 
-export const getFinishedMatches = async (params) => {
+export const getBadmintonFinishedMatches = async (params) => {
     try {
         const res: response = await axios.get(apiUrl + '/finished', { params });
         if(!res.data.success) {
@@ -76,13 +76,12 @@ export const createMatch = async (payload) => {
 
 export const updateScore = async (payload) => {
     try {
-        console.log(payload);
         const res: response = await axios.put(apiUrl + '/update/score', payload ); 
         if(!res.data.success) {
             toast.error(res.data.error);
-            return false;
+            return '';
         }
-        return true;
+        return res.data.data;
     } catch (error) {
         toast.error('Something went wrong!');
     }

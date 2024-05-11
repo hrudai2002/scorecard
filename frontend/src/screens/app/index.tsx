@@ -6,34 +6,49 @@ import { Text } from "../../components/text";
 import React, { useCallback, useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../components/match-card";
-import { liveMatchDetails, sports } from "../../constants/match-data";
+import { sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
 import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
-import { getFinishedMatches, getLiveMatches } from "../../services/badminton.service";
+import { getBadmintonLiveMatches, getBadmintonFinishedMatches } from "../../services/badminton.service";
 import { useAuth } from "../../contexts/auth";
 
 export function HomePage() {
     const { width } = useDimensions();
-    const [liveMatchesData, setLiveMatchesData] = useState(null); 
+    const [liveMatchData, setLiveMatchData] = useState(null); 
     const [finishedMatchesData, setFinishedMatchesData] = useState(null);
     const [selectedSportId, setSelectedSportId] = useState<number>(1);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
     
     const fetchLiveMatchesData = async () => {
-        const data = await getLiveMatches({ user: authData._id });
-        setLiveMatchesData(data);
+        let data = [];
+        switch(selectedSportId) {
+            case 1: 
+                data = await getBadmintonLiveMatches({ user: authData._id });
+                setLiveMatchData(data);
+                break;
+            case 2: 
+                setLiveMatchData([]);
+                break;
+        }
     }
 
     const fetchFinishedMatchesData = async () => {
-        const data = await getFinishedMatches({ user: authData._id }); 
-        setFinishedMatchesData(data);
+        let data = [];
+        switch(selectedSportId) {
+            case 1: 
+                data = await getBadmintonFinishedMatches({ user: authData._id });
+                setFinishedMatchesData(data);
+                break;
+            case 2: 
+                setFinishedMatchesData([])
+                break;
+        }
     }
-
     useEffect(() => {
         fetchLiveMatchesData();
         fetchFinishedMatchesData();
-    }, []);
+    }, [selectedSportId]);
 
     useFocusEffect(
         useCallback(() => {
@@ -94,9 +109,9 @@ export function HomePage() {
                         <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live' })} />
                     </View>
                     {
-                        liveMatchDetails.length ? (<FlatList
+                        liveMatchData?.length ? (<FlatList
                             horizontal
-                            data={liveMatchesData}
+                            data={liveMatchData}
                             renderItem={({ item, index }) => (
                                 <TouchableOpacity style={{ width: width / 1.4 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
                                     <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
