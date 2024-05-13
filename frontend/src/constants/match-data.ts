@@ -32,3 +32,10 @@ export const badmintonGamePoints = [
     { label: '11', value: '11' },
     { label: '21', value: '21' },
 ]
+
+export const badmintonRules = [
+    'A match consists of  3 games of 21 points.',
+    'At 20 all, the side which gains a 2 point lead first wins that game, At 29 all, the side scoring the 30th point first, wins that game.', 
+    'The side winning  a game serves first in the next game', 
+    'At the beginning of the game (0-0) and when the server’s score is even, the server serves from the right service court. When the server’s score is odd, the server serves from the left service court'
+]

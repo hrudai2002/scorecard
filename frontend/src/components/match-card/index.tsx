@@ -18,11 +18,13 @@ interface IMatchDetailsProps {
             winner?: boolean
         },
         winner?: string,
+        enableEdit?: boolean,
         totalSets: number,
         matchType: string,
         currentSet: number,
         _id: string,
     },
+    set?: number,
     live: boolean, 
     matchNo: number
     showBtn: boolean,
@@ -51,22 +53,22 @@ export function MatchCard(props: IMatchDetailsProps) {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                {props.live && props.showBtn ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null }
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>
-                                {props.live && props.showBtn ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score + 1, teamBScore: props.data.teamB.score, whoScored: Team.TEAM_A })} /> : null }
+                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null }
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>
+                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score + 1, teamBScore: props.data.teamB.score, whoScored: Team.TEAM_A })} /> : null }
                                 
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                {props.live && props.showBtn ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score - 1, whoScored: '' })} /> : null}
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{ !props.live && props.data.teamB?.winner && "🏆"} {props.data.teamB.score } </Text>
-                                {props.live && props.showBtn ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score + 1, whoScored: Team.TEAM_B })} /> : null}
+                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score - 1, whoScored: '' })} /> : null}
+                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{ props.data.teamB?.winner && "🏆"} {props.data.teamB.score } </Text>
+                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score + 1, whoScored: Team.TEAM_B })} /> : null}
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                         <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType + ` (${props.data.currentSet} / ${props.data.totalSets}) ` : `${props.data.winner} wins` }</Text>
+                         <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType + ` (${props.set || props.data.currentSet} / ${props.data.totalSets}) ` : `${props.data.winner} wins` }</Text>
                         </View>
                     </View>
                 </View>

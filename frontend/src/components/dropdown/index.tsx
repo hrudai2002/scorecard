@@ -8,9 +8,10 @@ interface IDropdownProps {
       label: string, 
       value: string  
     }[], 
+    width?: any
     placeholder: string,
-    value: string, 
-    setValue: Dispatch<SetStateAction<any>>
+    value: any, 
+    setValue: Dispatch<SetStateAction<any>>,
 }
 
 export function Dropdown(props: IDropdownProps) {
