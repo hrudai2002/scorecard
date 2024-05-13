@@ -19,7 +19,7 @@ export function Dropdown(props: IDropdownProps) {
     const font = `OpenSans_400Regular`;
     return (
         <NativeDropdown
-            style={[styles.dropDown, isFocus && { borderColor: ProjectColors.Primary, borderWidth: 1 }]}
+            style={[styles.dropDown, isFocus && { borderColor: ProjectColors.Primary, borderWidth: 1 }, props.width && { width: props.width }]}
             data={props.data}
             labelField={'label'}
             valueField={'value'}
