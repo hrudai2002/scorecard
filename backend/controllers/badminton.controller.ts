@@ -104,24 +104,8 @@ export const getMatchDetails = async (req, res) => {
             throw new Error("Invalid Request!");
         }
         matchId = new Types.ObjectId(matchId);
-        const doc: any = await BadmintonMatchDetails.findOne({ _id: matchId }).populate('teamA teamB winner');
-        const result = {
-            date: doc.date,
-            status: doc.status,
-            totalSets: doc.totalSets,
-            teamA: {
-                name: doc.teamA.name,
-                score: doc.teamA.sets[doc.teamA.sets.length - 1].score
-            },
-            teamB: {
-                name: doc.teamB.name,
-                score: doc.teamB.sets[doc.teamB.sets.length - 1].score
-            },
-            winner: doc?.winner?.name,
-            currentSet: doc.teamA.sets.length,
-            matchType: doc.gameType,
-            _id: doc._id
-        }
+        const result: any = await BadmintonMatchDetails.findOne({ _id: matchId })
+                                                       .populate('teamA teamB winner').lean();
         return res.json({ success: true, data: result });
     } catch (error) {
         return res.json({ success: false, error: error.message });
@@ -138,8 +122,9 @@ export const getMatchSummary = async (req, res) => {
         }
         matchId = new Types.ObjectId(matchId); 
         const result = await BadmintonMatchDetails.findById(matchId).lean();
+        const data = result.summary.map((doc) => doc.reverse());
 
-        return res.json({ success: true, data: result.summary[result.summary.length - 1].reverse() });
+        return res.json({ success: true, data });
     } catch (error) {
         return res.json({ success: false, error: error.message });
     }
