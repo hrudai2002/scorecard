@@ -17,7 +17,7 @@ export function Header(props: IHeaderProps) {
     const navigation = useNavigation();
     return (
         <View style={styles.container}>
-            <SafeAreaView edges={['top']}>
+            <SafeAreaView edges={['top']} style={{ backgroundColor: ProjectColors.Primary }}>
                 <View style={styles.headerContainer}>
                   <AntDesign name="arrowleft" size={24} color={ProjectColors.Secondary} onPress={() => {
                         if(props.setBack) {
@@ -46,7 +46,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center', 
         backgroundColor: ProjectColors.Primary,
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        paddingBottom: 20,
     },
     headerContext: {
         flex: 1, 

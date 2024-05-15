@@ -23,7 +23,7 @@ export const getLiveMatches = async (req, res) => {
             matches = await BadmintonMatchDetails.find({
                 status: MATCH_STATUS.LIVE,
                 user
-            }).populate('teamA teamB')
+            }).populate('teamA teamB').sort({ _id: -1 })
         }
 
         const result = matches.map((doc: any) => ({
@@ -68,7 +68,7 @@ export const getFinishedMatches = async (req, res) => {
             matches = await BadmintonMatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
                 user
-            }).populate('teamA teamB winner')
+            }).populate('teamA teamB winner').sort({ _id: -1 })
         }
 
         const result = matches.map((doc: any) => ({
