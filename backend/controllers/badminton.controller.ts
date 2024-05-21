@@ -259,7 +259,9 @@ export const updateScore = async (req, res) => {
         await teamB.save();
         await matchDetails.save();
 
-        return res.json({ success: true, data: matchDetails });
+        const result = await BadmintonMatchDetails.findOne({ _id: matchDetails._id }).populate('teamA teamB').lean();
+
+        return res.json({ success: true, data: result });
 
     } catch (error) {
         return res.json({ success: false, error: error.message });

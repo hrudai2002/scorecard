@@ -32,11 +32,10 @@ export function ScoreScreen() {
             data['winner'] = data?.winner?.name;
             const enableEdit = data.teamA?.sets[set]?.winner || data.teamB?.sets[set]?.winner;
             data['enableEdit'] = !enableEdit;
-            data.teamA = { name: data.teamA.name, score: data.teamA.sets[set].score, winner: data.teamA?.sets[set]?.winner },
-            data.teamB = { name: data.teamB.name, score: data.teamB.sets[set].score, winner: data.teamB?.sets[set]?.winner  }
+            data.teamA = { name: data.teamA.name, score: data.teamA.sets[set]?.score, winner: data.teamA?.sets[set]?.winner },
+            data.teamB = { name: data.teamB.name, score: data.teamB.sets[set]?.score, winner: data.teamB?.sets[set]?.winner  }
             data.matchType = data.gameType;
             setMatchData(data);
-            setSummary([...summaryDetails[set]]);
     }
 
     const fetchData = async (matchId) => {
@@ -82,6 +81,16 @@ export function ScoreScreen() {
                 setLoading(false);
                 navigation.goBack();
             }, 2000);
+            return;
+        }
+
+        if('winner' in res.teamA.sets[set]) {
+            setValue(set + 1);
+            setLoading(true);
+            setText(`Set-${res.completedSets} completed..`);
+            setTimeout(() => {
+                setLoading(false)
+            }, 2000)
         }
     }
 
@@ -92,6 +101,7 @@ export function ScoreScreen() {
     useEffect(() => {
         if(matchDetails && summaryDetails?.length) {
             onSetChange();
+            getMatchSummary(matchDetails._id);
         }
     }, [matchDetails, summaryDetails, set])
 
