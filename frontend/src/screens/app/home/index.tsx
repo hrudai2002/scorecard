@@ -1,5 +1,5 @@
 import { Text } from "../../../components/text";
-import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Header } from "../../../components/header";
 import { ProjectColors } from "../../../constants/colors";
 import { SearchBar } from "../../../components/search-bar";
@@ -13,6 +13,7 @@ import { MatchStatus } from "../../../constants/enum";
 
 export function ViewMatches() {
     const [searchString, setSearchString] = useState<string>(null);
+    const [orgMatchesData, setOrgMatchesData] = useState(null);
     const [matchesData, setMatchesData] = useState(null);
     const { navigate }: NavigationProp<any> = useNavigation();
     const route: RouteProp<any>  = useRoute();
@@ -26,10 +27,23 @@ export function ViewMatches() {
             data = await getBadmintonFinishedMatches({ user: authData._id, limit: false })
         }
         setMatchesData(data);
+        setOrgMatchesData(data);
     }
     useEffect(() => {
         fetchData(route.params.status);
     }, []);
+
+    const searchData = () => {
+        if(!searchString?.length) return; 
+        const result = orgMatchesData.filter( (doc) => 
+                            doc.teamA.name.toLowerCase().includes(searchString.toLowerCase()) || 
+                            doc.teamB.name.toLowerCase().includes(searchString.toLowerCase()))
+        setMatchesData([...result]);
+    }
+
+    useEffect(() => {
+        searchData();
+    }, [searchString])
 
 
     useFocusEffect(
@@ -41,25 +55,32 @@ export function ViewMatches() {
     return (
         <View style={{ flex: 1 }}>
             <Header title={`${route?.params?.status} Matches`} />
-                <View style={styles.container}>
-                   <SearchBar placeholder="Search" setSearchString={setSearchString} width={'75%'} />
-                   <TouchableOpacity onPress={() => navigate("Create-Match")}>
-                      <View style={styles.createBtn}>
-                        <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
-                        <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
-                      </View>
-                   </TouchableOpacity>
-                </View>
-            <View style={{ padding: 10 }}>
-                <FlatList
-                    data={matchesData}
-                    renderItem={({ item, index }) => (
-                        <TouchableOpacity style={{ marginBottom: 15 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                            <MatchCard data={item} live={route.params.status == MatchStatus.LIVE ? true : false} matchNo={index + 1} showBtn={false} />
-                        </TouchableOpacity>
-                    )}
-                />
+            <View style={styles.container}>
+                <SearchBar placeholder="Search Team Name" setSearchString={setSearchString} width={'75%'} />
+                <TouchableOpacity onPress={() => navigate("Create-Match")}>
+                    <View style={styles.createBtn}>
+                    <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
+                    <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
+            {
+                matchesData?.length ? <View style={styles.viewMatches}>
+                    <FlatList
+                        data={matchesData}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: item.matchNo })}>
+                                <MatchCard data={item} live={route.params.status == MatchStatus.LIVE ? true : false} matchNo={item.matchNo} showBtn={false} />
+                            </TouchableOpacity>
+                        )}
+                    />
+                </View> :  (
+                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                    <Image style={styles.noData} source={require('../../../../assets/no-data.png')} />
+                    <Text>{route.params.status == MatchStatus.LIVE ? 'No Live Matches': 'No Finished Matches' } </Text>
+                </View>)
+            }
+            
         </View>
     )    
 }
@@ -79,5 +100,15 @@ const styles = StyleSheet.create({
         opacity: 0.8, 
         borderRadius: 10, 
         padding: 12
-    }
+    }, 
+    viewMatches: {
+        flex: 1, 
+        padding: 10, 
+        marginBottom: 15
+    },
+    noData: {
+        width: 200,
+        height: 200,
+        textAlign: 'center'
+    },
 })

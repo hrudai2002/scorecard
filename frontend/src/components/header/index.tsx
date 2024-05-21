@@ -1,14 +1,13 @@
 import { BackHandler, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../constants/colors";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { Text } from "../text";
-import { useEffect } from "react";
-import { useBackHandler } from "@react-native-community/hooks";
 import { useNavigation } from "@react-navigation/native";
 
 interface IHeaderProps {
     title: string,
+    share?: boolean,
     subTitle?: string,
     setBack?: any
 }
@@ -31,7 +30,9 @@ export function Header(props: IHeaderProps) {
                         {
                             props.subTitle ? <Text fontWeight={400} style={{ color: ProjectColors.Secondary }}>{props.subTitle}</Text> : null
                         }
-                  </View>
+                    </View>
+                    {props?.share ? <Feather name="share-2" size={24} color={ProjectColors.Secondary} /> : null }
+                    
                 </View>
             </SafeAreaView>
         </View>
@@ -45,6 +46,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         flexDirection: 'row', 
         alignItems: 'center', 
+        justifyContent: 'space-evenly',
         backgroundColor: ProjectColors.Primary,
         paddingVertical: 10,
         paddingHorizontal: 15,

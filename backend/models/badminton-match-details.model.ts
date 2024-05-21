@@ -8,6 +8,7 @@ export interface IBadmintonMatchDetails {
     user:  Schema.Types.ObjectId | IUser, 
     gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES, 
     date: Date, 
+    matchNo: number,
     totalSets: number, 
     completedSets: number, 
     gamePoint: number,
@@ -38,6 +39,10 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
         type: Schema.Types.Date, 
         required: true
     }, 
+    matchNo: {
+        type: Schema.Types.Number, 
+        required: true
+    },
     totalSets: {
         type: Schema.Types.Number, 
         required: true

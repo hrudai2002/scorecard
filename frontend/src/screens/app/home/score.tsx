@@ -98,7 +98,7 @@ export function ScoreScreen() {
     return (
        <View style={{ flex: 1 }}>
            <LoadingComponent loading={loading} text={text} />
-           <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `Badmintion ${matchData.matchType}` : ''} /> 
+           <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `Badmintion ${matchData.matchType}` : ''} share={matchDetails?.status == MatchStatus.LIVE} /> 
            <View style={{ padding: 10 }}>
                 {
                     matchData && 

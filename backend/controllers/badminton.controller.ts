@@ -39,6 +39,7 @@ export const getLiveMatches = async (req, res) => {
             },
             currentSet: doc.teamA.sets.length,
             matchType: doc.gameType, 
+            matchNo: doc.matchNo,
             _id: doc._id
         }))
 
@@ -84,6 +85,7 @@ export const getFinishedMatches = async (req, res) => {
                 score: doc.teamB.sets[doc.teamB.sets.length - 1].score,
                 winner: doc.teamB.sets[doc.teamB.sets.length - 1].winner
             },
+            matchNo: doc.matchNo,
             winner: doc?.winner?.name,
             currentSet: doc.teamA.sets.length,
             matchType: doc.gameType,
@@ -158,11 +160,14 @@ export const createMatch = async (req, res) => {
         const name = serveFirst == TeamEnum.TEAM_A ? TeamA.name : TeamB.name;
         const summary = `Serve holds by ${name}, Serve from right side of the court, ( ${TeamA.name} - 0, ${TeamB.name} - 0 )`
 
+        const count = await BadmintonMatchDetails.find({  status: MATCH_STATUS.LIVE, user: new Types.ObjectId(user) }).countDocuments();
+
         await BadmintonMatchDetails.create({
             status: MATCH_STATUS.LIVE, 
             user: new Types.ObjectId(user),
             gameType, 
             date: new Date(), 
+            matchNo: count + 1,
             totalSets: sets, 
             completedSets: 0, 
             gamePoint: gamePoints,

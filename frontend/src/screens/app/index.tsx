@@ -121,8 +121,8 @@ export function HomePage() {
                                 <View style={{ width: 10 }} />
                             )}
                             showsHorizontalScrollIndicator={false}
-                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                              {/* <Image style={styles.noData} source={require('../../../assets/no-data.gif')} /> */}
+                        />) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                              <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
                               <Text>No Live Matches</Text>
                             </View>)
                     }
@@ -148,9 +148,9 @@ export function HomePage() {
                                 <View style={{ width: 10 }} />
                             )}
                             showsHorizontalScrollIndicator={false}
-                        />) : (<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                        />) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                                <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
                                 <Text>No Finished Matches</Text>
-                                {/* <Image style={styles.noData} source={require('../../../assets/no-data.png')} /> */}
                             </View>)
                     }
                   

@@ -16,7 +16,7 @@ export function SearchBar(props: ISearchBarProps) {
             <Feather name="search" size={22} color={ProjectColors.LightBlack} />
             <TextInput
              style={styles.textInput}
-             placeholder='Search'
+             placeholder={props.placeholder}
              onChangeText={(data) =>  props.setSearchString(data)}
             />
         </View>
