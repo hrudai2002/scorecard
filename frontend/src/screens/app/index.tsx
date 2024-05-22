@@ -79,7 +79,7 @@ export function HomePage() {
             
             <View style={styles.profileHeader}>
                 <View style={styles.profileText}>
-                    <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary}}>Welcome, Greg!</Text> 
+                    <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary, textTransform: 'capitalize'}}>Welcome, {authData.name}</Text> 
                     <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
                 </View>
                 <TouchableOpacity onPress={() => navigate('Profile')}>
