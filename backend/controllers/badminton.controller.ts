@@ -114,6 +114,25 @@ export const getMatchDetails = async (req, res) => {
     }
 }
 
+// @get badminton/teams/:id 
+export const getMatchTeamDetails = async (req, res) => {
+    try {
+        let { matchId } = req.params; 
+        if(!matchId) {
+            throw new Error('Invalid Request!');
+        }
+        matchId = new Types.ObjectId(matchId); 
+        const badmintonDoc = await BadmintonMatchDetails.findOne({ _id: matchId }).populate('teamA teamB').lean(); 
+        const result = {
+            teamA: badmintonDoc.teamA, 
+            teamB: badmintonDoc.teamB
+        }
+        return res.json({ success: true, data: result  });
+    } catch (error) {
+        return res.json({ success: false, error: error.message });
+    }
+}
+
 
 // @get badminton/summary
 export const getMatchSummary = async (req, res) => {
@@ -141,6 +160,10 @@ export const createMatch = async (req, res) => {
             throw new Error("Invalid Request!");
         }
 
+        if(teamA.name == teamB.name) {
+            throw new Error("Team Name should be unique");
+        }
+ 
         const TeamA = await Team.create({
             ...teamA, 
             sets: [{
@@ -176,7 +199,7 @@ export const createMatch = async (req, res) => {
             teamA: TeamA._id, 
             teamB: TeamB._id
         });
-        return res.json({ success: true, data: null });
+        return res.json({ success: true, data: true });
     } catch (error) {
         return res.json({ success: false, error: error.message })
     }
