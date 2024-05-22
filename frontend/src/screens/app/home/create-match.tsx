@@ -13,6 +13,7 @@ import { badmintonMatchType, badmintonGameSets, badmintonGamePoints } from "../.
 import { useAuth } from "../../../contexts/auth";
 import { createMatch } from "../../../services/badminton.service";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { LoadingComponent } from "../../../components/loading";
 
 export function CreateMatch() {
     const { authData } = useAuth();
@@ -21,6 +22,7 @@ export function CreateMatch() {
     const [gamePoint, setGamePoint] = useState(null);
     const [serveFirst, setServeFirst] = useState(null);
     const [selectTeam, setSelectedTeam] = useState(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const navigation: NavigationProp<any> = useNavigation();
 
     const [team, setTeam] = useState(null);
@@ -70,7 +72,12 @@ export function CreateMatch() {
             return;
         }
 
-        await createMatch({
+        if(teamA.name == teamB.name) {
+            toast.error("Team names should be unique");
+            return;
+        }
+
+        const res = await createMatch({
             gameType: matchType,
             serveFirst: serveFirst,
             sets: numberOfSets,
@@ -80,7 +87,13 @@ export function CreateMatch() {
             user: authData._id
         });
 
-        navigation.goBack();
+        if(res) {
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+                navigation.goBack();
+            }, 2000);
+        }
     }
 
     if(selectTeam) {
@@ -120,6 +133,7 @@ export function CreateMatch() {
 
     return (
         <View style={{ flex: 1 }}>
+            <LoadingComponent loading={loading} />
             <Header title={'New Match'}  />
             <View style={styles.container}>
                 <View style={styles.groupInputField}>

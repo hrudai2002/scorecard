@@ -30,5 +30,6 @@ export const month = {
 
 export enum Tabs {
     SUMMARY = 'Summary', 
-    RULES = 'Rules'
+    TEAMS = 'Teams',
+    RULES = 'Rules',
 }

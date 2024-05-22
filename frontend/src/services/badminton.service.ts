@@ -47,6 +47,19 @@ export const getMatchDetails = async (params) => {
     }
 }
 
+export const getMatchTeamDetails = async (params) => {
+    try {
+        const res: response = await axios.get(apiUrl + `/teams/${params}`);
+        if(!res.data.success) {
+            toast.error(res.data.error);
+            return;
+        }
+        return res.data.data;
+    } catch (error) {
+        toast.error('Something went wrong!');
+    }
+}
+
 export const getMatchSummary = async (params) => {
     try {
         const res: response = await axios.get(apiUrl + `/summary/${params}`);

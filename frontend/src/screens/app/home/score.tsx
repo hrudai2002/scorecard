@@ -2,7 +2,7 @@ import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-nat
 import { Header } from "../../../components/header";
 import { useEffect, useState } from "react";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as getMatchSummaryService } from "../../../services/badminton.service";
+import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as getMatchSummaryService, getMatchTeamDetails } from "../../../services/badminton.service";
 import { MatchCard } from "../../../components/match-card";
 import { Text } from "../../../components/text";
 import { ProjectColors } from "../../../constants/colors";
@@ -15,6 +15,7 @@ import { Dropdown } from "../../../components/dropdown";
 export function ScoreScreen() {
     const router: RouteProp<any> = useRoute();
     const [matchDetails, setMatchDetails] = useState(null);
+    const [teams, setTeams] = useState(null);
     const [summaryDetails, setSummaryDetails] = useState(null);
     const [matchData, setMatchData] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -40,6 +41,7 @@ export function ScoreScreen() {
 
     const fetchData = async (matchId) => {
         const data = await getMatchDetails(matchId); 
+        const teamData = await getMatchTeamDetails(matchId);
         const summary = await getMatchSummaryService(matchId);
 
         // if (completedSets && data.completedSets == completedSets.length) {
@@ -53,6 +55,7 @@ export function ScoreScreen() {
 
         setCompletedSets(res);
         setMatchDetails(data);
+        setTeams(teamData);
         setSummaryDetails(summary);
 
         // console.log(loading);
@@ -87,7 +90,7 @@ export function ScoreScreen() {
         if('winner' in res.teamA.sets[set]) {
             setValue(set + 1);
             setLoading(true);
-            setText(`Set-${res.completedSets} completed..`);
+            setText(`Set - ${res.completedSets} completed..`);
             setTimeout(() => {
                 setLoading(false)
             }, 2000)
@@ -104,6 +107,59 @@ export function ScoreScreen() {
             getMatchSummary(matchDetails._id);
         }
     }, [matchDetails, summaryDetails, set])
+
+    const tabsData = () => {
+        if(selectedTab == Tabs.SUMMARY) {
+            return (<View style={{ flexDirection: 'column', gap: 10, marginBottom: 30 }}>
+                {summary?.map((item, index) => (
+                    <View key={index} style={styles.card} >
+                        <Text>{item.text}</Text>
+                        <Text style={styles.cardDate}>{formateDate(item.date)} </Text>
+                    </View>
+                ))
+                }
+            </View>)
+        } else if(selectedTab == Tabs.RULES) {
+            return (
+                <View style={{ flexDirection: 'column', gap: 10, marginBottom: 30 }}>
+                    <View style={[styles.card, { flexDirection: 'column', gap: 5 }]}>
+                        {
+                            badmintonRules?.map((item, index) => (
+                                <Text key={index}>{index + 1}. {item}</Text>
+                            ))
+                        }
+                    </View>
+                    <View style={[styles.card, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+                        <Image source={require('../../../../assets/rules.png')} />
+                    </View>
+                </View>
+            )   
+        }
+
+        return (
+            <View style={styles.teams}>
+                <View style={styles.card}>
+                    <View>
+                        <View style={styles.row}>
+                            <Text style={styles.cell}>Team</Text>
+                            <Text style={styles.cell}>Player - 1</Text>
+                            {teams?.teamA?.playerTwo ? <Text style={styles.cell}>Player - 2</Text> : null}
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.cell}>{teams?.teamA.name}</Text>
+                            <Text style={styles.cell}>{teams?.teamA.playerOne}</Text>
+                            {teams?.teamA?.playerTwo ? <Text style={styles.cell}>{teams?.teamA?.playerTwo}</Text> : null}
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.cell}>{teams?.teamB.name}</Text>
+                            <Text style={styles.cell}>{teams?.teamB.playerOne}</Text>
+                            {teams?.teamB?.playerTwo ? <Text style={styles.cell}>{teams?.teamB?.playerTwo}</Text> : null}
+                        </View>
+                    </View>
+                </View>
+            </View>
+        )
+    }
 
     return (
        <View style={{ flex: 1 }}>
@@ -123,6 +179,11 @@ export function ScoreScreen() {
                             <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
                         </View>
                     </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.TEAMS)}>
+                            <View style={[selectedTab == Tabs.TEAMS && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary }, { padding: 10 }]}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
+                            </View>
+                        </TouchableOpacity>
                     <TouchableOpacity onPress={() => setSelectedTab(Tabs.RULES)}>
                         <View style={[selectedTab == Tabs.RULES && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
@@ -131,7 +192,7 @@ export function ScoreScreen() {
                 </View>
                 {
                         completedSets?.length && <Dropdown
-                            width='40%'
+                            width='30%'
                             data={completedSets}
                             value={set}
                             setValue={setValue}
@@ -141,29 +202,7 @@ export function ScoreScreen() {
                 
               </View>
               <ScrollView style={{ paddingVertical: 15 }} showsVerticalScrollIndicator={false}>
-                { selectedTab == Tabs.SUMMARY ? 
-                    <View style={{ flexDirection: 'column', gap: 10, marginBottom: 30 }}>
-                        { summary?.map((item, index) => (
-                                <View key={index} style={styles.card} >
-                                    <Text>{item.text}</Text>
-                                    <Text style={styles.cardDate}>{formateDate(item.date)} </Text>
-                                </View>
-                            ))
-                        } 
-                    </View> : 
-                    <View style={{ flexDirection: 'column', gap: 10, marginBottom: 30 }}>
-                        <View style={[styles.card, { flexDirection: 'column', gap: 5 }]}>
-                            {
-                                badmintonRules?.map((item, index) => (
-                                    <Text key={index}>{index + 1}. {item}</Text>
-                                ))
-                            }
-                        </View>
-                        <View style={[styles.card, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
-                            <Image source={require('../../../../assets/rules.png')}/>
-                        </View>
-                    </View>
-                }
+                { tabsData() }
               </ScrollView>
            </View>
        </View>
@@ -187,5 +226,25 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: 'space-between', 
         alignItems: 'center',
+    },
+
+    teams: {
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: 10
+    },
+
+    row: {
+        flexDirection: 'row', 
+        justifyContent: 'space-evenly',
+    },
+
+    cell: {
+        display: 'flex',
+        flex: 1,
+        borderWidth: 1, 
+        padding: 5,
+        borderColor: '#c4c4c4',
+        textAlign: 'center'
     }
 });
