@@ -2,9 +2,10 @@ import { Image, SafeAreaView, StyleSheet, View } from "react-native";
 import { Text } from "../../components/text";
 import { ProjectColors } from "../../constants/colors";
 import { Button } from "../../components/button";
-import { useEffect, useState } from "react";
-import ImageSlider from 'react-native-image-slider';
+import { useEffect, useRef, useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import Carousel, { Pagination } from "react-native-snap-carousel";
+import { useDimensions } from "../../hooks/useDimensions";
 
 export function SplashScreen () {
     const imageSource = [
@@ -13,20 +14,23 @@ export function SplashScreen () {
         require('../../../assets/bat_ball.png'),
     ]
     const [position, setPosition] = useState<number>(0);
+    const [page, setPage] = useState(0);
+    const isCarousel = useRef(null);
     const { navigate }: NavigationProp<any> = useNavigation();
+    const { width } = useDimensions();
     
-    useEffect(() => {
-        const toggle = setInterval(() => {
-            setPosition(position === imageSource.length - 1 ? 0 : position + 1);
-        }, 2000);
-        return () => clearInterval(toggle);
-    }, []);
+    // useEffect(() => {
+    //     const toggle = setInterval(() => {
+    //         setPosition(position === imageSource.length - 1 ? 0 : position + 1);
+    //     }, 2000);
+    //     return () => clearInterval(toggle);
+    // }, []);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: ProjectColors.Primary }}>
             <View style={styles.container}>
                 <View style={styles.imageSlider}>
-                    <ImageSlider
+                    {/* <ImageSlider
                         style={{ backgroundColor: ProjectColors.Primary }}
                         autoPlayWithInterval={3000}
                         images={imageSource}
@@ -35,6 +39,37 @@ export function SplashScreen () {
                                 <Image style={[styles.image, { transform: [{ rotate: index == 2 ? '340deg' : '0deg' }] }]} source={item} />
                             </View>
                         )}
+                    /> */}
+                    <Carousel 
+                        ref={isCarousel}
+                        onSnapToItem={(page) => setPage(page)}
+                        autoplay={true}
+                        loop={true}
+                        itemWidth={width}
+                        sliderWidth={400}
+                        autoplayDelay={1000}
+                        data={imageSource} 
+                        renderItem={({ item, index }) => (
+                            <View key={index}>
+                                <Image style={[styles.image, { transform: [{ rotate: index == 2 ? '340deg' : '0deg' }] }]} source={item} />
+                            </View>
+                     )}
+                    />
+                    <Pagination
+                        activeDotIndex={page}
+                        carouselRef={isCarousel}
+                        tappableDots={true}
+                        inactiveDotOpacity={0.4}
+                        inactiveDotScale={0.6}
+                        dotsLength={imageSource.length}
+                        dotStyle={{
+                            width: 20,
+                            borderRadius: 10,
+                            backgroundColor: ProjectColors.Secondary
+                        }}
+                        inactiveDotStyle={{
+                            backgroundColor: "grey",
+                        }}
                     />
                 </View>
                 <View style={styles.letsStart}>
@@ -75,7 +110,7 @@ const styles = StyleSheet.create({
     }, 
     image: {
         width: '90%',
-        height: '80%',
+        height: '100%',
     },
     circle: {
         width: 8, 

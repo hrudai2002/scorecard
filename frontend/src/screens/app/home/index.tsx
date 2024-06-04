@@ -109,6 +109,5 @@ const styles = StyleSheet.create({
     noData: {
         width: 200,
         height: 200,
-        textAlign: 'center'
     },
 })

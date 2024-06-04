@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from "./src/contexts/auth"
 import { Router } from './src/routes/router';
 import Toast  from "react-native-toast-message";

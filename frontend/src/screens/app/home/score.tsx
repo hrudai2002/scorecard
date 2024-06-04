@@ -40,9 +40,11 @@ export function ScoreScreen() {
     }
 
     const fetchData = async (matchId) => {
+        setLoading(true);
         const data = await getMatchDetails(matchId); 
         const teamData = await getMatchTeamDetails(matchId);
         const summary = await getMatchSummaryService(matchId);
+        setLoading(false);
 
         // if (completedSets && data.completedSets == completedSets.length) {
         //     setLoading(true);
