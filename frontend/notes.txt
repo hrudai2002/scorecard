@@ -1,0 +1,3 @@
+Image Slider on main page
+optimizations 
+- everytime getting the match data on updating scoring
