@@ -7,9 +7,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from "react";
 import { MatchCard } from "../../../components/match-card";
 import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
-import { getBadmintonFinishedMatches, getBadmintonLiveMatches } from "../../../services/badminton.service";
+import { getLiveMatches, getFinishedMatches } from "../../../services/common.service";
 import { useAuth } from "../../../contexts/auth";
-import { MatchStatus } from "../../../constants/enum";
+import { MatchStatus, Sport } from "../../../constants/enum";
 
 export function ViewMatches() {
     const [searchString, setSearchString] = useState<string>(null);
@@ -19,18 +19,18 @@ export function ViewMatches() {
     const route: RouteProp<any>  = useRoute();
     const { authData } = useAuth();
     
-    const fetchData = async (status: string) => {
+    const fetchData = async (status: string, sportType: Sport) => {
         let data = [];
         if(status == MatchStatus.LIVE) {
-            data = await getBadmintonLiveMatches({ user: authData._id, limit: false });
+            data = await getLiveMatches({ user: authData._id, limit: false, sport: sportType });
         } else {
-            data = await getBadmintonFinishedMatches({ user: authData._id, limit: false })
+            data = await getFinishedMatches({ user: authData._id, limit: false, sport: sportType });
         }
         setMatchesData(data);
         setOrgMatchesData(data);
     }
     useEffect(() => {
-        fetchData(route.params.status);
+        fetchData(route.params.status, route.params.sportType);
     }, []);
 
     const searchData = () => {
@@ -48,7 +48,7 @@ export function ViewMatches() {
 
     useFocusEffect(
         useCallback(() => {
-            fetchData(route.params.status);
+            fetchData(route.params.status, route.params.sportType);
         }, [])
     )
 
@@ -57,7 +57,7 @@ export function ViewMatches() {
             <Header title={`${route?.params?.status} Matches`} />
             <View style={styles.container}>
                 <SearchBar placeholder="Search Team Name" setSearchString={setSearchString} width={'75%'} />
-                <TouchableOpacity onPress={() => navigate("Create-Match")}>
+                <TouchableOpacity onPress={() => navigate("Create-Match", { sportType: route.params.sportType })}>
                     <View style={styles.createBtn}>
                     <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
                     <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>

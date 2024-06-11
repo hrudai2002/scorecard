@@ -1,10 +1,11 @@
 
-import { GAMETYPE, MATCH_STATUS } from "../enum";
+import { GAMETYPE, MATCH_STATUS, SPORT } from "../enum";
 import { model, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
 
-export interface IBadmintonMatchDetails {
+export interface IMatchDetails {
     status: MATCH_STATUS.LIVE | MATCH_STATUS.COMPLETED, 
+    sport: SPORT.BADMINTON | SPORT.TABLE_TENNIS,
     user:  Schema.Types.ObjectId | IUser, 
     gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES, 
     date: Date, 
@@ -19,10 +20,15 @@ export interface IBadmintonMatchDetails {
     teamB: Schema.Types.ObjectId
 }
 
-const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({ 
+const matchDetailsSchema = new Schema<IMatchDetails>({ 
     status: {
         type: Schema.Types.String,
         enum: Object.values(MATCH_STATUS),
+        required: true
+    },
+    sport: {
+        type: Schema.Types.String, 
+        enum: Object.values(SPORT),
         required: true
     },
     user: {
@@ -86,10 +92,10 @@ const badmintonMatchDetailsSchema = new Schema<IBadmintonMatchDetails>({
     }
  });
 
- badmintonMatchDetailsSchema.index({
+ matchDetailsSchema.index({
     teamA: 1, 
     teamB: 1
  }, {unique: true})
 
-export const BadmintonMatchDetails: Model<IBadmintonMatchDetails> = model<IBadmintonMatchDetails>('BadmintonMatchDetails', badmintonMatchDetailsSchema);
+export const MatchDetails: Model<IMatchDetails> = model<IMatchDetails>('MatchDetails', matchDetailsSchema);
 

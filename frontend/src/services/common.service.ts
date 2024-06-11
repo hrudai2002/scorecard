@@ -6,9 +6,9 @@ interface response {
     data: any,
 }
 
-const apiUrl = '/badminton';
+const apiUrl = '/common';
 
-export const getBadmintonLiveMatches = async (params) => {
+export const getLiveMatches = async (params) => {
     try {
         const res: response  = await axios.get(apiUrl + '/live', { params });
         if (!res.data.success) {
@@ -21,7 +21,7 @@ export const getBadmintonLiveMatches = async (params) => {
     }
 }
 
-export const getBadmintonFinishedMatches = async (params) => {
+export const getFinishedMatches = async (params) => {
     try {
         const res: response = await axios.get(apiUrl + '/finished', { params });
         if(!res.data.success) {

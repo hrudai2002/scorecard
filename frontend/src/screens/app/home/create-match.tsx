@@ -11,8 +11,8 @@ import { toast } from "../../../utils/toast";
 import { BadmintonMatchType, Team } from "../../../constants/enum";
 import { badmintonMatchType, badmintonGameSets, badmintonGamePoints } from "../../../constants/match-data";
 import { useAuth } from "../../../contexts/auth";
-import { createMatch } from "../../../services/badminton.service";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { createMatch } from "../../../services/common.service";
+import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { LoadingComponent } from "../../../components/loading";
 
 export function CreateMatch() {
@@ -24,6 +24,7 @@ export function CreateMatch() {
     const [selectTeam, setSelectedTeam] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
     const navigation: NavigationProp<any> = useNavigation();
+    const route: RouteProp<any> = useRoute();
 
     const [team, setTeam] = useState(null);
     const [teamA, setTeamA] = useState({
@@ -79,6 +80,7 @@ export function CreateMatch() {
 
         const res = await createMatch({
             gameType: matchType,
+            sportType: route.params.sportType,
             serveFirst: serveFirst,
             sets: numberOfSets,
             gamePoints: gamePoint,

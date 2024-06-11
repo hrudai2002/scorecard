@@ -9,46 +9,32 @@ import { MatchCard } from "../../components/match-card";
 import { sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
 import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
-import { getBadmintonLiveMatches, getBadmintonFinishedMatches } from "../../services/badminton.service";
+import { getLiveMatches, getFinishedMatches } from "../../services/common.service";
 import { useAuth } from "../../contexts/auth";
+import { Sport } from "../../constants/enum";
 
 export function HomePage() {
     const { width } = useDimensions();
     const [liveMatchData, setLiveMatchData] = useState(null); 
     const [finishedMatchesData, setFinishedMatchesData] = useState(null);
-    const [selectedSportId, setSelectedSportId] = useState<number>(1);
+    const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
     
     const fetchLiveMatchesData = async () => {
-        let data = [];
-        switch(selectedSportId) {
-            case 1: 
-                data = await getBadmintonLiveMatches({ user: authData._id, limit: true });
-                setLiveMatchData(data);
-                break;
-            case 2: 
-                setLiveMatchData([]);
-                break;
-        }
+        let data = await getLiveMatches({ user: authData._id, limit: true, sport: sportType });
+        setLiveMatchData(data);
     }
 
     const fetchFinishedMatchesData = async () => {
-        let data = [];
-        switch(selectedSportId) {
-            case 1: 
-                data = await getBadmintonFinishedMatches({ user: authData._id, limit: true });
-                setFinishedMatchesData(data);
-                break;
-            case 2: 
-                setFinishedMatchesData([])
-                break;
-        }
+        let data = await getFinishedMatches({ user: authData._id, limit: true, sport: sportType });
+        setFinishedMatchesData(data);
+
     }
     useEffect(() => {
         fetchLiveMatchesData();
         fetchFinishedMatchesData();
-    }, [selectedSportId]);
+    }, [sportType]);
 
     useFocusEffect(
         useCallback(() => {
@@ -59,12 +45,14 @@ export function HomePage() {
 
     const SportsIcon = (props) => {
         return (
-            <TouchableOpacity onPress={() => setSelectedSportId(props.sport._id)}>
+            <TouchableOpacity onPress={() => {
+                setSportType(props.sport.sportType);
+            }}>
                 <View style={styles.sportsSlider}>
                     <View style={[
                         styles.circle, 
-                        { backgroundColor: props.sport._id === selectedSportId ? ProjectColors.Primary : ProjectColors.Secondary },
-                        { opacity: props.sport._id === selectedSportId ? 0.8 : 1 }
+                        { backgroundColor: props.sport.sportType === sportType ? ProjectColors.Primary : ProjectColors.Secondary },
+                        { opacity: props.sport.sportType === sportType ? 0.8 : 1 }
                     ]}>
                         <Image style={styles.sportIcon}  source={props.sport.src} />
                     </View>
@@ -106,7 +94,7 @@ export function HomePage() {
                 <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 30 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live' })} />
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live', sportType: sportType })} />
                     </View>
                     {
                         liveMatchData?.length ? (<FlatList
@@ -133,7 +121,7 @@ export function HomePage() {
                 <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished' })} />
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
                     </View>
                     {
                         finishedMatchesData?.length ? (<FlatList

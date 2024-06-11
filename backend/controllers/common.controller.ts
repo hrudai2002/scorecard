@@ -1,5 +1,5 @@
-import { BadmintonMatchDetails } from "../models/badminton-match-details.model";
-import { MATCH_STATUS, Team as TeamEnum } from "../enum";
+import { MatchDetails } from "../models/match-details.model";
+import { MATCH_STATUS, SPORT, Team as TeamEnum } from "../enum";
 import { Types } from "mongoose";
 import { Team } from "../models/team.model";
 
@@ -7,21 +7,23 @@ import { Team } from "../models/team.model";
 // @get badminton/live
 export const getLiveMatches = async (req, res) => {
     try {
-        let { user, limit } = req.query;
-        if (!user || !limit) {
+        let { user, limit, sport } = req.query;
+        if (!user || !limit || !sport) {
             throw new Error("Invalid Request");
         }
         user = new Types.ObjectId(user);
         limit = (limit == 'true') ? true : false;
         let matches = [];
         if(limit) {
-            matches = await BadmintonMatchDetails.find({
+            matches = await MatchDetails.find({
                 status: MATCH_STATUS.LIVE, 
+                sport,
                 user
             }).populate('teamA teamB').limit(5);
         } else {
-            matches = await BadmintonMatchDetails.find({
+            matches = await MatchDetails.find({
                 status: MATCH_STATUS.LIVE,
+                sport,
                 user
             }).populate('teamA teamB').sort({ _id: -1 })
         }
@@ -61,13 +63,15 @@ export const getFinishedMatches = async (req, res) => {
         limit =  (limit == 'true') ? true : false;
         let matches = [];
         if(limit) {
-            matches = await BadmintonMatchDetails.find({
+            matches = await MatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
+                sport: SPORT.BADMINTON,
                 user
             }).populate('teamA teamB winner').limit(5).lean();
         } else {
-            matches = await BadmintonMatchDetails.find({
+            matches = await MatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
+                sport: SPORT.BADMINTON,
                 user
             }).populate('teamA teamB winner').sort({ _id: -1 })
         }
@@ -106,7 +110,7 @@ export const getMatchDetails = async (req, res) => {
             throw new Error("Invalid Request!");
         }
         matchId = new Types.ObjectId(matchId);
-        const result: any = await BadmintonMatchDetails.findOne({ _id: matchId })
+        const result: any = await MatchDetails.findOne({ _id: matchId })
                                                        .populate('teamA teamB winner').lean();
         return res.json({ success: true, data: result });
     } catch (error) {
@@ -122,7 +126,7 @@ export const getMatchTeamDetails = async (req, res) => {
             throw new Error('Invalid Request!');
         }
         matchId = new Types.ObjectId(matchId); 
-        const badmintonDoc = await BadmintonMatchDetails.findOne({ _id: matchId }).populate('teamA teamB').lean(); 
+        const badmintonDoc = await MatchDetails.findOne({ _id: matchId }).populate('teamA teamB').lean(); 
         const result = {
             teamA: badmintonDoc.teamA, 
             teamB: badmintonDoc.teamB
@@ -142,7 +146,7 @@ export const getMatchSummary = async (req, res) => {
             throw new Error('Invalid Request!');
         }
         matchId = new Types.ObjectId(matchId); 
-        const result = await BadmintonMatchDetails.findById(matchId).lean();
+        const result = await MatchDetails.findById(matchId).lean();
         const data = result.summary.map((doc) => doc.reverse());
 
         return res.json({ success: true, data });
@@ -154,9 +158,9 @@ export const getMatchSummary = async (req, res) => {
 // @post badminton/create
 export const createMatch = async (req, res) => {
     try {
-        const { gameType, sets, gamePoints, serveFirst, teamA, teamB, user } = req.body;
+        const { gameType, sportType, sets, gamePoints, serveFirst, teamA, teamB, user } = req.body;
 
-        if (!gameType || !sets || !gamePoints || !serveFirst  || !teamA || !teamB || !teamA?.name || !teamA?.playerOne || (gameType == "Doubles" && !teamA?.playerTwo) || !teamB || !teamB?.name || !teamB?.playerOne || (gameType == "Doubles" && !teamB?.playerTwo) ) {
+        if (!gameType || !sportType || !sets || !gamePoints || !serveFirst  || !teamA || !teamB || !teamA?.name || !teamA?.playerOne || (gameType == "Doubles" && !teamA?.playerTwo) || !teamB || !teamB?.name || !teamB?.playerOne || (gameType == "Doubles" && !teamB?.playerTwo) ) {
             throw new Error("Invalid Request!");
         }
 
@@ -183,10 +187,11 @@ export const createMatch = async (req, res) => {
         const name = serveFirst == TeamEnum.TEAM_A ? TeamA.name : TeamB.name;
         const summary = `Serve holds by ${name}, Serve from right side of the court, ( ${TeamA.name} - 0, ${TeamB.name} - 0 )`
 
-        const count = await BadmintonMatchDetails.find({  status: MATCH_STATUS.LIVE, user: new Types.ObjectId(user) }).countDocuments();
+        const count = await MatchDetails.find({  status: MATCH_STATUS.LIVE, sport: sportType, user: new Types.ObjectId(user) }).countDocuments();
 
-        await BadmintonMatchDetails.create({
+        await MatchDetails.create({
             status: MATCH_STATUS.LIVE, 
+            sport: sportType,
             user: new Types.ObjectId(user),
             gameType, 
             date: new Date(), 
@@ -218,7 +223,7 @@ export const updateScore = async (req, res) => {
             throw new Error('Score cannot be negative!');
         }
 
-        const matchDetails = await BadmintonMatchDetails.findOne({ _id: matchId }); 
+        const matchDetails = await MatchDetails.findOne({ _id: matchId }); 
         const teamA = await Team.findOne({ _id: matchDetails.teamA }); 
         const teamB = await Team.findOne({ _id: matchDetails.teamB }); 
         const gamePoint = matchDetails.gamePoint;
@@ -282,7 +287,7 @@ export const updateScore = async (req, res) => {
         await teamB.save();
         await matchDetails.save();
 
-        const result = await BadmintonMatchDetails.findOne({ _id: matchDetails._id }).populate('teamA teamB').lean();
+        const result = await MatchDetails.findOne({ _id: matchDetails._id }).populate('teamA teamB').lean();
 
         return res.json({ success: true, data: result });
 

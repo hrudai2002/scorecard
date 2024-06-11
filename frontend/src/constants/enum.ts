@@ -8,6 +8,11 @@ export enum MatchStatus {
     COMPLETED = 'Completed'
 }
 
+export enum Sport {
+    BADMINTON = 'Badminton', 
+    TABLE_TENNIS = 'Table_Tennis'
+ }
+
 export enum Team {
     TEAM_A = 'TeamA', 
     TEAM_B = 'TeamB'

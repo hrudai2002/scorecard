@@ -1,5 +1,5 @@
 import express from 'express'; 
-import { createMatch, getFinishedMatches, getLiveMatches, getMatchDetails, getMatchSummary, getMatchTeamDetails, updateScore } from '../controllers/badminton.controller';
+import { createMatch, getFinishedMatches, getLiveMatches, getMatchDetails, getMatchSummary, getMatchTeamDetails, updateScore } from '../controllers/common.controller';
 import { authMiddleWare } from '../middlewares/auth.middleware';
 
 const router = express.Router();

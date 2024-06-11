@@ -2,7 +2,7 @@ import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-nat
 import { Header } from "../../../components/header";
 import { useEffect, useState } from "react";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as getMatchSummaryService, getMatchTeamDetails } from "../../../services/badminton.service";
+import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as getMatchSummaryService, getMatchTeamDetails } from "../../../services/common.service";
 import { MatchCard } from "../../../components/match-card";
 import { Text } from "../../../components/text";
 import { ProjectColors } from "../../../constants/colors";
@@ -175,23 +175,25 @@ export function ScoreScreen() {
            </View>
            <View style={{ flex: 1, padding: 15 }}>
               <View style={styles.tabs}>
-                <View style={{ flexDirection: 'row', gap: 20 }}>
-                    <TouchableOpacity onPress={() => setSelectedTab(Tabs.SUMMARY)}>
-                        <View style={[ selectedTab == Tabs.SUMMARY && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
-                            <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
-                        </View>
-                    </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.TEAMS)}>
-                            <View style={[selectedTab == Tabs.TEAMS && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary }, { padding: 10 }]}>
-                                <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                    <View style={{ flexDirection: 'row', gap: 15, paddingRight: 15 }}>
+                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.SUMMARY)}>
+                            <View style={[ selectedTab == Tabs.SUMMARY && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
                             </View>
                         </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectedTab(Tabs.RULES)}>
-                        <View style={[selectedTab == Tabs.RULES && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
-                            <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.TEAMS)}>
+                                <View style={[selectedTab == Tabs.TEAMS && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary }, { padding: 10 }]}>
+                                    <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.TEAMS ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
+                                </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.RULES)}>
+                            <View style={[selectedTab == Tabs.RULES && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
                 {
                         completedSets?.length && <Dropdown
                             width='30%'
