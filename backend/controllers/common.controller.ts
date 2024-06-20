@@ -54,8 +54,8 @@ export const getLiveMatches = async (req, res) => {
 // @get badminton/finished 
 export const getFinishedMatches = async (req, res) => {
     try {
-        let { user, limit } = req.query; 
-        if(!user || !limit) {
+        let { user, limit, sport } = req.query; 
+        if(!user || !limit || !sport) {
             throw new Error("Invalid Request"); 
         }
 
@@ -65,13 +65,13 @@ export const getFinishedMatches = async (req, res) => {
         if(limit) {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
-                sport: SPORT.BADMINTON,
+                sport,
                 user
             }).populate('teamA teamB winner').limit(5).lean();
         } else {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
-                sport: SPORT.BADMINTON,
+                sport,
                 user
             }).populate('teamA teamB winner').sort({ _id: -1 })
         }
