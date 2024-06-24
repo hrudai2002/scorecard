@@ -18,6 +18,11 @@ export enum Team {
     TEAM_B = 'TeamB'
 }
 
+export enum Tabs {
+    Home = 'Home', 
+    Tournament = 'Tournament'
+}
+
 export const month = {
     '0': 'January', 
     '1': 'Feburary', 

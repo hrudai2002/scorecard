@@ -1,4 +1,4 @@
-import { StyleSheet,View, Image, ScrollView, FlatList, Dimensions } from "react-native";
+import { StyleSheet,View, Image, ScrollView, FlatList, Dimensions, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
@@ -11,13 +11,15 @@ import { useDimensions } from "../../hooks/useDimensions";
 import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getLiveMatches, getFinishedMatches } from "../../services/common.service";
 import { useAuth } from "../../contexts/auth";
-import { Sport } from "../../constants/enum";
+import { Sport, Tabs } from "../../constants/enum";
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 export function HomePage() {
     const { width } = useDimensions();
     const [liveMatchData, setLiveMatchData] = useState(null); 
     const [finishedMatchesData, setFinishedMatchesData] = useState(null);
     const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
+    const [tab, setTab] = useState<Tabs>(Tabs.Home);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
     
@@ -77,12 +79,12 @@ export function HomePage() {
 
             <View style={styles.sportsContainer}>
                 <Text fontWeight={600} style={{ fontSize: 16 }}>Sports</Text>
-                <View style={{ flexDirection: 'row' }}>
+                <View>
                     <FlatList 
-                      horizontal 
-                      data={sports} 
-                      renderItem={({ item }) => <SportsIcon sport={item} />}
-                      showsHorizontalScrollIndicator={false}
+                        data={sports} 
+                        renderItem={({ item }) => <SportsIcon sport={item} />}
+                        horizontal
+                        showsHorizontalScrollIndicator={true}
                     />
                 </View>
             </View>
@@ -98,16 +100,13 @@ export function HomePage() {
                     </View>
                     {
                         liveMatchData?.length ? (<FlatList
-                            horizontal
                             data={liveMatchData}
                             renderItem={({ item, index }) => (
-                                <TouchableOpacity style={{ width: width / 1.4 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
                                     <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
                                 </TouchableOpacity>
                             )}
-                            ItemSeparatorComponent={() => (
-                                <View style={{ width: 10 }} />
-                            )}
+                            horizontal
                             showsHorizontalScrollIndicator={false}
                         />) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
                               <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
@@ -124,26 +123,83 @@ export function HomePage() {
                         <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
                     </View>
                     {
-                        finishedMatchesData?.length ? (<FlatList
-                            horizontal
-                            data={finishedMatchesData}
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity style={{ width: width / 1.4 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                                    <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false}  />
-                                </TouchableOpacity>
-                            )}
-                            ItemSeparatorComponent={() => (
-                                <View style={{ width: 10 }} />
-                            )}
-                            showsHorizontalScrollIndicator={false}
-                        />) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                        finishedMatchesData?.length ? (
+                            <FlatList
+                                horizontal
+                                data={finishedMatchesData}
+                                keyExtractor={item => item._id}
+                                renderItem={({ item, index }) => (
+                                    <TouchableOpacity style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                        <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false}  />
+                                    </TouchableOpacity>
+                                )}
+                                showsHorizontalScrollIndicator={false}
+                            />
+                        ) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
                                 <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
                                 <Text>No Finished Matches</Text>
                             </View>)
                     }
-                  
+                    {/* <ScrollView
+                     horizontal 
+                     showsHorizontalScrollIndicator={false}
+                    >
+                        {
+                           finishedMatchesData?.map((item, index) => (
+                               <TouchableOpacity key={index} style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                   <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false} />
+                               </TouchableOpacity>
+                           ))
+                        }
+                    </ScrollView> */} 
+                </View>
+                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 20 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
+                        <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
+                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
+                    </View>
+                    {
+                        finishedMatchesData?.length ? (
+                            <FlatList
+                                horizontal
+                                data={finishedMatchesData}
+                                keyExtractor={item => item._id}
+                                renderItem={({ item, index }) => (
+                                    <TouchableOpacity style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                        <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false}  />
+                                    </TouchableOpacity>
+                                )}
+                                showsHorizontalScrollIndicator={false}
+                            />
+                        ) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                                <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
+                                <Text>No Finished Matches</Text>
+                            </View>)
+                    }
+                    {/* <ScrollView
+                     horizontal 
+                     showsHorizontalScrollIndicator={false}
+                    >
+                        {
+                           finishedMatchesData?.map((item, index) => (
+                               <TouchableOpacity key={index} style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                                   <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false} />
+                               </TouchableOpacity>
+                           ))
+                        }
+                    </ScrollView> */} 
                 </View>
             </ScrollView>
+            <View style={styles.footer}>
+                <View style={styles.tab}>
+                    <FontAwesome onPress={() => setTab(Tabs.Home)} name="home" size={30} color={ tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
+                    <Text style={{ color:  ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
+                </View>
+                <View style={styles.tab}>
+                    <MaterialIcons onPress={() => setTab(Tabs.Tournament)} name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} /> 
+                    <Text style={{ color: ProjectColors.LightBlack }}>Tournament</Text>
+                </View>
+            </View>   
         </SafeAreaView>
     )
 }
@@ -210,5 +266,24 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    footer: {
+        padding: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderTopLeftRadius: 20, 
+        borderTopRightRadius: 20, 
+        backgroundColor: ProjectColors.Secondary, 
+    },
+    tab: {
+        flex: 1,
+        padding: 5,
+        flexDirection: 'column', 
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    selected: {
+        backgroundColor: ProjectColors.Secondary, 
+        opacity: 0.5
     }
 })
