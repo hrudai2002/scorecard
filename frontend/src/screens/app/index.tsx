@@ -36,6 +36,7 @@ export function HomePage() {
     useEffect(() => {
         fetchLiveMatchesData();
         fetchFinishedMatchesData();
+        return () => {};
     }, [sportType]);
 
     useFocusEffect(
@@ -44,7 +45,7 @@ export function HomePage() {
             fetchFinishedMatchesData();
         }, [])
     )
-
+ 
     const SportsIcon = (props) => {
         return (
             <TouchableOpacity onPress={() => {
@@ -64,6 +65,40 @@ export function HomePage() {
         )
     }
 
+    const renderMatchesData = (data) => {
+        if(!data?.length) {
+            return (
+                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
+                    <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
+                    <Text>No Finished Matches</Text>
+                </View>
+            )
+        }
+        
+        if(data?.length == 1) {
+            const [ item ] = data;
+            return (
+                <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: 1 })}>
+                    <MatchCard data={item} live={true} matchNo={1} showBtn={false} />
+                </TouchableOpacity>
+            )
+        }
+
+        return (
+            <FlatList
+                data={data}
+                renderItem={({ item, index }) => (
+                    <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
+                        <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
+                    </TouchableOpacity>
+                )}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+            />
+        )
+
+    }
+
     return (
         <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1, backgroundColor: ProjectColors.Grey}}>
             
@@ -79,13 +114,8 @@ export function HomePage() {
 
             <View style={styles.sportsContainer}>
                 <Text fontWeight={600} style={{ fontSize: 16 }}>Sports</Text>
-                <View>
-                    <FlatList 
-                        data={sports} 
-                        renderItem={({ item }) => <SportsIcon sport={item} />}
-                        horizontal
-                        showsHorizontalScrollIndicator={true}
-                    />
+                <View style={{ flexDirection: 'row' }}>
+                    { sports.map((item, index) => <SportsIcon key={index} sport={item} />)   }
                 </View>
             </View>
 
@@ -98,22 +128,7 @@ export function HomePage() {
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
                         <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live', sportType: sportType })} />
                     </View>
-                    {
-                        liveMatchData?.length ? (<FlatList
-                            data={liveMatchData}
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                                    <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
-                                </TouchableOpacity>
-                            )}
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                        />) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                              <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
-                              <Text>No Live Matches</Text>
-                            </View>)
-                    }
-                   
+                    { renderMatchesData(liveMatchData) }
                 </View>
 
                 {/* Finished Matches */}
@@ -122,72 +137,7 @@ export function HomePage() {
                         <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
                         <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
                     </View>
-                    {
-                        finishedMatchesData?.length ? (
-                            <FlatList
-                                horizontal
-                                data={finishedMatchesData}
-                                keyExtractor={item => item._id}
-                                renderItem={({ item, index }) => (
-                                    <TouchableOpacity style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                                        <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false}  />
-                                    </TouchableOpacity>
-                                )}
-                                showsHorizontalScrollIndicator={false}
-                            />
-                        ) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                                <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
-                                <Text>No Finished Matches</Text>
-                            </View>)
-                    }
-                    {/* <ScrollView
-                     horizontal 
-                     showsHorizontalScrollIndicator={false}
-                    >
-                        {
-                           finishedMatchesData?.map((item, index) => (
-                               <TouchableOpacity key={index} style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                                   <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false} />
-                               </TouchableOpacity>
-                           ))
-                        }
-                    </ScrollView> */} 
-                </View>
-                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 20 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
-                        <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
-                    </View>
-                    {
-                        finishedMatchesData?.length ? (
-                            <FlatList
-                                horizontal
-                                data={finishedMatchesData}
-                                keyExtractor={item => item._id}
-                                renderItem={({ item, index }) => (
-                                    <TouchableOpacity style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                                        <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false}  />
-                                    </TouchableOpacity>
-                                )}
-                                showsHorizontalScrollIndicator={false}
-                            />
-                        ) : (<View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                                <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
-                                <Text>No Finished Matches</Text>
-                            </View>)
-                    }
-                    {/* <ScrollView
-                     horizontal 
-                     showsHorizontalScrollIndicator={false}
-                    >
-                        {
-                           finishedMatchesData?.map((item, index) => (
-                               <TouchableOpacity key={index} style={{ width: width / 1.4, marginRight: 10, }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                                   <MatchCard data={item} live={false} matchNo={index + 1} showBtn={false} />
-                               </TouchableOpacity>
-                           ))
-                        }
-                    </ScrollView> */} 
+                    { renderMatchesData(finishedMatchesData) }
                 </View>
             </ScrollView>
             <View style={styles.footer}>
@@ -229,7 +179,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 0.8,
-        marginTop: 20,
+        marginTop: 30,
         paddingVertical: 10
     },
     sportsContainer: {
