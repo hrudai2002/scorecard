@@ -1,6 +1,12 @@
 export enum MATCH_STATUS {
     LIVE = "Live", 
     COMPLETED = "Completed", 
+    NOT_STARTED = "Not_Started"
+}
+
+export enum TOURNAMENT_STATUS {
+    COMPLETED = 'COMPLETED', 
+    UNDER_PROGRESS = 'UNDER_PROGRESS',
 }
 
 export enum SPORT {

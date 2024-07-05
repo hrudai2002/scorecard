@@ -1,3 +1,8 @@
-Image Slider on main page
+
+Andriod Issues
+1. Flikering issues on home screen.
+3. Decrease tabs font size.
+4. Delay on clicking back button
+
 optimizations 
 - everytime getting the match data on updating scoring
