@@ -7,6 +7,7 @@ export enum MATCH_STATUS {
 export enum TOURNAMENT_STATUS {
     COMPLETED = 'COMPLETED', 
     UNDER_PROGRESS = 'UNDER_PROGRESS',
+    READY = 'READY'
 }
 
 export enum SPORT {

@@ -17,7 +17,8 @@ export interface IMatchDetails {
     serveFirst: Schema.Types.ObjectId,
     winner: Schema.Types.ObjectId,
     teamA: Schema.Types.ObjectId, 
-    teamB: Schema.Types.ObjectId
+    teamB: Schema.Types.ObjectId,
+    tournament?: Schema.Types.ObjectId
 }
 
 const matchDetailsSchema = new Schema<IMatchDetails>({ 
@@ -47,7 +48,6 @@ const matchDetailsSchema = new Schema<IMatchDetails>({
     }, 
     matchNo: {
         type: Schema.Types.Number, 
-        required: true
     },
     totalSets: {
         type: Schema.Types.Number, 
@@ -72,8 +72,7 @@ const matchDetailsSchema = new Schema<IMatchDetails>({
        }
     })]],
     serveFirst: {
-        type: Schema.Types.ObjectId, 
-        required: true, 
+        type: Schema.Types.ObjectId,
         ref: 'Team'
     },
     winner: {
@@ -89,6 +88,10 @@ const matchDetailsSchema = new Schema<IMatchDetails>({
         type: Schema.Types.ObjectId, 
         required: true, 
         ref: 'Team'
+    },
+    tournament: {
+        type: Schema.Types.ObjectId, 
+        ref: 'Tournament' 
     }
  });
 

@@ -1,6 +1,6 @@
 import express from 'express'; 
-import { createMatch, getFinishedMatches, getLiveMatches, getMatchDetails, getMatchSummary, getMatchTeamDetails, updateScore } from '../controllers/common.controller';
 import { authMiddleWare } from '../middlewares/auth.middleware';
+import { createMatch, getFinishedMatches, getLiveMatches, getMatchDetails, getMatchSummary, getMatchTeamDetails, updateScore } from '../controllers/common.controller';
 
 const router = express.Router();
 router.get('/live', authMiddleWare, getLiveMatches);

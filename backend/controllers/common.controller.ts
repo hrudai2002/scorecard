@@ -1,6 +1,6 @@
 import { MatchDetails } from "../models/match-details.model";
 import { MATCH_STATUS, SPORT, Team as TeamEnum } from "../enum";
-import { Types } from "mongoose";
+import { Schema, Types } from "mongoose";
 import { Team } from "../models/team.model";
 
 
@@ -11,7 +11,7 @@ export const getLiveMatches = async (req, res) => {
         if (!user || !limit || !sport) {
             throw new Error("Invalid Request");
         }
-        user = new Types.ObjectId(user);
+        user = new Schema.Types.ObjectId(user);
         limit = (limit == 'true') ? true : false;
         let matches = [];
         if(limit) {
@@ -59,7 +59,7 @@ export const getFinishedMatches = async (req, res) => {
             throw new Error("Invalid Request"); 
         }
 
-        user = new Types.ObjectId(user);
+        user = new Schema.Types.ObjectId(user);
         limit =  (limit == 'true') ? true : false;
         let matches = [];
         if(limit) {
@@ -109,7 +109,7 @@ export const getMatchDetails = async (req, res) => {
         if(!matchId) {
             throw new Error("Invalid Request!");
         }
-        matchId = new Types.ObjectId(matchId);
+        matchId = new Schema.Types.ObjectId(matchId);
         const result: any = await MatchDetails.findOne({ _id: matchId })
                                                        .populate('teamA teamB winner').lean();
         return res.json({ success: true, data: result });
@@ -125,7 +125,7 @@ export const getMatchTeamDetails = async (req, res) => {
         if(!matchId) {
             throw new Error('Invalid Request!');
         }
-        matchId = new Types.ObjectId(matchId); 
+        matchId = new Schema.Types.ObjectId(matchId); 
         const badmintonDoc = await MatchDetails.findOne({ _id: matchId }).populate('teamA teamB').lean(); 
         const result = {
             teamA: badmintonDoc.teamA, 
@@ -145,7 +145,7 @@ export const getMatchSummary = async (req, res) => {
         if(!matchId) {
             throw new Error('Invalid Request!');
         }
-        matchId = new Types.ObjectId(matchId); 
+        matchId = new Schema.Types.ObjectId(matchId); 
         const result = await MatchDetails.findById(matchId).lean();
         const data = result.summary.map((doc) => doc.reverse());
 
@@ -187,12 +187,12 @@ export const createMatch = async (req, res) => {
         const name = serveFirst == TeamEnum.TEAM_A ? TeamA.name : TeamB.name;
         const summary = `Serve holds by ${name}, Serve from right side of the court, ( ${TeamA.name} - 0, ${TeamB.name} - 0 )`
 
-        const count = await MatchDetails.find({  status: MATCH_STATUS.LIVE, sport: sportType, user: new Types.ObjectId(user) }).countDocuments();
+        const count = await MatchDetails.find({  status: MATCH_STATUS.LIVE, sport: sportType, user: new Schema.Types.ObjectId(user) }).countDocuments();
 
         await MatchDetails.create({
             status: MATCH_STATUS.LIVE, 
             sport: sportType,
-            user: new Types.ObjectId(user),
+            user: new Schema.Types.ObjectId(user),
             gameType, 
             date: new Date(), 
             matchNo: count + 1,
@@ -217,7 +217,7 @@ export const updateScore = async (req, res) => {
         if(!matchId || teamAScore == undefined || !teamBScore == undefined || whoScored == undefined) {
             throw new Error('Invalid Request!');
         }
-        matchId = new Types.ObjectId(matchId); 
+        matchId = new Schema.Types.ObjectId(matchId); 
 
         if(teamAScore < 0 || teamBScore < 0) {
             throw new Error('Score cannot be negative!');

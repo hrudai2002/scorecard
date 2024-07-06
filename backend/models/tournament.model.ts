@@ -2,7 +2,7 @@ import { Model, model, Schema } from 'mongoose';
 import { GAMETYPE, SPORT, TOURNAMENT_STATUS } from '../enum';
 
 interface ITournament {
-    status: TOURNAMENT_STATUS.COMPLETED | TOURNAMENT_STATUS.UNDER_PROGRESS, 
+    status: TOURNAMENT_STATUS.COMPLETED | TOURNAMENT_STATUS.UNDER_PROGRESS | TOURNAMENT_STATUS.READY, 
     sport: SPORT.BADMINTON | SPORT.TABLE_TENNIS, 
     gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES,
     teams: Schema.Types.ObjectId[], 

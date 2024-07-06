@@ -10,6 +10,7 @@ export interface ITeam {
     name: string, 
     playerOne: string, 
     playerTwo: string, 
+    tournament?: Schema.Types.ObjectId,
     sets: Sets[],
 }
 
@@ -25,6 +26,10 @@ const teamSchema = new Schema<ITeam>({
     playerTwo: {
         type: Schema.Types.String,
     }, 
+    tournament: {
+        type: Schema.Types.ObjectId, 
+        ref: 'Tournament'
+    },
     sets: [new Schema({
         score: {
             type: Schema.Types.Number,
