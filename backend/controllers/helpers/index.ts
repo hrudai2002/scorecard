@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 import { MATCH_STATUS } from "../../enum";
 import { MatchDetails } from "../../models/match-details.model";
 
@@ -6,7 +6,7 @@ export const roundRobinSchedule = async (
  teams: Schema.Types.ObjectId[],
  matchDetails: {
     sport: string, 
-    user: Schema.Types.ObjectId, 
+    user: Types.ObjectId, 
     gameType: string,
     sets: number, 
     gamePoints: number

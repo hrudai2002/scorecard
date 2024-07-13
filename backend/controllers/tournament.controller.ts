@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 import { Team } from "../models/team.model";
 import { roundRobinSchedule } from "./helpers";
 import { Tournament } from "../models/tournament.model";
@@ -16,7 +16,7 @@ export const createTournament = async (req, res) => {
             throw new Error('Invalid Request!');
         }
 
-        user = new Schema.Types.ObjectId(user); 
+        user = new Types.ObjectId(user); 
 
         let teamBulkWrite = []
         for(let doc of teams) {

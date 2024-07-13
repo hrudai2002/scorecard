@@ -13,11 +13,13 @@ import { getLiveMatches, getFinishedMatches } from "../../services/common.servic
 import { useAuth } from "../../contexts/auth";
 import { Sport, Tabs } from "../../constants/enum";
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { SearchBar } from "../../components/search-bar";
 
 export function HomePage() {
     const { width } = useDimensions();
     const [liveMatchData, setLiveMatchData] = useState(null); 
     const [finishedMatchesData, setFinishedMatchesData] = useState(null);
+    const [searchString, setSearchString] = useState<string>(null);
     const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const [tab, setTab] = useState<Tabs>(Tabs.Home);
     const { navigate }: NavigationProp<any> = useNavigation();
@@ -69,8 +71,8 @@ export function HomePage() {
         if(!data?.length) {
             return (
                 <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                    <Image style={styles.noData} source={require('../../../assets/no-data.png')} />
-                    <Text>No Finished Matches</Text>
+                    <Image style={styles.noData} source={require('../../../assets/nothing-here.png')} />
+                    <Text>Nothing here</Text>
                 </View>
             )
         }
@@ -99,9 +101,65 @@ export function HomePage() {
 
     }
 
+    const renderTabContent = () => {
+        if(tab == Tabs.Home) {
+            return (
+                <>
+                    <View style={styles.sportsContainer}>
+                        <Text fontWeight={600} style={{ fontSize: 15 }}>Sports</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                            {sports.map((item, index) => <SportsIcon key={index} sport={item} />)}
+                        </View>
+                    </View>
+
+
+                    <ScrollView style={styles.container}>
+
+                        {/* Live Matches */}
+                        <View style={styles.liveMatchContainer}>
+                            <View style={styles.liveMatchesView}>
+                                <Text fontWeight={600} style={{ fontSize: 15 }}>Live Matches</Text>
+                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live', sportType: sportType })} />
+                            </View>
+                            {renderMatchesData(liveMatchData)}
+                        </View>
+
+                        {/* Finished Matches */}
+                        <View style={styles.finishedMatchContainer}>
+                            <View style={styles.finishedMatchsView}>
+                                <Text fontWeight={600} style={{ fontSize: 15 }}>Finished Matches</Text>
+                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
+                            </View>
+                            {renderMatchesData(finishedMatchesData)}
+                        </View>
+                    </ScrollView>
+                     
+                </>
+            )
+        }
+        return (
+            <View style={styles.tournamentContainer}>
+                <View style={styles.tournamentHeader}>
+                    <SearchBar placeholder="Search Tournament" setSearchString={setSearchString} width={'75%'} />
+                    <TouchableOpacity>
+                        <View style={styles.createBtn}>
+                            <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
+                            <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.tournamentView}>
+                    <View style={{ flexDirection: 'column', alignItems: 'center'  }}>
+                        <Image style={styles.noData} source={require('../../../assets/nothing-here.png')} />
+                        <Text>Nothing here</Text>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
     return (
         <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1, backgroundColor: ProjectColors.Grey}}>
-            
             <View style={styles.profileHeader}>
                 <View style={styles.profileText}>
                     <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary, textTransform: 'capitalize'}}>Welcome, {authData.name}</Text> 
@@ -111,57 +169,28 @@ export function HomePage() {
                     <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
                 </TouchableOpacity>
             </View>
-
-            <View style={styles.sportsContainer}>
-                <Text fontWeight={600} style={{ fontSize: 16 }}>Sports</Text>
-                <View style={{ flexDirection: 'row' }}>
-                    { sports.map((item, index) => <SportsIcon key={index} sport={item} />)   }
-                </View>
-            </View>
-
-
-            <ScrollView style={styles.container}>
-
-                {/* Live Matches */}
-                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 30 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
-                        <Text fontWeight={600} style={{ fontSize: 16 }}>Live Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live', sportType: sportType })} />
-                    </View>
-                    { renderMatchesData(liveMatchData) }
-                </View>
-
-                {/* Finished Matches */}
-                <View style={{ flex: 1, flexDirection: 'column', gap: 15, paddingLeft: 15, marginBottom: 20 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
-                        <Text fontWeight={600} style={{ fontSize: 16 }}>Finished Matches</Text>
-                        <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
-                    </View>
-                    { renderMatchesData(finishedMatchesData) }
-                </View>
-            </ScrollView>
+            { renderTabContent() }
             <View style={styles.footer}>
                 <View style={styles.tab}>
-                    <FontAwesome onPress={() => setTab(Tabs.Home)} name="home" size={30} color={ tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
-                    <Text style={{ color:  ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
+                    <FontAwesome onPress={() => setTab(Tabs.Home)} name="home" size={30} color={tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
+                    <Text style={{ color: ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
                 </View>
                 <View style={styles.tab}>
-                    <MaterialIcons onPress={() => setTab(Tabs.Tournament)} name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} /> 
+                    <MaterialIcons onPress={() => setTab(Tabs.Tournament)} name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} />
                     <Text style={{ color: ProjectColors.LightBlack }}>Tournament</Text>
                 </View>
-            </View>   
+            </View> 
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     profileHeader: {
-        flex: 0.1, 
         backgroundColor: ProjectColors.Primary,
         flexDirection: 'row', 
         justifyContent: 'space-between',
         alignItems: 'center', 
-        padding: 15
+        padding: 15,
     }, 
     profileText: {
         flexDirection: 'column',
@@ -178,15 +207,40 @@ const styles = StyleSheet.create({
        height: 200,
     },
     container: {
-        flex: 0.8,
-        marginTop: 30,
-        paddingVertical: 10
+        flex: 1,
+        paddingVertical: 10,
+    },
+    tournamentContainer: {
+        flex: 1,
     },
     sportsContainer: {
-        flex: 0.2, 
         paddingLeft: 15,
         paddingVertical: 20,
-        gap: 15
+        gap: 15,
+    },
+    liveMatchContainer: {
+        flex: 1, 
+        flexDirection: 'column', 
+        gap: 15, 
+        paddingLeft: 15, 
+        marginBottom: 30
+    },
+    liveMatchesView: {
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        paddingRight: 10
+    },
+    finishedMatchContainer: {
+        flex: 1, 
+        flexDirection: 'column', 
+        gap: 15, 
+        paddingLeft: 15, 
+        marginBottom: 20
+    },
+    finishedMatchsView: {
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        paddingRight: 10
     },
     circle: {
         width: 74, 
@@ -206,7 +260,7 @@ const styles = StyleSheet.create({
         marginRight: 20, 
         justifyContent: 'center', 
         alignItems: 'center', 
-        gap: 10
+        gap: 10,
     },
     ratingCircle: {
         width: 60, 
@@ -235,5 +289,26 @@ const styles = StyleSheet.create({
     selected: {
         backgroundColor: ProjectColors.Secondary, 
         opacity: 0.5
+    },
+    tournamentHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        gap: 10
+    },
+    createBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        backgroundColor: ProjectColors.Primary,
+        opacity: 0.8,
+        borderRadius: 10,
+        padding: 12
+    },
+    tournamentView: {
+        flex: 1,
+        flexDirection: 'row', 
+        justifyContent: 'center', 
+        paddingTop: '30%', 
     }
 })
