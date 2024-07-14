@@ -4,6 +4,7 @@ import { Profile } from "../screens/app/profile";
 import { ViewMatches } from "../screens/app/home";
 import { CreateMatch } from "../screens/app/home/create-match";
 import { ScoreScreen } from "../screens/app/home/score";
+import { Tournament } from "../screens/app/tournament";
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ export function AppStack() {
             <Stack.Screen name="Matches" component={ViewMatches} options={{ headerShown: false }} />
             <Stack.Screen name="Create-Match" component={CreateMatch} options={{ headerShown: false }} />
             <Stack.Screen name="Score" component={ScoreScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='Create-Tournament' component={Tournament} options={{ headerShown: false }}  />
         </Stack.Navigator>
     )
 }

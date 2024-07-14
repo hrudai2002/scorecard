@@ -6,7 +6,7 @@ import { getMatchDetails, updateScore as updateScoreService, getMatchSummary as 
 import { MatchCard } from "../../../components/match-card";
 import { Text } from "../../../components/text";
 import { ProjectColors } from "../../../constants/colors";
-import { MatchStatus, Tabs } from "../../../constants/enum";
+import { MatchStatus, Sport, Tabs } from "../../../constants/enum";
 import { formateDate } from "../../../utils/helpers";
 import { LoadingComponent } from "../../../components/loading";
 import { badmintonRules } from "../../../constants/match-data";
@@ -166,7 +166,7 @@ export function ScoreScreen() {
     return (
        <View style={{ flex: 1 }}>
            <LoadingComponent loading={loading} text={text} />
-           <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `Badmintion ${matchData.matchType}` : ''} share={matchDetails?.status == MatchStatus.LIVE} /> 
+           <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `${matchData.sport == Sport.BADMINTON ? 'Badminton' : 'Table Tennis'} ${matchData.matchType}` : ''} share={matchDetails?.status == MatchStatus.LIVE} /> 
            <View style={{ padding: 10 }}>
                 {
                     matchData && 

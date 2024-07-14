@@ -7,11 +7,16 @@ export const sports = [
     },
     {
         name: 'Table Tennis',
-        sportType: 'Table_Tennis',
+        sportType: 'TableTennis',
         src: require('../../assets/Table_tennis.png'),
         _id: 2,
     },
 ];
+
+export const sportTypes = [
+    { label: 'Badmintion', value: 'Badminton' }, 
+    { label: 'Table Tennis', value: 'TableTennis' }
+]
 
 
 

@@ -1,4 +1,4 @@
-import { StyleSheet,View, Image, ScrollView, FlatList, Dimensions, Pressable } from "react-native";
+import { StyleSheet,View, Image, ScrollView, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
@@ -8,7 +8,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../components/match-card";
 import { sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
-import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { getLiveMatches, getFinishedMatches } from "../../services/common.service";
 import { useAuth } from "../../contexts/auth";
 import { Sport, Tabs } from "../../constants/enum";
@@ -23,6 +23,7 @@ export function HomePage() {
     const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const [tab, setTab] = useState<Tabs>(Tabs.Home);
     const { navigate }: NavigationProp<any> = useNavigation();
+    const route: RouteProp<any> = useRoute();
     const { authData } = useAuth();
     
     const fetchLiveMatchesData = async () => {
@@ -38,7 +39,6 @@ export function HomePage() {
     useEffect(() => {
         fetchLiveMatchesData();
         fetchFinishedMatchesData();
-        return () => {};
     }, [sportType]);
 
     useFocusEffect(
@@ -141,7 +141,7 @@ export function HomePage() {
             <View style={styles.tournamentContainer}>
                 <View style={styles.tournamentHeader}>
                     <SearchBar placeholder="Search Tournament" setSearchString={setSearchString} width={'75%'} />
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigate('Create-Tournament')}>
                         <View style={styles.createBtn}>
                             <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
                             <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>

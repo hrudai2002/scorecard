@@ -12,7 +12,7 @@ export enum TOURNAMENT_STATUS {
 
 export enum SPORT {
     BADMINTON = "Badminton", 
-    TABLE_TENNIS = "Table_Tennis"
+    TABLE_TENNIS = "TableTennis"
 }
 
 export enum GAMETYPE {

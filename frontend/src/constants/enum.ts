@@ -10,7 +10,7 @@ export enum MatchStatus {
 
 export enum Sport {
     BADMINTON = 'Badminton', 
-    TABLE_TENNIS = 'Table_Tennis'
+    TABLE_TENNIS = 'TableTennis'
  }
 
 export enum Team {
