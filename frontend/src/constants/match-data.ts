@@ -18,6 +18,10 @@ export const sportTypes = [
     { label: 'Table Tennis', value: 'TableTennis' }
 ]
 
+export const schedule = [
+    { label: 'Round Robin', value: 'Round Robin' }
+]
+
 
 
 // Badmintion 
