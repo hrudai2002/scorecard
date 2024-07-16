@@ -76,7 +76,7 @@ export function ViewMatches() {
                     />
                 </View> :  (
                 <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                    <Image style={styles.noData} source={require('../../../../assets/no-data.png')} />
+                    <Image style={styles.noData} source={require('../../../../assets/nothing-here.png')} />
                     <Text>{route.params.status == MatchStatus.LIVE ? 'No Live Matches': 'No Finished Matches' } </Text>
                 </View>)
             }
