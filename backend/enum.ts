@@ -1,13 +1,13 @@
 export enum MATCH_STATUS {
-    LIVE = "Live", 
-    COMPLETED = "Completed", 
-    NOT_STARTED = "Not_Started"
+    READY = "READY",
+    LIVE = "LIVE", 
+    COMPLETED = "COMPLETED", 
+    NOT_STARTED = "NOT_STARTED"
 }
 
 export enum TOURNAMENT_STATUS {
-    COMPLETED = 'COMPLETED', 
-    UNDER_PROGRESS = 'UNDER_PROGRESS',
-    READY = 'READY'
+    COMPLETED = "COMPLETED", 
+    LIVE = "LIVE",
 }
 
 export enum SPORT {
@@ -16,8 +16,8 @@ export enum SPORT {
 }
 
 export enum GAMETYPE {
-    SINGLES = "Singles", 
-    DOUBLES = "Doubles"
+    SINGLES = "SINGLES", 
+    DOUBLES = "DOUBLES"
 }
 
 export enum Team {

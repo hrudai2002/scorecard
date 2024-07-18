@@ -4,7 +4,7 @@ import { model, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
 
 export interface IMatchDetails {
-    status: MATCH_STATUS.LIVE | MATCH_STATUS.COMPLETED | MATCH_STATUS.NOT_STARTED, 
+    status: MATCH_STATUS.READY | MATCH_STATUS.LIVE | MATCH_STATUS.COMPLETED | MATCH_STATUS.NOT_STARTED, 
     sport: SPORT.BADMINTON | SPORT.TABLE_TENNIS,
     user:  Schema.Types.ObjectId | IUser, 
     gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES, 

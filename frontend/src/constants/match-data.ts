@@ -27,8 +27,8 @@ export const schedule = [
 // Badmintion 
 
 export const badmintonMatchType = [
-    { label: 'Singles', value: 'Singles' },
-    { label: 'Doubles', value: 'Doubles' }
+    { label: 'Singles', value: 'SINGLES' },
+    { label: 'Doubles', value: 'DOUBLES' }
 ]
 
 export const badmintonGameSets = [

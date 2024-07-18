@@ -2,7 +2,7 @@ import { Model, model, Schema } from 'mongoose';
 import { GAMETYPE, SPORT, TOURNAMENT_STATUS } from '../enum';
 
 interface ITournament {
-    status: TOURNAMENT_STATUS.COMPLETED | TOURNAMENT_STATUS.UNDER_PROGRESS | TOURNAMENT_STATUS.READY, 
+    status: TOURNAMENT_STATUS.COMPLETED | TOURNAMENT_STATUS.LIVE, 
     sport: SPORT.BADMINTON | SPORT.TABLE_TENNIS, 
     gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES,
     teams: Schema.Types.ObjectId[], 
@@ -27,16 +27,16 @@ const tournamentSchema = new Schema<ITournament>({
         enum: Object.values(GAMETYPE),
         required: true
     },
-    teams: [new Schema({
-        type: Schema.Types.ObjectId, 
+    teams: {
+        type: [Schema.Types.ObjectId],
         ref: 'Team',
         default: []
-    })], 
-    matches: [new Schema({
-        type: Schema.Types.ObjectId, 
-        ref: 'MatchDetails',
+    }, 
+    matches: {
+        type: [Schema.Types.ObjectId], 
+        ref: 'MatchDetails', 
         default: []
-    })],
+    },
     date: {
         type: Schema.Types.Date, 
         required: true

@@ -7,11 +7,14 @@ import { Button } from "../../../components/button";
 import { ProjectColors } from "../../../constants/colors";
 import { Dropdown } from "../../../components/dropdown";
 import { badmintonGamePoints, badmintonGameSets, badmintonMatchType, schedule, sportTypes } from "../../../constants/match-data";
-import { FlatList, TextInput } from "react-native-gesture-handler";
+import { TextInput } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BadmintonMatchType } from "../../../constants/enum";
 import { toast } from "../../../utils/toast";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createTournament } from "../../../services/tournament.service";
+import { useAuth } from "../../../contexts/auth";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 export function Tournament() {
     const [loading, setLoading] = useState<boolean>(false);
@@ -31,6 +34,8 @@ export function Tournament() {
         playerOne: string, 
         playerTwo: string
     }[]>([]);
+    const { authData } = useAuth();
+    const navigation: NavigationProp<any> = useNavigation();
 
     const addTeam = () => {
         setTeams(
@@ -50,10 +55,10 @@ export function Tournament() {
             ...team,
             _id: index
         }); 
-
     }
 
     const saveTeamDetails = () => {
+        // Validations
         if(!selectedTeam.name) {
             toast.error('Team name cannot be empty');
             return;
@@ -64,6 +69,10 @@ export function Tournament() {
         }
         if(matchType == BadmintonMatchType.DOUBLES && !selectedTeam.playerTwo) {
             toast.error('Player two name cannot be empty');
+            return;
+        }
+        if(teams.find((item) => item.name == selectedTeam.name)) {
+            toast.error('duplicate team name!');
             return;
         }
         const newTeams = teams.map((item, index) => {
@@ -78,6 +87,61 @@ export function Tournament() {
         });
         setTeams([...newTeams]);
         setSelectedTeam(null);
+    }
+
+    const createNewTournament = async () => {
+        // validations
+        if(!sportType) {
+            toast.error('Sport cannot be empty!');
+            return;
+        }
+        if (!matchType) {
+            toast.error("Game type cannot be empty!");
+            return;
+        }
+        if (!numberOfSets) {
+            toast.error("Number of sets cannot be empty!");
+            return;
+        }
+        if (!gamePoint) {
+            toast.error("Game points cannot be empty!");
+            return;
+        }
+        if (!scheduleMode) {
+            toast.error("Schedule cannot be empty!");
+            return;
+        }
+        if(!teams.length || teams.length == 1) {
+            toast.error('Teams cannot be empty or one');
+            return;
+        }
+
+        if((teams.some((item) => {
+                if(matchType == BadmintonMatchType.SINGLES) {
+                    return !item.name.length || !item.playerOne.length;
+                }
+                return !item.name.length || !item.playerOne.length || !item.playerTwo.length;
+        }))) {
+            toast.error('Teams cannot contain empty fields!');
+            return;
+        }
+        const res = await createTournament({
+            teams,
+            sport: sportType, 
+            gameType: matchType, 
+            user: authData._id, 
+            sets: numberOfSets, 
+            gamePoints: gamePoint, 
+            scheduleType: scheduleMode
+        });
+
+        if (res) {
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+                navigation.goBack();
+            }, 2000);
+        }
     }
 
     if(selectedTeam) {
@@ -166,7 +230,7 @@ export function Tournament() {
                                 data={schedule}
                                 value={scheduleMode}
                                 setValue={setScheduleMode}
-                                placeholder={"Select game points"}
+                                placeholder={"Select schedule"}
                             />
                         </View>
                         <View style={{ flexDirection: 'column', gap: 10, marginBottom: 25 }}>
@@ -192,7 +256,7 @@ export function Tournament() {
 
                 <View style={{ padding: 10, flex: 0.09, paddingBottom: 0 }}>
                     <Button
-                        // onPress={startGame}
+                        onPress={createNewTournament}
                         text={'Create Tournament'}
                         color={ProjectColors.Secondary}
                         backgroundColor={ProjectColors.Primary}

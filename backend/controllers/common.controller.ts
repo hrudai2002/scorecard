@@ -4,7 +4,10 @@ import { Schema, Types, Mongoose } from "mongoose";
 import { Team } from "../models/team.model";
 
 
-// @get badminton/live
+/** 
+ * @Get badminton/live
+ * @desc get all live matches
+ */
 export const getLiveMatches = async (req, res) => {
     try {
         let { user, limit, sport } = req.query;
@@ -19,13 +22,13 @@ export const getLiveMatches = async (req, res) => {
                 status: MATCH_STATUS.LIVE, 
                 sport,
                 user
-            }).populate('teamA teamB').limit(5);
+            }).populate('teamA teamB').limit(5).lean();
         } else {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.LIVE,
                 sport,
                 user
-            }).populate('teamA teamB').sort({ _id: -1 })
+            }).populate('teamA teamB').sort({ _id: -1 }).lean();
         }
 
         const result = matches.map((doc: any) => ({
@@ -51,7 +54,10 @@ export const getLiveMatches = async (req, res) => {
     }
 }
 
-// @get badminton/finished 
+/** 
+ * @Get badminton/finished
+ * @desc get all finished matches
+ */
 export const getFinishedMatches = async (req, res) => {
     try {
         let { user, limit, sport } = req.query; 

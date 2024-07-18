@@ -11,14 +11,16 @@ import { useDimensions } from "../../hooks/useDimensions";
 import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { getLiveMatches, getFinishedMatches } from "../../services/common.service";
 import { useAuth } from "../../contexts/auth";
-import { Sport, Tabs } from "../../constants/enum";
+import { BadmintonMatchType, MatchStatus, Sport, Tabs } from "../../constants/enum";
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { SearchBar } from "../../components/search-bar";
+import { getAllTournaments } from "../../services/tournament.service";
 
 export function HomePage() {
     const { width } = useDimensions();
     const [liveMatchData, setLiveMatchData] = useState(null); 
     const [finishedMatchesData, setFinishedMatchesData] = useState(null);
+    const [tournamentsData, setTournamentsData] = useState(null);
     const [searchString, setSearchString] = useState<string>(null);
     const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const [tab, setTab] = useState<Tabs>(Tabs.Home);
@@ -34,17 +36,35 @@ export function HomePage() {
     const fetchFinishedMatchesData = async () => {
         let data = await getFinishedMatches({ user: authData._id, limit: true, sport: sportType });
         setFinishedMatchesData(data);
-
     }
+
+    const fetchTournamentsData = async () => {
+        let data = await getAllTournaments({ user: authData._id }); 
+        setTournamentsData(data);
+    }
+
     useEffect(() => {
         fetchLiveMatchesData();
         fetchFinishedMatchesData();
     }, [sportType]);
 
-    useFocusEffect(
-        useCallback(() => {
+    useEffect(() => {
+        if(tab == Tabs.Home) {
             fetchLiveMatchesData();
             fetchFinishedMatchesData();
+        } else {
+            fetchTournamentsData();
+        }
+    }, [tab])
+
+    useFocusEffect(
+        useCallback(() => {
+            if (tab == Tabs.Home) {
+                fetchLiveMatchesData();
+                fetchFinishedMatchesData();
+            } else {
+                fetchTournamentsData();
+            }
         }, [])
     )
  
@@ -119,7 +139,7 @@ export function HomePage() {
                         <View style={styles.liveMatchContainer}>
                             <View style={styles.liveMatchesView}>
                                 <Text fontWeight={600} style={{ fontSize: 15 }}>Live Matches</Text>
-                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Live', sportType: sportType })} />
+                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: MatchStatus.LIVE, sportType: sportType })} />
                             </View>
                             {renderMatchesData(liveMatchData)}
                         </View>
@@ -128,7 +148,7 @@ export function HomePage() {
                         <View style={styles.finishedMatchContainer}>
                             <View style={styles.finishedMatchsView}>
                                 <Text fontWeight={600} style={{ fontSize: 15 }}>Finished Matches</Text>
-                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: 'Finished', sportType: sportType })} />
+                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: MatchStatus.COMPLETED, sportType: sportType })} />
                             </View>
                             {renderMatchesData(finishedMatchesData)}
                         </View>

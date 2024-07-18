@@ -1,11 +1,13 @@
 export enum BadmintonMatchType {
-    SINGLES = 'Singles', 
-    DOUBLES = 'Doubles'
+    SINGLES = "SINGLES",
+    DOUBLES = "DOUBLES"
 }
 
 export enum MatchStatus {
-    LIVE = 'Live', 
-    COMPLETED = 'Completed'
+    READY = "READY",
+    LIVE = "LIVE",
+    COMPLETED = "COMPLETED",
+    NOT_STARTED = "NOT_STARTED"
 }
 
 export enum Sport {

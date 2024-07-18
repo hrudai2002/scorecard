@@ -22,9 +22,9 @@ export const roundRobinSchedule = async (
                         sport: matchDetails.sport, 
                         user: matchDetails.user, 
                         gameType: matchDetails.gameType,
-                        totalSets: matchDetails.sets, 
+                        totalSets: Number(matchDetails.sets), 
                         completedSets: 0,
-                        gamePoints: matchDetails.gamePoints, 
+                        gamePoint: Number(matchDetails.gamePoints), 
                         teamA: teams[t1], 
                         teamB: teams[t2]
                     }
@@ -40,15 +40,19 @@ export const roundRobinSchedule = async (
     }
 
     matchesBulkWrite = matchesBulkWrite.map((doc) => ({
-        ...doc, 
-        date: new Date()
+        insertOne: {
+            'document': {
+                ...doc.insertOne.document, 
+                date: new Date()
+            }
+        }
     }))
 
     const result = await MatchDetails.bulkWrite(matchesBulkWrite); 
     const createdIds = Object.values(result.insertedIds); 
 
     const firstMatch = await MatchDetails.findOne({ _id: { $in: createdIds } }).sort({ date: 1 }); 
-    firstMatch.status = MATCH_STATUS.LIVE;
+    firstMatch.status = MATCH_STATUS.READY;
     await firstMatch.save();
 
     return createdIds;
