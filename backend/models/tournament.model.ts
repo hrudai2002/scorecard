@@ -2,6 +2,7 @@ import { Model, model, Schema } from 'mongoose';
 import { GAMETYPE, SPORT, TOURNAMENT_STATUS } from '../enum';
 
 interface ITournament {
+    name: string,
     status: TOURNAMENT_STATUS.COMPLETED | TOURNAMENT_STATUS.LIVE, 
     sport: SPORT.BADMINTON | SPORT.TABLE_TENNIS, 
     gameType: GAMETYPE.SINGLES | GAMETYPE.DOUBLES,
@@ -12,6 +13,10 @@ interface ITournament {
 }
 
 const tournamentSchema = new Schema<ITournament>({
+    name: {
+        type: Schema.Types.String, 
+        required: true
+    },
     status: {
         type: Schema.Types.String, 
         enum: Object.values(TOURNAMENT_STATUS),

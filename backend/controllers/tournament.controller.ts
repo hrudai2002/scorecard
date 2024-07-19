@@ -29,8 +29,8 @@ export const getAllTournaments = async (req, res) => {
  */
 export const createTournament = async (req, res) => {
     try {
-        let { teams, sport, gameType, user, sets, gamePoints, scheduleType } = req.body;
-        if(!teams.length || !sport || !gameType || !user || !sets || !gamePoints || !scheduleType) {
+        let { teams, name, sport, gameType, user, sets, gamePoints, scheduleType } = req.body;
+        if(!teams.length || !sport || !name || !gameType || !user || !sets || !gamePoints || !scheduleType) {
             throw new Error('Invalid Request!');
         }
 
@@ -59,6 +59,7 @@ export const createTournament = async (req, res) => {
 
         const tournament = await Tournament.create({
             status: TOURNAMENT_STATUS.LIVE, 
+            name,
             sport, 
             gameType, 
             teams: createdTeams, 
