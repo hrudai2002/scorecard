@@ -18,6 +18,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 export function Tournament() {
     const [loading, setLoading] = useState<boolean>(false);
+    const [name, setName] = useState<string>(null);
     const [sportType, setSportType] = useState(null);
     const [matchType, setMatchType] = useState(null);
     const [numberOfSets, setNumberOfSets] = useState(null);
@@ -95,6 +96,10 @@ export function Tournament() {
             toast.error('Sport cannot be empty!');
             return;
         }
+        if(!name) {
+            toast.error('tournament name cannot be empty!');
+            return;
+        }
         if (!matchType) {
             toast.error("Game type cannot be empty!");
             return;
@@ -126,7 +131,8 @@ export function Tournament() {
             return;
         }
         const res = await createTournament({
-            teams,
+            name,
+            teams,  
             sport: sportType, 
             gameType: matchType, 
             user: authData._id, 
@@ -195,6 +201,16 @@ export function Tournament() {
                                 value={sportType}
                                 setValue={setSportType}
                                 placeholder={"Select Sport"}
+                            />
+                        </View>
+                        <View style={styles.inputField}>
+                            <Text fontWeight={400}>Tournament Name</Text>
+                            <TextInput
+                                autoCapitalize="none"
+                                style={styles.textInput}
+                                onChangeText={value => setName(value)}
+                                value={name}
+                                placeholder="Enter the tournament name"
                             />
                         </View>
                         <View style={styles.inputField}>

@@ -168,12 +168,23 @@ export function HomePage() {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.tournamentView}>
-                    <View style={{ flexDirection: 'column', alignItems: 'center'  }}>
-                        <Image style={styles.noData} source={require('../../../assets/nothing-here.png')} />
-                        <Text>Nothing here</Text>
-                    </View>
-                </View>
+                {
+                    tournamentsData?.length ? (
+                        <View style={{ padding: 10 }}>
+                            { tournamentsData?.map((doc, index) => (
+                                <TouchableOpacity onPress={() => navigate('Tournament-Matches')}>
+                                    <View key={index} style={{ padding: 15, backgroundColor: ProjectColors.Secondary }}>
+                                        <Text style={{ color: ProjectColors.LightBlack }}>{ doc.name }</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </View>) : (<View style={styles.tournamentView}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                            <Image style={styles.noData} source={require('../../../assets/nothing-here.png')} />
+                            <Text>Nothing here</Text>
+                        </View>
+                    </View>)
+                }
             </View>
         )
     }
