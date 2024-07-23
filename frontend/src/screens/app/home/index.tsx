@@ -69,8 +69,8 @@ export function ViewMatches() {
                     <FlatList
                         data={matchesData}
                         renderItem={({ item, index }) => (
-                            <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: item.matchNo })}>
-                                <MatchCard data={item} live={route.params.status == MatchStatus.LIVE ? true : false} matchNo={item.matchNo} showBtn={false} />
+                            <TouchableOpacity key={index} style={{ marginBottom: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: item.matchNo })}>
+                                <MatchCard data={item} status={route.params.status} matchNo={item.matchNo} showBtn={false} />
                             </TouchableOpacity>
                         )}
                     />

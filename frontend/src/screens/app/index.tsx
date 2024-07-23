@@ -87,7 +87,7 @@ export function HomePage() {
         )
     }
 
-    const renderMatchesData = (data) => {
+    const renderMatchesData = (data, status) => {
         if(!data?.length) {
             return (
                 <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
@@ -101,7 +101,7 @@ export function HomePage() {
             const [ item ] = data;
             return (
                 <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: 1 })}>
-                    <MatchCard data={item} live={true} matchNo={1} showBtn={false} />
+                    <MatchCard data={item} status={status} matchNo={1} showBtn={false} />
                 </TouchableOpacity>
             )
         }
@@ -111,7 +111,7 @@ export function HomePage() {
                 data={data}
                 renderItem={({ item, index }) => (
                     <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: index + 1 })}>
-                        <MatchCard data={item} live={true} matchNo={index + 1} showBtn={false} />
+                        <MatchCard data={item} status={status} matchNo={index + 1} showBtn={false} />
                     </TouchableOpacity>
                 )}
                 horizontal
@@ -141,7 +141,7 @@ export function HomePage() {
                                 <Text fontWeight={600} style={{ fontSize: 15 }}>Live Matches</Text>
                                 <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: MatchStatus.LIVE, sportType: sportType })} />
                             </View>
-                            {renderMatchesData(liveMatchData)}
+                            {renderMatchesData(liveMatchData, MatchStatus.LIVE)}
                         </View>
 
                         {/* Finished Matches */}
@@ -150,7 +150,7 @@ export function HomePage() {
                                 <Text fontWeight={600} style={{ fontSize: 15 }}>Finished Matches</Text>
                                 <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: MatchStatus.COMPLETED, sportType: sportType })} />
                             </View>
-                            {renderMatchesData(finishedMatchesData)}
+                            {renderMatchesData(finishedMatchesData, MatchStatus.COMPLETED)}
                         </View>
                     </ScrollView>
                      
@@ -172,8 +172,8 @@ export function HomePage() {
                     tournamentsData?.length ? (
                         <View style={{ padding: 10 }}>
                             { tournamentsData?.map((doc, index) => (
-                                <TouchableOpacity onPress={() => navigate('Tournament-Matches')}>
-                                    <View key={index} style={{ padding: 15, backgroundColor: ProjectColors.Secondary }}>
+                                <TouchableOpacity key={index} onPress={() => navigate('Tournament-Matches', { tournament: doc._id })}>
+                                    <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary }}>
                                         <Text style={{ color: ProjectColors.LightBlack }}>{ doc.name }</Text>
                                     </View>
                                 </TouchableOpacity>

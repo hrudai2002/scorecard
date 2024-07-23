@@ -1,8 +1,10 @@
 import { StyleSheet, View } from "react-native"
 import { ProjectColors } from "../../constants/colors"
 import { Text } from "../text"
-import { month, Team } from "../../constants/enum"
+import { MatchStatus, month, Team } from "../../constants/enum"
 import { Entypo } from '@expo/vector-icons'
+import { useState } from "react"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 interface IMatchDetailsProps {
     data: {
@@ -25,50 +27,107 @@ interface IMatchDetailsProps {
         _id: string,
     },
     set?: number,
-    live: boolean, 
+    status: string,
     matchNo: number
     showBtn: boolean,
     updateScore?: (data: any) => void,
 }
 
 export function MatchCard(props: IMatchDetailsProps) {
+
+    if(props.status == MatchStatus.LIVE) {
+        return (
+            <View>
+                <View style={styles.container}>
+                    <View style={styles.topSection}>
+                        <View style={styles.matchDetails}>
+                            <Text fontWeight={600} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Match - {props.matchNo}</Text>
+                            <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>{(new Date(props.data.date).getDate())} {month[new Date(props.data.date).getMonth()]} {new Date(props.data.date).getFullYear()}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+                            <View style={styles.circle}></View>
+                            <Text fontWeight={400} style={{ color: ProjectColors.Red, fontSize: 12 }}>Live</Text>
+                        </View> 
+                    </View>
+                    <View style={styles.middleSection}>
+                        <View style={{ flexDirection: 'column', gap: 5 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    {props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null}
+                                    <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>
+                                    {props.showBtn && props.data?.enableEdit ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score + 1, teamBScore: props.data.teamB.score, whoScored: Team.TEAM_A })} /> : null}
+
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    {props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score - 1, whoScored: '' })} /> : null}
+                                    <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamB?.winner && "🏆"} {props.data.teamB.score} </Text>
+                                    {props.showBtn && props.data?.enableEdit ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score + 1, whoScored: Team.TEAM_B })} /> : null}
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                <Text fontWeight={400} style={{ fontSize: 12 }}>{props.data.matchType + ` (${props.set || props.data.currentSet} / ${props.data.totalSets}) `}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    if(props.status == MatchStatus.COMPLETED) {
+        return (
+            <View>
+                <View style={styles.container}>
+                    <View style={styles.topSection}>
+                        <View style={styles.matchDetails}>
+                            <Text fontWeight={600} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Match - {props.matchNo}</Text>
+                            <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>{(new Date(props.data.date).getDate())} {month[new Date(props.data.date).getMonth()]} {new Date(props.data.date).getFullYear()}</Text>
+                        </View>
+                        <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>{props.data.matchType}</Text>
+                    </View>
+                    <View style={styles.middleSection}>
+                        <View style={{ flexDirection: 'column', gap: 5 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamB?.winner && "🏆"} {props.data.teamB.score} </Text>
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                <Text fontWeight={400} style={{ fontSize: 12 }}>{`${props.data.winner} wins`}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        )
+    }
     return (
-        <View>
+        <View style={{ opacity: props.status == MatchStatus.NOT_STARTED ? 0.5 : 1 }}>
             <View style={styles.container}>
                 <View style={styles.topSection}>
                     <View style={styles.matchDetails}>
                         <Text fontWeight={600} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>Match - { props.matchNo }</Text>
                         <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>{(new Date(props.data.date).getDate())} {month[new Date(props.data.date).getMonth()]} {new Date(props.data.date).getFullYear()}</Text>
                     </View>
-                    {
-                        props.live ? <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-                            <View style={styles.circle}></View>
-                            <Text fontWeight={400} style={{ color: ProjectColors.Red, fontSize: 12 }}>Live</Text>
-                        </View> : <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>{props.data.matchType}</Text>
-                    }
-                  
+                <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, fontSize: 12 }}>{props.data.matchType}</Text>        
                 </View>
                 <View style={styles.middleSection}>
                     <View style={{ flexDirection: 'column', gap: 5 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null }
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ?  ProjectColors.Primary : ProjectColors.LightBlack }}>{ props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>
-                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score + 1, teamBScore: props.data.teamB.score, whoScored: Team.TEAM_A })} /> : null }
-                                
-                            </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamB.name}</Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score - 1, whoScored: '' })} /> : null}
-                                <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score <= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{ props.data.teamB?.winner && "🏆"} {props.data.teamB.score } </Text>
-                                {props.live && props.showBtn && props.data?.enableEdit ? <Entypo name="plus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score, teamBScore: props.data.teamB.score + 1, whoScored: Team.TEAM_B })} /> : null}
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                         <Text fontWeight={400} style={{ fontSize: 12 }}>{ props.live ? props.data.matchType + ` (${props.set || props.data.currentSet} / ${props.data.totalSets}) ` : `${props.data.winner} wins` }</Text>
                         </View>
                     </View>
                 </View>
@@ -84,7 +143,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5, 
         borderRadius: 10,
         padding: 15,
-        gap: 15
+        gap: 15,
     }, 
     matchDetails: {
         flexDirection: 'column',
@@ -114,6 +173,11 @@ const styles = StyleSheet.create({
         left: '44%',
         justifyContent: 'center', 
         alignItems: 'center'
+    },
+    inputField: {
+        width: 300,
+        flexDirection: 'column',
+        gap: 10
     },
 })
 

@@ -170,7 +170,7 @@ export function ScoreScreen() {
            <View style={{ padding: 10 }}>
                 {
                     matchData && 
-                    <MatchCard data={matchData} set={set + 1} live={matchData?.status == MatchStatus.LIVE} matchNo={Number((router.params.matchNo < 10 ? '0' : '') + router.params?.matchNo)} showBtn={true} updateScore={updateScore} />
+                    <MatchCard data={matchData} set={set + 1} status={matchData?.status} matchNo={Number((router.params.matchNo < 10 ? '0' : '') + router.params?.matchNo)} showBtn={true} updateScore={updateScore} />
                 }
            </View>
            <View style={{ flex: 1, padding: 15 }}>
