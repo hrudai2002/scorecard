@@ -43,7 +43,8 @@ export default function Matches() {
 
     const onSave = async () => {
         await moveMatchToLive({ matchId: dialogData._id, team: serveFirst });
-        // navigate('Score', { _id: dialogData._id, matchNo: dialogData.matchNo })
+        setShowDialog(false);
+        navigate('Score', { _id: dialogData._id, matchNo: dialogData.matchNo })
     }
 
     const onMatchClick = async (item) => {
