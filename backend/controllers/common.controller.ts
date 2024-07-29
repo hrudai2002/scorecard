@@ -2,7 +2,6 @@ import { MatchDetails } from "../models/match-details.model";
 import { MATCH_STATUS, SPORT, Team as TeamEnum } from "../enum";
 import { Schema, Types, Mongoose } from "mongoose";
 import { Team } from "../models/team.model";
-import { Tournament } from "../models/tournament.model";
 
 
 /** 
