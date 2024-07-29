@@ -2,6 +2,7 @@ import { MatchDetails } from "../models/match-details.model";
 import { MATCH_STATUS, SPORT, Team as TeamEnum } from "../enum";
 import { Schema, Types, Mongoose } from "mongoose";
 import { Team } from "../models/team.model";
+import { Tournament } from "../models/tournament.model";
 
 
 /** 
@@ -294,6 +295,20 @@ export const updateScore = async (req, res) => {
         await matchDetails.save();
 
         const result = await MatchDetails.findOne({ _id: matchDetails._id }).populate('teamA teamB').lean();
+
+        if(matchDetails?.tournament && matchDetails.status == MATCH_STATUS.COMPLETED) {
+            // move next match from not started to ready 
+            const nextMatch = await MatchDetails.findOne({ 
+                tournament: matchDetails.tournament, 
+                status: MATCH_STATUS.NOT_STARTED
+            }).sort({ matchNo: 1 }); 
+
+            if(nextMatch) {
+                nextMatch.status = MATCH_STATUS.READY;
+                await nextMatch.save();
+            }
+
+        }
 
         return res.json({ success: true, data: result });
 

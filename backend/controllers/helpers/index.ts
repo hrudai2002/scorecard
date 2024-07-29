@@ -52,7 +52,7 @@ export const roundRobinSchedule = async (
     const result = await MatchDetails.bulkWrite(matchesBulkWrite); 
     const createdIds = Object.values(result.insertedIds); 
 
-    const firstMatch = await MatchDetails.findOne({ _id: { $in: createdIds } }).sort({ date: 1 }); 
+    const firstMatch = await MatchDetails.findOne({ _id: { $in: createdIds } }).sort({ matchNo: 1 }); 
     firstMatch.status = MATCH_STATUS.READY;
     await firstMatch.save();
 

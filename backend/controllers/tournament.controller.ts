@@ -35,7 +35,7 @@ export const getTournamentMatches = async (req, res) => {
             throw new Error('Invalid Request!');
         }
         user = new Types.ObjectId(user); 
-        const matches = await MatchDetails.find({ tournament: id }).populate('teamA teamB').sort({ matchNo: 1 }).lean();
+        const matches = await MatchDetails.find({ tournament: id }).populate('teamA teamB winner').sort({ matchNo: 1 }).lean();
         const result = matches.map((doc: any) => {
             if(doc.status == MATCH_STATUS.LIVE) {
                 return {
@@ -172,10 +172,13 @@ export const moveMatchToLive = async (req, res) => {
         if(!matchId || !team) {
             throw new Error('Invalid Request!');
         }
-        const match = await MatchDetails.findOne({ _id: matchId }).lean();
+        team = new Types.ObjectId(team);
+        const match: any = await MatchDetails.findOne({ _id: matchId }).populate('teamA teamB').lean();
+        const summary = `Serve holds by ${match.teamA._id == team ? match.teamA.name : match.teamB.name} Serve from right side of the court, ( ${match.teamA.name} - 0, ${match.teamB.name} - 0 )`
         await MatchDetails.updateOne({ _id: matchId }, {
             $set: {
-                status: MATCH_STATUS.LIVE
+                status: MATCH_STATUS.LIVE,
+                summary: [[{ text: summary, date: new Date() }]]
             }
         });
         await Team.updateOne({ _id: match.teamA }, {
@@ -194,6 +197,7 @@ export const moveMatchToLive = async (req, res) => {
                 }],
             }
         });
+        return res.json({ success: true, data: true });
     } catch (error) {
         return res.json({ success: false, error: error.message })
     }
