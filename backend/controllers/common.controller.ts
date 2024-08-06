@@ -3,10 +3,13 @@ import { MATCH_STATUS, SPORT, Team as TeamEnum } from "../enum";
 import { Schema, Types, Mongoose } from "mongoose";
 import { Team } from "../models/team.model";
 
+const twentyOnePointsMatchMaxScore = 30, 
+      elevenPointsMatchMaxScore = 16, 
+      matchGamePoint = 21;
 
 /** 
- * @Get badminton/live
- * @desc get all live matches
+ * @Get - badminton/live
+ * @desc - get all live matches
  */
 export const getLiveMatches = async (req, res) => {
     try {
@@ -36,13 +39,13 @@ export const getLiveMatches = async (req, res) => {
             totalSets: doc.totalSets,
             teamA: {
                 name: doc.teamA.name, 
-                score: doc.teamA.sets[doc.teamA.sets.length - 1].score
+                score: doc.sets[doc.sets.length - 1].teamAScore
             }, 
             teamB: {
                 name: doc.teamB.name, 
-                score: doc.teamB.sets[doc.teamB.sets.length - 1].score
+                score: doc.sets[doc.sets.length - 1].teamBScore
             },
-            currentSet: doc.teamA.sets.length,
+            currentSet: doc.sets.length,
             matchType: doc.gameType, 
             matchNo: doc.matchNo,
             _id: doc._id
@@ -55,8 +58,8 @@ export const getLiveMatches = async (req, res) => {
 }
 
 /** 
- * @Get badminton/finished
- * @desc get all finished matches
+ * @Get - badminton/finished
+ * @desc - get all finished matches
  */
 export const getFinishedMatches = async (req, res) => {
     try {
@@ -72,13 +75,15 @@ export const getFinishedMatches = async (req, res) => {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
                 sport,
-                user
+                user, 
+                tournament: { $exists: false }
             }).populate('teamA teamB winner').limit(5).lean();
         } else {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.COMPLETED,
                 sport,
-                user
+                user,
+                tournament: { $exists: false }
             }).populate('teamA teamB winner').sort({ _id: -1 })
         }
 
@@ -87,17 +92,17 @@ export const getFinishedMatches = async (req, res) => {
             totalSets: doc.totalSets,
             teamA: {
                 name: doc.teamA.name,
-                score: doc.teamA.sets[doc.teamA.sets.length - 1].score, 
-                winner: doc.teamA.sets[doc.teamA.sets.length - 1].winner
+                score: doc.sets[doc.sets.length - 1].teamAScore, 
+                winner: doc.sets[doc.sets.length - 1].winner.toString() == doc.teamA._id.toString()
             },
             teamB: {
                 name: doc.teamB.name,
-                score: doc.teamB.sets[doc.teamB.sets.length - 1].score,
-                winner: doc.teamB.sets[doc.teamB.sets.length - 1].winner
+                score: doc.sets[doc.sets.length - 1].teamBScore,
+                winner: doc.sets[doc.sets.length - 1].winner.toString() == doc.teamB._id.toString()
             },
             matchNo: doc.matchNo,
             winner: doc?.winner?.name,
-            currentSet: doc.teamA.sets.length,
+            currentSet: doc.sets.length,
             matchType: doc.gameType,
             _id: doc._id
         })); 
@@ -108,7 +113,10 @@ export const getFinishedMatches = async (req, res) => {
     }
 }
 
-// @get badminton/:id
+/**
+ * @Get - badminton/:id 
+ * @desc - get particular badminton match details
+ */
 export const getMatchDetails = async (req, res) => {
     try {
         let { matchId } = req.params; 
@@ -124,7 +132,10 @@ export const getMatchDetails = async (req, res) => {
     }
 }
 
-// @get badminton/teams/:id 
+/**
+ * @Get - badminton/teams/:id 
+ * @desc - get team details
+ */
 export const getMatchTeamDetails = async (req, res) => {
     try {
         let { matchId } = req.params; 
@@ -143,8 +154,10 @@ export const getMatchTeamDetails = async (req, res) => {
     }
 }
 
-
-// @get badminton/summary
+/**
+ * @Get - badminton/summary
+ * @desc - get match summary
+ */
 export const getMatchSummary = async (req, res) => {
     try {
         let { matchId } = req.params;
@@ -161,34 +174,24 @@ export const getMatchSummary = async (req, res) => {
     }
 }
 
-// @post badminton/create
+/**
+ * @Post - badminton/create 
+ * @desc - creates a match
+ */
 export const createMatch = async (req, res) => {
     try {
         const { gameType, sportType, sets, gamePoints, serveFirst, teamA, teamB, user } = req.body;
 
-        if (!gameType || !sportType || !sets || !gamePoints || !serveFirst  || !teamA || !teamB || !teamA?.name || !teamA?.playerOne || (gameType == "Doubles" && !teamA?.playerTwo) || !teamB || !teamB?.name || !teamB?.playerOne || (gameType == "Doubles" && !teamB?.playerTwo) ) {
-            throw new Error("Invalid Request!");
-        }
+        if (!gameType || !sportType || !sets || !gamePoints || !serveFirst  || !teamA || !teamB || !teamA?.name || !teamA?.playerOne || 
+            (gameType == "Doubles" && !teamA?.playerTwo) || !teamB || !teamB?.name || !teamB?.playerOne || (gameType == "Doubles" && !teamB?.playerTwo) 
+        ) { throw new Error("Invalid Request!") }
 
         if(teamA.name == teamB.name) {
             throw new Error("Team Name should be unique");
         }
  
-        const TeamA = await Team.create({
-            ...teamA, 
-            sets: [{
-                score: 0, 
-                serve: serveFirst == TeamEnum.TEAM_A ? true : false
-            }], 
-        });
-
-        const TeamB = await Team.create({
-            ...teamB, 
-            sets: [{
-                score: 0, 
-                serve: serveFirst == TeamEnum.TEAM_A ? false : true
-            }]
-        })
+        const TeamA = await Team.create(teamA);
+        const TeamB = await Team.create(teamB);
         
         const name = serveFirst == TeamEnum.TEAM_A ? TeamA.name : TeamB.name;
         const summary = `Serve holds by ${name}, Serve from right side of the court, ( ${TeamA.name} - 0, ${TeamB.name} - 0 )`
@@ -205,6 +208,11 @@ export const createMatch = async (req, res) => {
             totalSets: sets, 
             completedSets: 0, 
             gamePoint: gamePoints,
+            sets: [{
+                teamAScore: 0,
+                teamBScore: 0, 
+                serve: serveFirst == TeamEnum.TEAM_A ? TeamA._id : TeamB._id
+            }], 
             summary: [[{ text: summary, date: new Date() }]], 
             serveFirst: serveFirst == TeamEnum.TEAM_A ? TeamA._id : TeamB._id,
             teamA: TeamA._id, 
@@ -216,11 +224,14 @@ export const createMatch = async (req, res) => {
     }
 }
 
-// @put badminton/update/score
+/**
+ * @Put - badminton/update/score
+ * @desc - updates score
+ */
 export const updateScore = async (req, res) => {
     try {
         let { matchId, teamAScore, teamBScore, whoScored } = req.body;
-        if(!matchId || teamAScore == undefined || !teamBScore == undefined || whoScored == undefined) {
+        if(!matchId || teamAScore == undefined || teamBScore == undefined || whoScored == undefined) {
             throw new Error('Invalid Request!');
         }
         matchId = new Types.ObjectId(matchId); 
@@ -233,16 +244,13 @@ export const updateScore = async (req, res) => {
         const teamA = await Team.findOne({ _id: matchDetails.teamA }); 
         const teamB = await Team.findOne({ _id: matchDetails.teamB }); 
         const gamePoint = matchDetails.gamePoint;
-        const maximumScore = gamePoint == 21 ? 30 : 16;
+        const maximumScore = gamePoint == matchGamePoint ? twentyOnePointsMatchMaxScore : elevenPointsMatchMaxScore;
 
-        teamA.sets[matchDetails.completedSets].score = teamAScore; 
-        teamB.sets[matchDetails.completedSets].score = teamBScore; 
+        matchDetails.sets[matchDetails.completedSets].teamAScore = teamAScore;
+        matchDetails.sets[matchDetails.completedSets].teamBScore = teamBScore;
         
         if(whoScored) {
-            
-            teamA.sets[matchDetails.completedSets].serve = (whoScored == TeamEnum.TEAM_A) ? true : false; 
-            teamB.sets[matchDetails.completedSets].serve = (whoScored == TeamEnum.TEAM_A) ? false : true;
-
+            matchDetails.sets[matchDetails.completedSets].serve = (whoScored == TeamEnum.TEAM_A) ? matchDetails.teamA : matchDetails.teamB; 
             if (
                 (teamAScore == maximumScore || teamBScore == maximumScore) || 
                 ((teamAScore >= gamePoint || teamBScore >= gamePoint) && Math.abs(teamAScore - teamBScore) > 1) 
@@ -250,26 +258,24 @@ export const updateScore = async (req, res) => {
                 // set completed
                 const winningTeam = teamAScore > teamBScore ? teamA.name : teamB.name;
                 if (matchDetails.completedSets < matchDetails.totalSets - 1) {
-                    teamA.sets.push({ score: 0, serve: false });
-                    teamB.sets.push({ score: 0, serve: false });
+                    matchDetails.sets.push({ teamAScore: 0, teamBScore: 0 });
                     matchDetails.summary.push([{ text: `Serve holds by ${winningTeam}, Serve from right side of the court, ( ${teamA.name} - 0, ${teamB.name} - 0 )`, date: new Date() }])
                 }
                 matchDetails.summary[matchDetails.completedSets].push({ text: `Set-${matchDetails.completedSets + 1} won by ${winningTeam} 🎉`, date: new Date() });
-                teamA.sets[matchDetails.completedSets].winner = teamAScore > teamBScore ? true : false;
-                teamB.sets[matchDetails.completedSets].winner = teamBScore > teamAScore ? true : false;
+                matchDetails.sets[matchDetails.completedSets].winner = teamAScore > teamBScore ? matchDetails.teamA: matchDetails.teamB;
                 matchDetails.completedSets += 1;
             } 
     
             else {
                 let summaryText; 
-                if (teamA.sets[matchDetails.completedSets].serve) {
-                    if (teamA.sets[matchDetails.completedSets].score % 2) {
+                if (matchDetails.sets[matchDetails.completedSets].serve.toString() == matchDetails.teamA.toString()) {
+                    if (matchDetails.sets[matchDetails.completedSets].teamAScore % 2) {
                         summaryText = `Set-${matchDetails.completedSets + 1}, ${teamA.name} scores a point, Serve holds by ${teamA.name}, Serve from left side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
                     } else {
                         summaryText = `Set-${matchDetails.completedSets + 1}, ${teamA.name} scores a point, Serve holds by ${teamA.name}, Serve from right side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
                     }
                 } else {
-                    if (teamB.sets[matchDetails.completedSets].score % 2) {
+                    if (matchDetails.sets[matchDetails.completedSets].teamBScore % 2) {
                         summaryText = `Set-${matchDetails.completedSets + 1}, ${teamB.name} scores a point Serve holds by ${teamB.name}, Serve from left side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
                     } else {
                         summaryText = `Set-${matchDetails.completedSets + 1}, ${teamB.name} scores a point, Serve holds by ${teamB.name}, Serve from right side of the court, ( ${teamA.name} - ${teamAScore}, ${teamB.name} - ${teamBScore} )`;
@@ -282,8 +288,8 @@ export const updateScore = async (req, res) => {
             }
     
             if(matchDetails.completedSets == matchDetails.totalSets) {
-                const teamASetWinsCount = teamA.sets.reduce((acc, curr) => acc + (curr.winner ? 1 : 0), 0);
-                const teamBSetWinsCount = teamB.sets.reduce((acc, curr) => acc + (curr.winner ? 1 : 0), 0);
+                const teamASetWinsCount = matchDetails.sets.reduce((acc, curr) => acc + (curr.winner.toString() == matchDetails.teamA.toString() ? 1 : 0), 0);
+                const teamBSetWinsCount = matchDetails.sets.reduce((acc, curr) => acc + (curr.winner.toString() == matchDetails.teamB.toString() ? 1 : 0), 0);
                 matchDetails.status = MATCH_STATUS.COMPLETED;
                 matchDetails.winner = teamASetWinsCount > teamBSetWinsCount ? matchDetails.teamA : matchDetails.teamB;
             }

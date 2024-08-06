@@ -15,6 +15,8 @@ import { BadmintonMatchType, MatchStatus, Sport, Tabs } from "../../constants/en
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { SearchBar } from "../../components/search-bar";
 import { getAllTournaments } from "../../services/tournament.service";
+import { Header } from "../../components/header";
+import { StatusBar } from "react-native";
 
 export function HomePage() {
     const { width } = useDimensions();
@@ -25,7 +27,6 @@ export function HomePage() {
     const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const [tab, setTab] = useState<Tabs>(Tabs.Home);
     const { navigate }: NavigationProp<any> = useNavigation();
-    const route: RouteProp<any> = useRoute();
     const { authData } = useAuth();
     
     const fetchLiveMatchesData = async () => {
@@ -170,7 +171,7 @@ export function HomePage() {
                 </View>
                 {
                     tournamentsData?.length ? (
-                        <View style={{ padding: 10 }}>
+                        <View style={{ padding: 10, flexDirection: 'column', gap: 10 }}>
                             { tournamentsData?.map((doc, index) => (
                                 <TouchableOpacity key={index} onPress={() => navigate('Tournament-Matches', { tournament: doc._id })}>
                                     <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary }}>
@@ -190,28 +191,31 @@ export function HomePage() {
     }
 
     return (
-        <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1, backgroundColor: ProjectColors.Grey}}>
-            <View style={styles.profileHeader}>
-                <View style={styles.profileText}>
-                    <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary, textTransform: 'capitalize'}}>Welcome, {authData.name}</Text> 
-                    <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
+        <>
+           <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1 }}>
+                <StatusBar translucent={false} backgroundColor={ProjectColors.Primary} />
+                <View style={styles.profileHeader}>
+                    <View style={styles.profileText}>
+                        <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary, textTransform: 'capitalize'}}>Welcome, {authData.name}</Text> 
+                        <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => navigate('Profile')}>
+                        <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => navigate('Profile')}>
-                    <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
-                </TouchableOpacity>
-            </View>
-            { renderTabContent() }
-            <View style={styles.footer}>
-                <View style={styles.tab}>
-                    <FontAwesome onPress={() => setTab(Tabs.Home)} name="home" size={30} color={tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
-                    <Text style={{ color: ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
-                </View>
-                <View style={styles.tab}>
-                    <MaterialIcons onPress={() => setTab(Tabs.Tournament)} name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} />
-                    <Text style={{ color: ProjectColors.LightBlack }}>Tournament</Text>
-                </View>
-            </View> 
-        </SafeAreaView>
+                { renderTabContent() }
+                <View style={styles.footer}>
+                    <View style={styles.tab}>
+                        <FontAwesome onPress={() => setTab(Tabs.Home)} name="home" size={30} color={tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
+                        <Text style={{ color: ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
+                    </View>
+                    <View style={styles.tab}>
+                        <MaterialIcons onPress={() => setTab(Tabs.Tournament)} name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} />
+                        <Text style={{ color: ProjectColors.LightBlack }}>Tournament</Text>
+                    </View>
+                </View> 
+            </SafeAreaView>
+        </>
     )
 }
 

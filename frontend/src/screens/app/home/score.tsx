@@ -29,12 +29,12 @@ export function ScoreScreen() {
 
     const onSetChange = () => {
             const data = {...matchDetails};
-            data.currentSet = data.teamA.sets.length;
+            data.currentSet = data.sets.length;
             data['winner'] = data?.winner?.name;
-            const enableEdit = data.teamA?.sets[set]?.winner || data.teamB?.sets[set]?.winner;
+            const enableEdit = data.sets[set]?.winner;
             data['enableEdit'] = !enableEdit;
-            data.teamA = { name: data.teamA.name, score: data.teamA.sets[set]?.score, winner: data.teamA?.sets[set]?.winner },
-            data.teamB = { name: data.teamB.name, score: data.teamB.sets[set]?.score, winner: data.teamB?.sets[set]?.winner  }
+            data.teamA = { _id: data.teamA._id, name: data.teamA.name, score: data.sets[set]?.teamAScore, winner: data.sets[set]?.winner?.toString() == data.teamA?._id?.toString() },
+            data.teamB = { _id: data.teamB._id,  name: data.teamB.name, score: data.sets[set]?.teamBScore, winner: data.sets[set]?.winner?.toString() == data.teamB?._id?.toString() },
             data.matchType = data.gameType;
             setMatchData(data);
     }
@@ -45,28 +45,13 @@ export function ScoreScreen() {
         const teamData = await getMatchTeamDetails(matchId);
         const summary = await getMatchSummaryService(matchId);
         setLoading(false);
-
-        // if (completedSets && data.completedSets == completedSets.length) {
-        //     setLoading(true);
-        //     setText(`Set - ${data.completedSets} Completed`);
-        // } 
-        const res = data.teamA.sets.map((_, index) => (
+        const res = data.sets.map((_, index) => (
             { label: `Set-${index + 1}`, value: index }
         ));
-
-
         setCompletedSets(res);
         setMatchDetails(data);
         setTeams(teamData);
         setSummaryDetails(summary);
-
-        // console.log(loading);
-
-        // if(loading) {
-        //     setTimeout(() => {
-        //         setLoading(false);
-        //     }, 2000);
-        // }
     }
 
     const getMatchSummary = async (matchId) => {
@@ -89,7 +74,7 @@ export function ScoreScreen() {
             return;
         }
 
-        if('winner' in res.teamA.sets[set]) {
+        if('winner' in res.sets[set]) {
             setValue(set + 1);
             setLoading(true);
             setText(`Set - ${res.completedSets} completed..`);
@@ -167,7 +152,7 @@ export function ScoreScreen() {
        <View style={{ flex: 1 }}>
            <LoadingComponent loading={loading} text={text} />
            <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `${matchData.sport == Sport.BADMINTON ? 'Badminton' : 'Table Tennis'} ${matchData.matchType}` : ''} share={matchDetails?.status == MatchStatus.LIVE} /> 
-           <View style={{ padding: 10 }}>
+           <View style={{ padding: 15, backgroundColor: ProjectColors.Primary }}>
                 {
                     matchData && 
                     <MatchCard data={matchData} set={set + 1} status={matchData?.status} matchNo={Number((router.params.matchNo < 10 ? '0' : '') + router.params?.matchNo)} showBtn={true} updateScore={updateScore} />

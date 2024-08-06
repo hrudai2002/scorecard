@@ -44,13 +44,13 @@ export const getTournamentMatches = async (req, res) => {
                     totalSets: doc.totalSets,
                     teamA: {
                         name: doc.teamA.name,
-                        score: doc.teamA.sets[doc.teamA.sets.length - 1].score
+                        score: doc.sets[doc.sets.length - 1].teamAScore
                     },
                     teamB: {
                         name: doc.teamB.name,
-                        score: doc.teamB.sets[doc.teamB.sets.length - 1].score
+                        score: doc.sets[doc.sets.length - 1].teamBScore
                     },
-                    currentSet: doc.teamA.sets.length,
+                    currentSet: doc.sets.length,
                     matchType: doc.gameType,
                     matchNo: doc.matchNo,
                     _id: doc._id
@@ -62,17 +62,17 @@ export const getTournamentMatches = async (req, res) => {
                     totalSets: doc.totalSets,
                     teamA: {
                         name: doc.teamA.name,
-                        score: doc.teamA.sets[doc.teamA.sets.length - 1].score,
-                        winner: doc.teamA.sets[doc.teamA.sets.length - 1].winner
+                        score: doc.sets[doc.sets.length - 1].teamAScore,
+                        winner: doc.sets[doc.sets.length - 1].winner.toString() == doc.teamA._id.toString()
                     },
                     teamB: {
                         name: doc.teamB.name,
-                        score: doc.teamB.sets[doc.teamB.sets.length - 1].score,
-                        winner: doc.teamB.sets[doc.teamB.sets.length - 1].winner
+                        score: doc.sets[doc.sets.length - 1].teamBScore,
+                        winner: doc.sets[doc.sets.length - 1].winner.toString() == doc.teamB._id.toString()
                     },
                     matchNo: doc.matchNo,
                     winner: doc?.winner?.name,
-                    currentSet: doc.teamA.sets.length,
+                    currentSet: doc.sets.length,
                     matchType: doc.gameType,
                     _id: doc._id
                 }
@@ -178,22 +178,11 @@ export const moveMatchToLive = async (req, res) => {
         await MatchDetails.updateOne({ _id: matchId }, {
             $set: {
                 status: MATCH_STATUS.LIVE,
-                summary: [[{ text: summary, date: new Date() }]]
-            }
-        });
-        await Team.updateOne({ _id: match.teamA }, {
-            $set: {
+                summary: [[{ text: summary, date: new Date() }]],
                 sets: [{
-                    score: 0,
-                    serve: team == match.teamA ? true : false
-                }],
-            }
-        });
-        await Team.updateOne({ _id: match.teamB }, {
-            $set: {
-                sets: [{
-                    score: 0,
-                    serve: team == match.teamB ? true : false
+                    teamAScore: 0,
+                    teamBScore: 0,
+                    serve: team
                 }],
             }
         });

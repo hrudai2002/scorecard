@@ -3,6 +3,18 @@ import { GAMETYPE, MATCH_STATUS, SPORT } from "../enum";
 import { model, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
 
+export interface Sets {
+    teamAScore: number,
+    teamBScore: number,
+    serve?: Schema.Types.ObjectId,
+    winner?: Schema.Types.ObjectId
+}
+
+export interface Summary {
+    text: string, 
+    date: Date
+}
+
 export interface IMatchDetails {
     status: MATCH_STATUS.READY | MATCH_STATUS.LIVE | MATCH_STATUS.COMPLETED | MATCH_STATUS.NOT_STARTED, 
     sport: SPORT.BADMINTON | SPORT.TABLE_TENNIS,
@@ -13,7 +25,8 @@ export interface IMatchDetails {
     totalSets: number, 
     completedSets: number, 
     gamePoint: number,
-    summary: [[{ text: string, date: Date }]], 
+    sets: Sets[],
+    summary: [Summary[]], 
     serveFirst: Schema.Types.ObjectId,
     winner: Schema.Types.ObjectId,
     teamA: Schema.Types.ObjectId, 
@@ -61,6 +74,24 @@ const matchDetailsSchema = new Schema<IMatchDetails>({
         type: Schema.Types.Number, 
         required: true
     },
+    sets: [new Schema({
+        teamAScore: {
+            type: Schema.Types.Number,
+            default: 0
+        },
+        teamBScore: {
+            type: Schema.Types.Number, 
+            default: 0
+        },
+        serve: {
+            type: Schema.Types.ObjectId,
+            ref: 'Team'
+        },
+        winner: {
+            type: Schema.Types.ObjectId,
+            ref: 'Team'
+        }
+    })],
     summary: [[ new Schema({
        text: {
          type: Schema.Types.String, 

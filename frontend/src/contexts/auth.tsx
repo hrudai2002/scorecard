@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { environments } from "../../environments/environments";
 import axios from "axios";
-import Toast from "react-native-toast-message";
+import { toast } from "../utils/toast";
+import { loginUser, registerUser } from "../services/auth.service";
 
 type AuthData = {
     token: string,
@@ -45,33 +46,28 @@ function AuthProvider({ children }) {
     }
 
     const register = async (authData) => {
-        axios.post(environments.apiUrl + '/user/register', {
-            name: authData.name, 
-            email: authData.email, 
+        const res = await registerUser({
+            name: authData.name,
+            email: authData.email,
             password: authData.password
-        }).then((res: any) => {
-            if(res.data.success) {
-                setAuthData(res.data.data); 
-                AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
-                Toast.show({ type: 'success', text1: 'Welcome to ScoreCard!', swipeable: true })
-            } else {
-                Toast.show({ type: 'error', text1: res.data.error });
-                console.log(res.data);
-            }
-        }).catch(err => console.log(err));
+        });
+        if(res) {
+            setAuthData(res);
+            AsyncStorage.setItem('@AuthData', JSON.stringify(res));
+            toast.success('Welcome to ScoreCard!')
+        }
     }
 
     const signIn = async (authData) => {
-        axios.put(environments.apiUrl + '/user/login', {
-            email: authData.email, 
+        const res = await loginUser({
+            email: authData.email,
             password: authData.password
-        }).then((res: any) => {
-            if(res.data.success) {
-                setAuthData(res.data.data);
-                AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
-                Toast.show({ type: 'success', text1: 'Logged In Successfully', swipeable: true })
-            }
-        }).catch(err => console.log(err));
+        });
+        if(res) {
+            setAuthData(res.data.data);
+            AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
+            toast.success('Logged In Successfully');
+        }
     };
 
     const signOut = async () => {

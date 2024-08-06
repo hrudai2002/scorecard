@@ -10,15 +10,22 @@ interface IMatchDetailsProps {
     data: {
         date: Date, 
         teamA: {
+            _id: string,
             name: string, 
             score: number, 
             winner?: boolean
         }, 
         teamB: {
+            _id: string,
             name: string, 
             score: number,
             winner?: boolean
         },
+        sets: {
+            teamAScore: number, 
+            teamBScore: number, 
+            serve?: string
+        }[]
         winner?: string,
         enableEdit?: boolean,
         totalSets: number,
@@ -34,7 +41,7 @@ interface IMatchDetailsProps {
 }
 
 export function MatchCard(props: IMatchDetailsProps) {
-
+    // console.log(props.data.teamA._id,props?.data?.sets[1], props.set);
     if(props.status == MatchStatus.LIVE) {
         return (
             <View>
@@ -52,7 +59,7 @@ export function MatchCard(props: IMatchDetailsProps) {
                     <View style={styles.middleSection}>
                         <View style={{ flexDirection: 'column', gap: 5 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name}</Text>
+                                <Text fontWeight={400} style={{ fontSize: 16, color: ProjectColors.LightBlack }}>{props.data.teamA.name} {!props.data.teamA?.winner && !props.data.teamB?.winner  &&  '  🏸'}</Text>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                                     {props.showBtn && props.data?.enableEdit ? <Entypo name="minus" size={20} color={ProjectColors.LightBlack} onPress={() => props.updateScore({ matchId: props.data._id, teamAScore: props.data.teamA.score - 1, teamBScore: props.data.teamB.score, whoScored: '' })} /> : null}
                                     <Text fontWeight={700} style={{ fontSize: 20, color: props.data.teamA.score >= props.data.teamB.score ? ProjectColors.Primary : ProjectColors.LightBlack }}>{props.data.teamA?.winner && "🏆"} {props.data.teamA.score} </Text>

@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 })
 
 // routers
-app.use('/user', userRouter);
+app.use('/auth', userRouter);
 app.use('/common', commonRouter); 
 app.use('/tournament', tournamentRouter);
 

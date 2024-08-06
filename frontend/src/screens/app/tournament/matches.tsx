@@ -10,6 +10,7 @@ import { MatchCard } from "../../../components/match-card";
 import { MatchStatus } from "../../../constants/enum";
 import Dialog from "react-native-dialog"
 import { Dropdown } from "../../../components/dropdown";
+import { toast } from "../../../utils/toast";
 
 
 export default function Matches() {
@@ -30,11 +31,6 @@ export default function Matches() {
         fetchTournamentMatches(route?.params?.tournament);
     }, [route.params]);
 
-    // useEffect(() => {
-    //     if(dialogData) {
-    //         setShowDialog(true);
-    //     }
-    // }, [dialogData])
 
     const closeDialog = () => {
         setServeFirst(null);
@@ -42,6 +38,10 @@ export default function Matches() {
     }
 
     const onSave = async () => {
+        if(!serveFirst) {
+            toast.error('serve first cannot empty!');
+            return;
+        }
         await moveMatchToLive({ matchId: dialogData._id, team: serveFirst });
         setShowDialog(false);
         navigate('Score', { _id: dialogData._id, matchNo: dialogData.matchNo })
@@ -69,7 +69,7 @@ export default function Matches() {
                     <Dialog.Title>Serve First</Dialog.Title>
                     <View style={{ padding: 15 }}>
                         <Dropdown
-                            width={210}
+                            width={240}
                             data={[
                                 { label: dialogData?.teamA?.name, value: dialogData?.teamA?._id },
                                 { label: dialogData?.teamB?.name, value: dialogData?.teamB?._id }

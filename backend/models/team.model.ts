@@ -1,17 +1,9 @@
 import { Model, Schema, model } from "mongoose"
-
-export interface Sets {
-    score: number, 
-    serve: boolean, 
-    winner?: boolean
-}
-
 export interface ITeam {
     name: string, 
     playerOne: string, 
     playerTwo: string, 
     tournament?: Schema.Types.ObjectId,
-    sets: Sets[],
 }
 
 const teamSchema = new Schema<ITeam>({
@@ -29,20 +21,7 @@ const teamSchema = new Schema<ITeam>({
     tournament: {
         type: Schema.Types.ObjectId, 
         ref: 'Tournament'
-    },
-    sets: [new Schema({
-        score: {
-            type: Schema.Types.Number,
-            default: 0
-        }, 
-        serve: {
-            type: Schema.Types.Boolean,
-            default: false
-        },
-        winner: {
-            type: Schema.Types.Boolean
-        }
-    })]
+    }
 })
 
 export const Team: Model<ITeam> = model<ITeam>('Team', teamSchema);

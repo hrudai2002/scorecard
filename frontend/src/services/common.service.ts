@@ -69,7 +69,6 @@ export const getMatchSummary = async (params) => {
         }
         return res.data.data;
     } catch (error) {
-        console.log(error);
         toast.error('Something went wrong!');
     }
 }

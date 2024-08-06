@@ -150,6 +150,10 @@ export function Tournament() {
         }
     }
 
+    const removeTeam = (teamId: number) => {
+        setTeams( teams.filter((doc, index) => index != teamId) );
+    }
+
     if(selectedTeam) {
         return (
             <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
@@ -260,7 +264,7 @@ export function Tournament() {
                                         <TouchableOpacity key={index} onPress={() => teamSelect(item, index)}>
                                             <View style={styles.teamInputField}>
                                                 <Text>{item.name ? item.name : 'Team'}</Text>
-                                                <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
+                                                <MaterialIcons name="highlight-remove" size={20} onPress={() => removeTeam(index)} color={ProjectColors.LightBlack} />
                                             </View>
                                         </TouchableOpacity>
                                     ))
