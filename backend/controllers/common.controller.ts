@@ -1,7 +1,8 @@
 import { MatchDetails } from "../models/match-details.model";
-import { MATCH_STATUS, SPORT, Team as TeamEnum } from "../enum";
-import { Schema, Types, Mongoose } from "mongoose";
+import { MATCH_STATUS, SPORT, Team as TeamEnum, TOURNAMENT_STATUS } from "../enum";
+import { Types } from "mongoose";
 import { Team } from "../models/team.model";
+import { Tournament } from "../models/tournament.model";
 
 const twentyOnePointsMatchMaxScore = 30, 
       elevenPointsMatchMaxScore = 16, 
@@ -311,6 +312,10 @@ export const updateScore = async (req, res) => {
             if(nextMatch) {
                 nextMatch.status = MATCH_STATUS.READY;
                 await nextMatch.save();
+            } else {
+                const tournament = await Tournament.findOne({ _id: matchDetails.tournament });
+                tournament.status = TOURNAMENT_STATUS.COMPLETED;
+                await tournament.save();
             }
 
         }

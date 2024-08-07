@@ -174,7 +174,7 @@ export const moveMatchToLive = async (req, res) => {
         }
         team = new Types.ObjectId(team);
         const match: any = await MatchDetails.findOne({ _id: matchId }).populate('teamA teamB').lean();
-        const summary = `Serve holds by ${match.teamA._id == team ? match.teamA.name : match.teamB.name} Serve from right side of the court, ( ${match.teamA.name} - 0, ${match.teamB.name} - 0 )`
+        const summary = `Serve holds by ${match.teamA._id.toString() == team.toString() ? match.teamA.name : match.teamB.name} Serve from right side of the court, ( ${match.teamA.name} - 0, ${match.teamB.name} - 0 )`
         await MatchDetails.updateOne({ _id: matchId }, {
             $set: {
                 status: MATCH_STATUS.LIVE,
