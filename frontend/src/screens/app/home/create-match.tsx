@@ -205,7 +205,7 @@ export function CreateMatch() {
                 </View>
                 <Button 
                  onPress={startGame}
-                 text={'Start Game'} 
+                 text={'Create Match'} 
                  color={ProjectColors.Secondary} 
                  backgroundColor={ProjectColors.Primary} 
                  fontSize={24}

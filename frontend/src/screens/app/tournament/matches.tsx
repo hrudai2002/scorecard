@@ -1,8 +1,8 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "../../../components/text";
 import { Header } from "../../../components/header";
-import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { getTournamentMatches, moveMatchToLive } from "../../../services/tournament.service";
 import { useAuth } from "../../../contexts/auth";
 import { FlatList } from "react-native-gesture-handler";
@@ -31,6 +31,12 @@ export default function Matches() {
         fetchTournamentMatches(route?.params?.tournament);
     }, [route.params]);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchTournamentMatches(route?.params?.tournament);
+        }, [])
+    )
+
 
     const closeDialog = () => {
         setServeFirst(null);
@@ -53,6 +59,7 @@ export default function Matches() {
         }
         else if(item.status == MatchStatus.READY) {
             setDialogData(item);
+            setServeFirst(null);
             setShowDialog(true);
             return;
         }

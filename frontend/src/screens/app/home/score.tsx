@@ -28,15 +28,15 @@ export function ScoreScreen() {
     const navigation: NavigationProp<any> = useNavigation();
 
     const onSetChange = () => {
-            const data = {...matchDetails};
-            data.currentSet = data.sets.length;
-            data['winner'] = data?.winner?.name;
-            const enableEdit = data.sets[set]?.winner;
-            data['enableEdit'] = !enableEdit;
-            data.teamA = { _id: data.teamA._id, name: data.teamA.name, score: data.sets[set]?.teamAScore, winner: data.sets[set]?.winner?.toString() == data.teamA?._id?.toString() },
-            data.teamB = { _id: data.teamB._id,  name: data.teamB.name, score: data.sets[set]?.teamBScore, winner: data.sets[set]?.winner?.toString() == data.teamB?._id?.toString() },
-            data.matchType = data.gameType;
-            setMatchData(data);
+        const data = {...matchDetails};
+        data.currentSet = data.sets.length;
+        data['winner'] = data?.winner?.name;
+        const enableEdit = data.sets[set]?.winner;
+        data['enableEdit'] = !enableEdit;
+        data.teamA = { _id: data.teamA._id, name: data.teamA.name, score: data.sets[set]?.teamAScore, winner: data.sets[set]?.winner?.toString() == data.teamA?._id?.toString() },
+        data.teamB = { _id: data.teamB._id,  name: data.teamB.name, score: data.sets[set]?.teamBScore, winner: data.sets[set]?.winner?.toString() == data.teamB?._id?.toString() },
+        data.matchType = data.gameType;
+        setMatchData(data);
     }
 
     const fetchData = async (matchId) => {

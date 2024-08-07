@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { Text } from "../../../components/text"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Header } from "../../../components/header";
 import { LoadingComponent } from "../../../components/loading";
 import { Button } from "../../../components/button";
@@ -37,6 +37,23 @@ export function Tournament() {
     }[]>([]);
     const { authData } = useAuth();
     const navigation: NavigationProp<any> = useNavigation();
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const scrollViewRef = useRef(null);
+
+    // useEffect(() => {
+    //     if(!selectedTeam) {
+    //         if(scrollViewRef.current) {
+    //             console.log('came here', scrollPosition);
+    //             scrollViewRef.current.scrollTo({ x: 0, y: scrollPosition, animated: false })
+    //         }
+    //     }
+    // }, [selectedTeam])
+
+    // useEffect(() => {
+    //     if (scrollViewRef.current) {
+    //         scrollViewRef.current.scrollTo({ x: 0, y: scrollPosition, animated: false })
+    //     }
+    // }, [scrollPosition])
 
     const addTeam = () => {
         setTeams(
@@ -154,6 +171,10 @@ export function Tournament() {
         setTeams( teams.filter((doc, index) => index != teamId) );
     }
 
+    const handleScroll = (event) => {
+        setScrollPosition(event.nativeEvent.contentOffset.y);
+    }
+
     if(selectedTeam) {
         return (
             <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
@@ -196,7 +217,12 @@ export function Tournament() {
             <View style={{ flex: 1 }}>
                 <Header title="New Tournament" />
                 <LoadingComponent loading={loading} />
-                <ScrollView style={styles.container}>
+                <ScrollView 
+                 style={styles.container}
+                //  ref={scrollViewRef}
+                //  onScroll={handleScroll} 
+                //  scrollEventThrottle={16}
+                >
                     <View style={styles.groupInputField}>
                         <View style={styles.inputField}>
                             <Text fontWeight={400}>Sport</Text>

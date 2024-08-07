@@ -91,7 +91,7 @@ const matchDetailsSchema = new Schema<IMatchDetails>({
             type: Schema.Types.ObjectId,
             ref: 'Team'
         }
-    })],
+    }, { _id: false })],
     summary: [[ new Schema({
        text: {
          type: Schema.Types.String, 
