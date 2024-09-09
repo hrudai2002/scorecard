@@ -19,6 +19,7 @@ export function ViewMatches() {
     const route: RouteProp<any>  = useRoute();
     const { authData } = useAuth();
     
+    // gets home screen data
     const fetchData = async (status: string, sportType: Sport) => {
         let data = [];
         if(status == MatchStatus.LIVE) {
@@ -29,7 +30,8 @@ export function ViewMatches() {
         setMatchesData(data);
         setOrgMatchesData(data);
     }
-    useEffect(() => {
+   
+    useEffect(() => { // called while clicking on back btn
         fetchData(route.params.status, route.params.sportType);
     }, []);
 
@@ -54,7 +56,7 @@ export function ViewMatches() {
 
     return (
         <View style={{ flex: 1 }}>
-            <Header title={`${route?.params?.status} Matches`} />
+            <Header title={`${route?.params?.status == MatchStatus.LIVE ? 'Live' : 'Finished' } Matches`} />
             <View style={styles.container}>
                 <SearchBar placeholder="Search Team Name" setSearchString={setSearchString} width={'75%'} />
                 <TouchableOpacity onPress={() => navigate("Create-Match", { sportType: route.params.sportType })}>
@@ -75,8 +77,8 @@ export function ViewMatches() {
                         )}
                     />
                 </View> :  (
-                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 30 }}>
-                    <Image style={styles.noData} source={require('../../../../assets/nothing-here.png')} />
+                <View style={styles.noData}>
+                    <Image style={styles.noDataImg} source={require('../../../../assets/nothing-here.png')} />
                     <Text>{route.params.status == MatchStatus.LIVE ? 'No Live Matches': 'No Finished Matches' } </Text>
                 </View>)
             }
@@ -107,6 +109,12 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     noData: {
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        padding: 30
+    },
+    noDataImg: {
         width: 200,
         height: 200,
     },

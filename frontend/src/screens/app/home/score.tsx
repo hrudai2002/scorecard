@@ -95,6 +95,8 @@ export function ScoreScreen() {
         }
     }, [matchDetails, summaryDetails, set])
 
+    const getMatchNo = (matchNo: number) => Number((matchNo < 10 ? '0' : '') + matchNo);
+
     const tabsData = () => {
         if(selectedTab == Tabs.SUMMARY) {
             return (<View style={{ flexDirection: 'column', gap: 10, marginBottom: 30 }}>
@@ -155,7 +157,13 @@ export function ScoreScreen() {
            <View style={{ padding: 15, backgroundColor: ProjectColors.Primary }}>
                 {
                     matchData && 
-                    <MatchCard data={matchData} set={set + 1} status={matchData?.status} matchNo={Number((router.params.matchNo < 10 ? '0' : '') + router.params?.matchNo)} showBtn={true} updateScore={updateScore} />
+                    <MatchCard 
+                    data={matchData} 
+                    set={set + 1} 
+                    status={matchData?.status} 
+                    matchNo={getMatchNo(router.params.matchNo)} 
+                    showBtn={true} 
+                    updateScore={updateScore} />
                 }
            </View>
            <View style={{ flex: 1, padding: 15 }}>
@@ -163,18 +171,18 @@ export function ScoreScreen() {
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                     <View style={{ flexDirection: 'row', gap: 15, paddingRight: 15 }}>
                         <TouchableOpacity onPress={() => setSelectedTab(Tabs.SUMMARY)}>
-                            <View style={[ selectedTab == Tabs.SUMMARY && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
-                                <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
+                            <View style={[ selectedTab == Tabs.SUMMARY && styles.tab_style, { padding: 8 } ]}>
+                                <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedTab(Tabs.TEAMS)}>
-                                <View style={[selectedTab == Tabs.TEAMS && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary }, { padding: 10 }]}>
-                                    <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.TEAMS ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
-                                </View>
+                            <View style={[selectedTab == Tabs.TEAMS && styles.tab_style, { padding: 8 } ]}>
+                                <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.TEAMS ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
+                            </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setSelectedTab(Tabs.RULES)}>
-                            <View style={[selectedTab == Tabs.RULES && { borderBottomWidth: 1.5, borderColor: ProjectColors.Primary}, { padding: 10 }]}>
-                                <Text fontWeight={400} style={{ fontSize: 16, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
+                            <View style={[selectedTab == Tabs.RULES && styles.tab_style, { padding: 8 } ]}>
+                                <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -205,29 +213,24 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         borderRadius: 10
     },
-
     cardDate: {
         alignSelf: "flex-end", 
         color: ProjectColors.LightBlack
     },
-
     tabs: {
         flexDirection: 'row', 
         justifyContent: 'space-between', 
         alignItems: 'center',
     },
-
     teams: {
         display: 'flex', 
         flexDirection: 'column', 
         gap: 10
     },
-
     row: {
         flexDirection: 'row', 
         justifyContent: 'space-evenly',
     },
-
     cell: {
         display: 'flex',
         flex: 1,
@@ -235,5 +238,9 @@ const styles = StyleSheet.create({
         padding: 5,
         borderColor: '#c4c4c4',
         textAlign: 'center'
-    }
+    },
+    tab_style: {
+        borderBottomWidth: 1.5, 
+        borderColor: ProjectColors.Primary,
+    },
 });

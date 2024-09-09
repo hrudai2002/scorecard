@@ -25,13 +25,15 @@ export const getLiveMatches = async (req, res) => {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.LIVE, 
                 sport,
-                user
+                user, 
+                tournament: {$exists: false}
             }).populate('teamA teamB').limit(5).lean();
         } else {
             matches = await MatchDetails.find({
                 status: MATCH_STATUS.LIVE,
                 sport,
-                user
+                user,
+                tournament: { $exists: false }
             }).populate('teamA teamB').sort({ _id: -1 }).lean();
         }
 

@@ -8,15 +8,15 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../components/match-card";
 import { sports } from "../../constants/match-data";
 import { useDimensions } from "../../hooks/useDimensions";
-import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getLiveMatches, getFinishedMatches } from "../../services/common.service";
 import { useAuth } from "../../contexts/auth";
-import { BadmintonMatchType, MatchStatus, Sport, Tabs } from "../../constants/enum";
+import { MatchStatus, Sport, Tabs } from "../../constants/enum";
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { SearchBar } from "../../components/search-bar";
 import { getAllTournaments } from "../../services/tournament.service";
-import { Header } from "../../components/header";
 import { StatusBar } from "react-native";
+import moment from "moment";
 
 export function HomePage() {
     const { width } = useDimensions();
@@ -30,6 +30,7 @@ export function HomePage() {
     const { authData } = useAuth();
     
     const fetchLiveMatchesData = async () => {
+        console.log('SportType Backend: ', sportType);
         let data = await getLiveMatches({ user: authData._id, limit: true, sport: sportType });
         setLiveMatchData(data);
     }
@@ -58,8 +59,9 @@ export function HomePage() {
         }
     }, [tab])
 
-    useFocusEffect(
+    useFocusEffect( // called on back btn clicked
         useCallback(() => {
+            setSportType(Sport.BADMINTON);
             if (tab == Tabs.Home) {
                 fetchLiveMatchesData();
                 fetchFinishedMatchesData();
@@ -68,8 +70,11 @@ export function HomePage() {
             }
         }, [])
     )
+
+    const formatString = (str: string) => str[0].toUpperCase() + str.slice(1).toLowerCase()
  
     const SportsIcon = (props) => {
+        console.log('SportType Props:', sportType);
         return (
             <TouchableOpacity onPress={() => {
                 setSportType(props.sport.sportType);
@@ -174,8 +179,13 @@ export function HomePage() {
                         <View style={{ padding: 10, flexDirection: 'column', gap: 10 }}>
                             { tournamentsData?.map((doc, index) => (
                                 <TouchableOpacity key={index} onPress={() => navigate('Tournament-Matches', { tournament: doc._id })}>
-                                    <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary }}>
+                                    <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary, borderRadius: 10, gap: 10 }}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <Text style={{ opacity: 0.5 }}>{moment(doc.date).format('DD MMM')}</Text>
+                                            <Text style={{ fontSize: 13, color: doc.status == 'COMPLETED' ? ProjectColors.Primary : ProjectColors.Red }}>{formatString(doc.status)}</Text>
+                                        </View>
                                         <Text style={{ color: ProjectColors.LightBlack }}>{ doc.name }</Text>
+                                        <View style={{  }}><Text style={{ fontSize: 12, opacity: 0.7 }}>{doc.sport + " " + formatString(doc.gameType)}</Text></View>
                                     </View>
                                 </TouchableOpacity>
                             ))}
