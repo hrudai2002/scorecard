@@ -20,44 +20,34 @@ import moment from "moment";
 
 export function HomePage() {
     const { width } = useDimensions();
-    const [liveMatchData, setLiveMatchData] = useState(null); 
-    const [finishedMatchesData, setFinishedMatchesData] = useState(null);
-    const [tournamentsData, setTournamentsData] = useState(null);
+    const [liveMatchData, setLiveMatchData] = useState([]); 
+    const [finishedMatchesData, setFinishedMatchesData] = useState([]);
+    const [tournamentsData, setTournamentsData] = useState([]);
+    const [searchedTournamentsData, setSearchedTournamentsData] = useState([]);
     const [searchString, setSearchString] = useState<string>(null);
     const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const [tab, setTab] = useState<Tabs>(Tabs.Home);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
-    
-    const fetchLiveMatchesData = async () => {
-        console.log('SportType Backend: ', sportType);
-        let data = await getLiveMatches({ user: authData._id, limit: true, sport: sportType });
-        setLiveMatchData(data);
-    }
 
-    const fetchFinishedMatchesData = async () => {
-        let data = await getFinishedMatches({ user: authData._id, limit: true, sport: sportType });
-        setFinishedMatchesData(data);
-    }
-
-    const fetchTournamentsData = async () => {
-        let data = await getAllTournaments({ user: authData._id }); 
-        setTournamentsData(data);
-    }
-
+    // fetches data on the home screen
     useEffect(() => {
         fetchLiveMatchesData();
         fetchFinishedMatchesData();
     }, [sportType]);
 
     useEffect(() => {
-        if(tab == Tabs.Home) {
+        if (tab == Tabs.Home) {
             fetchLiveMatchesData();
             fetchFinishedMatchesData();
         } else {
             fetchTournamentsData();
         }
     }, [tab])
+
+    useEffect(() => {
+        searchData();
+    }, [searchString])
 
     useFocusEffect( // called on back btn clicked
         useCallback(() => {
@@ -72,9 +62,36 @@ export function HomePage() {
     )
 
     const formatString = (str: string) => str[0].toUpperCase() + str.slice(1).toLowerCase()
- 
+    
+    const fetchLiveMatchesData = async () => {
+        let data = await getLiveMatches({ user: authData._id, limit: true, sport: sportType });
+        setLiveMatchData(data);
+    }
+
+    const fetchFinishedMatchesData = async () => {
+        let data = await getFinishedMatches({ user: authData._id, limit: true, sport: sportType });
+        setFinishedMatchesData(data);
+    }
+
+    const fetchTournamentsData = async () => {
+        let data = await getAllTournaments({ user: authData._id }); 
+        setTournamentsData(data);
+        setSearchedTournamentsData(data);
+    }
+
+    const searchData = () => {
+        if (!searchString?.length) {
+            setSearchedTournamentsData([...tournamentsData]);
+            return;
+        }
+        const result = tournamentsData.filter((doc) =>
+            doc.name.toLowerCase().includes(searchString.toLowerCase()) ||
+            doc.sport.toLowerCase().includes(searchString.toLowerCase()) || 
+            doc.gameType.toLowerCase().includes(searchString.toLowerCase()));
+        setSearchedTournamentsData([...result]);
+    }
+
     const SportsIcon = (props) => {
-        console.log('SportType Props:', sportType);
         return (
             <TouchableOpacity onPress={() => {
                 setSportType(props.sport.sportType);
@@ -102,8 +119,7 @@ export function HomePage() {
                 </View>
             )
         }
-        
-        if(data?.length == 1) {
+        if(data?.length == 1) { // for andriod 
             const [ item ] = data;
             return (
                 <TouchableOpacity style={{ width: width / 1.4, marginRight: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: 1 })}>
@@ -111,7 +127,6 @@ export function HomePage() {
                 </TouchableOpacity>
             )
         }
-
         return (
             <FlatList
                 data={data}
@@ -124,7 +139,6 @@ export function HomePage() {
                 showsHorizontalScrollIndicator={false}
             />
         )
-
     }
 
     const renderTabContent = () => {
@@ -137,10 +151,7 @@ export function HomePage() {
                             {sports.map((item, index) => <SportsIcon key={index} sport={item} />)}
                         </View>
                     </View>
-
-
                     <ScrollView style={styles.container}>
-
                         {/* Live Matches */}
                         <View style={styles.liveMatchContainer}>
                             <View style={styles.liveMatchesView}>
@@ -149,7 +160,6 @@ export function HomePage() {
                             </View>
                             {renderMatchesData(liveMatchData, MatchStatus.LIVE)}
                         </View>
-
                         {/* Finished Matches */}
                         <View style={styles.finishedMatchContainer}>
                             <View style={styles.finishedMatchsView}>
@@ -159,7 +169,6 @@ export function HomePage() {
                             {renderMatchesData(finishedMatchesData, MatchStatus.COMPLETED)}
                         </View>
                     </ScrollView>
-                     
                 </>
             )
         }
@@ -174,10 +183,9 @@ export function HomePage() {
                         </View>
                     </TouchableOpacity>
                 </View>
-                {
-                    tournamentsData?.length ? (
+                {   searchedTournamentsData.length ? (
                         <View style={{ padding: 10, flexDirection: 'column', gap: 10 }}>
-                            { tournamentsData?.map((doc, index) => (
+                            { searchedTournamentsData.map((doc, index) => (
                                 <TouchableOpacity key={index} onPress={() => navigate('Tournament-Matches', { tournament: doc._id })}>
                                     <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary, borderRadius: 10, gap: 10 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -185,7 +193,7 @@ export function HomePage() {
                                             <Text style={{ fontSize: 13, color: doc.status == 'COMPLETED' ? ProjectColors.Primary : ProjectColors.Red }}>{formatString(doc.status)}</Text>
                                         </View>
                                         <Text style={{ color: ProjectColors.LightBlack }}>{ doc.name }</Text>
-                                        <View style={{  }}><Text style={{ fontSize: 12, opacity: 0.7 }}>{doc.sport + " " + formatString(doc.gameType)}</Text></View>
+                                        <View><Text style={{ fontSize: 12, opacity: 0.7 }}>{doc.sport + " " + formatString(doc.gameType)}</Text></View>
                                     </View>
                                 </TouchableOpacity>
                             ))}

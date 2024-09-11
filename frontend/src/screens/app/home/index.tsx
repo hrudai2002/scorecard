@@ -1,5 +1,5 @@
 import { Text } from "../../../components/text";
-import { FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Header } from "../../../components/header";
 import { ProjectColors } from "../../../constants/colors";
 import { SearchBar } from "../../../components/search-bar";
@@ -13,13 +13,26 @@ import { MatchStatus, Sport } from "../../../constants/enum";
 
 export function ViewMatches() {
     const [searchString, setSearchString] = useState<string>(null);
-    const [orgMatchesData, setOrgMatchesData] = useState(null);
-    const [matchesData, setMatchesData] = useState(null);
+    const [searchedMatchesData, setSearchedMatchesData] = useState([]);
+    const [matchesData, setMatchesData] = useState([]);
     const { navigate }: NavigationProp<any> = useNavigation();
     const route: RouteProp<any>  = useRoute();
     const { authData } = useAuth();
+
+    useEffect(() => { // called while clicking on back btn
+        fetchData(route.params.status, route.params.sportType);
+    }, []);
+
+    useEffect(() => {
+        searchData();
+    }, [searchString]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchData(route.params.status, route.params.sportType);
+        }, [])
+    );
     
-    // gets home screen data
     const fetchData = async (status: string, sportType: Sport) => {
         let data = [];
         if(status == MatchStatus.LIVE) {
@@ -28,48 +41,38 @@ export function ViewMatches() {
             data = await getFinishedMatches({ user: authData._id, limit: false, sport: sportType });
         }
         setMatchesData(data);
-        setOrgMatchesData(data);
+        setSearchedMatchesData(data);
     }
    
-    useEffect(() => { // called while clicking on back btn
-        fetchData(route.params.status, route.params.sportType);
-    }, []);
-
     const searchData = () => {
-        if(!searchString?.length) return; 
-        const result = orgMatchesData.filter( (doc) => 
-                            doc.teamA.name.toLowerCase().includes(searchString.toLowerCase()) || 
-                            doc.teamB.name.toLowerCase().includes(searchString.toLowerCase()))
-        setMatchesData([...result]);
+        if(!searchString?.length)  {
+            setSearchedMatchesData([...matchesData]);
+            return;
+        } 
+        const result = matchesData.filter((doc) => 
+        doc.teamA.name.toLowerCase().includes(searchString.toLowerCase()) || 
+        doc.teamB.name.toLowerCase().includes(searchString.toLowerCase()));
+        setSearchedMatchesData([...result]);
     }
-
-    useEffect(() => {
-        searchData();
-    }, [searchString])
-
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchData(route.params.status, route.params.sportType);
-        }, [])
-    )
 
     return (
         <View style={{ flex: 1 }}>
             <Header title={`${route?.params?.status == MatchStatus.LIVE ? 'Live' : 'Finished' } Matches`} />
             <View style={styles.container}>
-                <SearchBar placeholder="Search Team Name" setSearchString={setSearchString} width={'75%'} />
+                <SearchBar placeholder="Search Team Name" setSearchString={setSearchString} width={ route?.params?.status == MatchStatus.LIVE ?  '75%' : '100%' } />
                 <TouchableOpacity onPress={() => navigate("Create-Match", { sportType: route.params.sportType })}>
-                    <View style={styles.createBtn}>
-                    <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
-                    <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
-                    </View>
+                    {
+                        route?.params?.status == MatchStatus.LIVE && <View style={styles.createBtn}>
+                            <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
+                            <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
+                        </View>
+                    }
+                   
                 </TouchableOpacity>
             </View>
-            {
-                matchesData?.length ? <View style={styles.viewMatches}>
+            {   matchesData?.length ? <View style={styles.viewMatches}>
                     <FlatList
-                        data={matchesData}
+                        data={searchedMatchesData}
                         renderItem={({ item, index }) => (
                             <TouchableOpacity key={index} style={{ marginBottom: 10 }} onPress={() => navigate('Score', { _id: item._id, matchNo: item.matchNo })}>
                                 <MatchCard data={item} status={route.params.status} matchNo={item.matchNo} showBtn={false} />
@@ -82,7 +85,6 @@ export function ViewMatches() {
                     <Text>{route.params.status == MatchStatus.LIVE ? 'No Live Matches': 'No Finished Matches' } </Text>
                 </View>)
             }
-            
         </View>
     )    
 }
@@ -118,4 +120,4 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
     },
-})
+});
