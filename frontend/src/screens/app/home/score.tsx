@@ -170,35 +170,35 @@ export function ScoreScreen() {
            </View>
            <View style={{ flex: 1, padding: 15 }}>
               <View style={styles.tabs}>
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                    <View style={{ flexDirection: 'row', gap: 15, paddingRight: 15 }}>
-                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.SUMMARY)}>
-                            <View style={[ selectedTab == Tabs.SUMMARY && styles.tab_style, { padding: 8 } ]}>
-                                <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.TEAMS)}>
-                            <View style={[selectedTab == Tabs.TEAMS && styles.tab_style, { padding: 8 } ]}>
-                                <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.TEAMS ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setSelectedTab(Tabs.RULES)}>
-                            <View style={[selectedTab == Tabs.RULES && styles.tab_style, { padding: 8 } ]}>
-                                <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-                {
-                        completedSets?.length && <Dropdown
-                            width='30%'
-                            data={completedSets}
-                            value={set}
-                            setValue={setValue}
-                            placeholder=""
-                        />
-                }
-                
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                        <View style={{ flexDirection: 'row', gap: 15, paddingRight: 15 }}>
+                            <TouchableOpacity onPress={() => setSelectedTab(Tabs.SUMMARY)}>
+                                <View style={[ selectedTab == Tabs.SUMMARY && styles.tab_style, { padding: 8 } ]}>
+                                    <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.SUMMARY ? ProjectColors.Primary : ProjectColors.LightBlack }}>Summary</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setSelectedTab(Tabs.TEAMS)}>
+                                <View style={[selectedTab == Tabs.TEAMS && styles.tab_style, { padding: 8 } ]}>
+                                    <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.TEAMS ? ProjectColors.Primary : ProjectColors.LightBlack }}>Teams</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setSelectedTab(Tabs.RULES)}>
+                                <View style={[selectedTab == Tabs.RULES && styles.tab_style, { padding: 8 } ]}>
+                                    <Text fontWeight={400} style={{ fontSize: 15, color: selectedTab == Tabs.RULES ? ProjectColors.Primary : ProjectColors.LightBlack }}>Rules</Text>  
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                    {
+                            completedSets?.length && <Dropdown
+                                width='30%'
+                                data={completedSets}
+                                value={set}
+                                setValue={setValue}
+                                placeholder=""
+                            />
+                    }
+                    
               </View>
               <ScrollView style={{ paddingVertical: 15 }} showsVerticalScrollIndicator={false}>
                 { tabsData() }
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: 'space-between', 
         alignItems: 'center',
+        paddingBottom: 5
     },
     teams: {
         display: 'flex', 

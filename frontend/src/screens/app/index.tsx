@@ -60,7 +60,6 @@ export function RenderTab(props: {
             props.setSportType(Sport.BADMINTON);
             setSearchString(null)
             if(!searchString) {
-                console.log(searchString);
                 if (tab == Tabs.Home) {
                     fetchLiveMatchesData(Sport.BADMINTON);
                     fetchFinishedMatchesData(Sport.BADMINTON);

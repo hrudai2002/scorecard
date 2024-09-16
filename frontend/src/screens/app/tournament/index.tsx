@@ -39,6 +39,10 @@ export function Tournament() {
     const route: RouteProp<any> = useRoute(); 
 
     const addTeam = () => {
+        if (!matchType) {
+            toast.error('GameType cannot be empty!');
+            return;
+        }
         setTeams(
             [...teams, {
             name: '', 
@@ -156,51 +160,47 @@ export function Tournament() {
 
     if(selectedTeam) {
         return (
-            <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-                <View style={{ flex: 1 }}>
-                    <Header title={'New Match'} setBack={setSelectedTeam} />
-                    <View style={[styles.container, { paddingBottom: 0 }]}>
-                        <View style={styles.groupInputField}>
-                            <View style={styles.inputField}>
-                                <Text>Team Name</Text>
-                                <TextInput style={styles.textInput} value={selectedTeam.name} onChangeText={(data) => setSelectedTeam({ ...selectedTeam, name: data })} />
-                            </View>
-                            <View style={styles.inputField}>
-                                <Text>Player 1</Text>
-                                <TextInput style={styles.textInput} value={selectedTeam.playerOne} onChangeText={(data) => setSelectedTeam({ ...selectedTeam, playerOne: data })} />
-                            </View>
-                            {
-                                matchType == BadmintonMatchType.DOUBLES ? <View style={styles.inputField}>
-                                    <Text>Player 2</Text>
-                                    <TextInput style={styles.textInput} value={selectedTeam.playerTwo} onChangeText={(data) => setSelectedTeam({ ...selectedTeam, playerTwo: data })} />
-                                </View> : null
-                            }
-
+            <View style={styles.flex_1}>
+                <Header title={'New Match'} setBack={setSelectedTeam} />
+                <View style={styles.container}>
+                    <View style={styles.groupInputField}>
+                        <View style={styles.inputField}>
+                            <Text>Team Name</Text>
+                            <TextInput style={styles.textInput} value={selectedTeam.name} onChangeText={(data) => setSelectedTeam({ ...selectedTeam, name: data })} />
                         </View>
-                    </View>
-                    <View style={{ flex: 0.09, padding: 10, paddingBottom: 0 }}>
-                        <Button
-                            onPress={saveTeamDetails}
-                            text={'Save Details'}
-                            color={ProjectColors.Secondary}
-                            backgroundColor={ProjectColors.Primary}
-                            fontSize={20}
-                            fontWeight={700}
-                        />
+                        <View style={styles.inputField}>
+                            <Text>Player 1</Text>
+                            <TextInput style={styles.textInput} value={selectedTeam.playerOne} onChangeText={(data) => setSelectedTeam({ ...selectedTeam, playerOne: data })} />
+                        </View>
+                        {
+                            matchType == BadmintonMatchType.DOUBLES ? <View style={styles.inputField}>
+                                <Text>Player 2</Text>
+                                <TextInput style={styles.textInput} value={selectedTeam.playerTwo} onChangeText={(data) => setSelectedTeam({ ...selectedTeam, playerTwo: data })} />
+                            </View> : null
+                        }
+
                     </View>
                 </View>
-            </SafeAreaView>
+                <View style={styles.padding15}>
+                    <Button
+                        onPress={saveTeamDetails}
+                        text={'Save Details'}
+                        color={ProjectColors.Secondary}
+                        backgroundColor={ProjectColors.Primary}
+                        fontSize={20}
+                        fontWeight={700}
+                    />
+                </View>
+            </View>
         )
     }
 
     return (
-        <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-            <View style={{ flex: 1 }}>
-                <Header title="New Tournament" />
-                <LoadingComponent loading={loading} />
-                <ScrollView 
-                 style={styles.container}
-                >
+        <View style={styles.flex_1}>
+            <LoadingComponent loading={loading} />
+            <Header title="New Tournament" />
+            <View style={styles.container}>
+                <ScrollView>
                     <View style={styles.groupInputField}>
                         <View style={styles.inputField}>
                             <Text fontWeight={400}>Tournament Name</Text>
@@ -248,7 +248,7 @@ export function Tournament() {
                                 placeholder={"Select schedule"}
                             />
                         </View>
-                        <View style={{ flexDirection: 'column', gap: 10, marginBottom: 25 }}>
+                        <View style={{ flexDirection: 'column', gap: 10, marginBottom: 10 }}>
                             <View style={styles.teamHeader}>
                                 <Text fontWeight={400}>Teams</Text>
                                 <Text fontWeight={400} style={{ color: ProjectColors.Primary }} onPress={addTeam}> + Add Team </Text>
@@ -268,27 +268,28 @@ export function Tournament() {
                         </View>
                     </View>
                 </ScrollView>
-
-                <View style={{ padding: 10, flex: 0.09, paddingBottom: 0 }}>
-                    <Button
-                        onPress={createNewTournament}
-                        text={'Create Tournament'}
-                        color={ProjectColors.Secondary}
-                        backgroundColor={ProjectColors.Primary}
-                        fontSize={20}
-                        fontWeight={700}
-                    />
-                </View>
             </View>
-        </SafeAreaView>
+            <View style={styles.padding15}>
+                <Button
+                    onPress={createNewTournament}
+                    text={'Create Tournament'}
+                    color={ProjectColors.Secondary}
+                    backgroundColor={ProjectColors.Primary}
+                    fontSize={20}
+                    fontWeight={700}
+                />
+            </View>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
+    flex_1: { flex: 1 },
     container: {
         flex: 1,
-        paddingHorizontal: 15,
-        paddingVertical: 20,
+        padding: 15,
+        paddingVertical: 30,
+        paddingBottom: 0,
     },
     groupInputField: {
         flexDirection: 'column',
@@ -317,4 +318,5 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10
     },
+    padding15: { padding: 15 }
 })

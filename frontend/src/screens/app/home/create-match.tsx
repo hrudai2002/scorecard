@@ -203,14 +203,14 @@ export function CreateMatch() {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Button 
-                 onPress={startGame}
-                 text={'Create Match'} 
-                 color={ProjectColors.Secondary} 
-                 backgroundColor={ProjectColors.Primary} 
-                 fontSize={24}
-                 fontWeight={700}
-                />
+            <Button 
+                onPress={startGame}
+                text={'Create Match'} 
+                color={ProjectColors.Secondary} 
+                backgroundColor={ProjectColors.Primary} 
+                fontSize={24}
+                fontWeight={700}
+            />
             </View>
         </View>
 
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 15,
-        paddingVertical: 30,
+        paddingVertical: 20,
     },
     groupInputField: {
         flexDirection: 'column', 
