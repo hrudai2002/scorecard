@@ -104,8 +104,12 @@ export const createTournament = async (req, res) => {
         if(!teams.length || !sport || !name || !gameType || !user || !sets || !gamePoints || !scheduleType) {
             throw new Error('Invalid Request!');
         }
-
         user = new Types.ObjectId(user); 
+
+        const existingTournament = await Tournament.findOne({ name }).lean();
+        if(existingTournament) {
+            throw new Error("Tournament name already exists!");
+        }
 
         let teamBulkWrite = []
         for(let doc of teams) {

@@ -4,8 +4,9 @@ import cors from 'cors';
 import userRouter from "./routes/user.router"; 
 import commonRouter from "./routes/common.router"
 import tournamentRouter from './routes/tournament.router';
-
 import connectDb from './config/db';
+
+// connection to database
 connectDb(); 
 
 const port = process.env.port || 8001; 
