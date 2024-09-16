@@ -11,12 +11,12 @@ import { MatchDetails } from "../models/match-details.model";
  */
 export const getAllTournaments = async (req, res) => {
     try {
-        let { user } = req.query; 
-        if(!user) {
+        let { user, sportType } = req.query; 
+        if(!user || !sportType) {
             throw new Error('Invalid Request!');
         }
         user = new Types.ObjectId(user);
-        const allTournamentsData = await Tournament.find({ user }).lean();
+        const allTournamentsData = await Tournament.find({ user, sport: sportType }).lean();
         return res.json({ success: true, data: allTournamentsData });
     } catch (error) {
         return res.json({ success: false, error: error.message });
@@ -29,13 +29,13 @@ export const getAllTournaments = async (req, res) => {
  */
 export const getTournamentMatches = async (req, res) => {
     try {
-        let { user } = req.query; 
+        let { user, sportType } = req.query; 
         let { id } = req.params; 
-        if(!user || !id) {
+        if(!user || !id || !sportType) {
             throw new Error('Invalid Request!');
         }
         user = new Types.ObjectId(user); 
-        const matches = await MatchDetails.find({ tournament: id }).populate('teamA teamB winner').sort({ matchNo: 1 }).lean();
+        const matches = await MatchDetails.find({ tournament: id, sport: sportType }).populate('teamA teamB winner').sort({ matchNo: 1 }).lean();
         const result = matches.map((doc: any) => {
             if(doc.status == MATCH_STATUS.LIVE) {
                 return {

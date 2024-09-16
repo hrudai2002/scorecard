@@ -8,7 +8,7 @@ import tournamentRouter from './routes/tournament.router';
 import connectDb from './config/db';
 connectDb(); 
 
-const port = process.env.port || 5001; 
+const port = process.env.port || 8001; 
 const app = express(); 
 
 app.use(express.json());
