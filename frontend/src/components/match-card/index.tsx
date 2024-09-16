@@ -51,7 +51,6 @@ export function MatchCard(props: IMatchDetailsProps) {
                             <Text fontWeight={400} style={{ color: ProjectColors.LightBlack, opacity: 0.6, fontSize: 12 }}>{(new Date(props.data.date).getDate())} {month[new Date(props.data.date).getMonth()]} {new Date(props.data.date).getFullYear()}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-                            <View style={styles.circle}></View>
                             <Text fontWeight={400} style={{ color: ProjectColors.Red, fontSize: 12 }}>Live</Text>
                         </View> 
                     </View>
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
     topSection: {
         flexDirection: 'row', 
         justifyContent: 'space-between', 
-        alignItems: 'center'
+        alignItems: 'flex-start'
     },
     middleSection: {
         marginBottom: 20

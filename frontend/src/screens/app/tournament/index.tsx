@@ -14,12 +14,11 @@ import { toast } from "../../../utils/toast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createTournament } from "../../../services/tournament.service";
 import { useAuth } from "../../../contexts/auth";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 export function Tournament() {
     const [loading, setLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>(null);
-    const [sportType, setSportType] = useState(null);
     const [matchType, setMatchType] = useState(null);
     const [numberOfSets, setNumberOfSets] = useState(null);
     const [gamePoint, setGamePoint] = useState(null);
@@ -37,23 +36,7 @@ export function Tournament() {
     }[]>([]);
     const { authData } = useAuth();
     const navigation: NavigationProp<any> = useNavigation();
-    const [scrollPosition, setScrollPosition] = useState(0);
-    const scrollViewRef = useRef(null);
-
-    // useEffect(() => {
-    //     if(!selectedTeam) {
-    //         if(scrollViewRef.current) {
-    //             console.log('came here', scrollPosition);
-    //             scrollViewRef.current.scrollTo({ x: 0, y: scrollPosition, animated: false })
-    //         }
-    //     }
-    // }, [selectedTeam])
-
-    // useEffect(() => {
-    //     if (scrollViewRef.current) {
-    //         scrollViewRef.current.scrollTo({ x: 0, y: scrollPosition, animated: false })
-    //     }
-    // }, [scrollPosition])
+    const route: RouteProp<any> = useRoute(); 
 
     const addTeam = () => {
         setTeams(
@@ -109,7 +92,7 @@ export function Tournament() {
 
     const createNewTournament = async () => {
         // validations
-        if(!sportType) {
+        if(!route?.params?.sportType) {
             toast.error('Sport cannot be empty!');
             return;
         }
@@ -150,7 +133,7 @@ export function Tournament() {
         const res = await createTournament({
             name,
             teams,  
-            sport: sportType, 
+            sport: route?.params?.sportType, 
             gameType: matchType, 
             user: authData._id, 
             sets: numberOfSets, 
@@ -169,10 +152,6 @@ export function Tournament() {
 
     const removeTeam = (teamId: number) => {
         setTeams( teams.filter((doc, index) => index != teamId) );
-    }
-
-    const handleScroll = (event) => {
-        setScrollPosition(event.nativeEvent.contentOffset.y);
     }
 
     if(selectedTeam) {
@@ -198,12 +177,14 @@ export function Tournament() {
                             }
 
                         </View>
+                    </View>
+                    <View style={{ flex: 0.09, padding: 10, paddingBottom: 0 }}>
                         <Button
                             onPress={saveTeamDetails}
                             text={'Save Details'}
                             color={ProjectColors.Secondary}
                             backgroundColor={ProjectColors.Primary}
-                            fontSize={24}
+                            fontSize={20}
                             fontWeight={700}
                         />
                     </View>
@@ -219,20 +200,8 @@ export function Tournament() {
                 <LoadingComponent loading={loading} />
                 <ScrollView 
                  style={styles.container}
-                //  ref={scrollViewRef}
-                //  onScroll={handleScroll} 
-                //  scrollEventThrottle={16}
                 >
                     <View style={styles.groupInputField}>
-                        <View style={styles.inputField}>
-                            <Text fontWeight={400}>Sport</Text>
-                            <Dropdown
-                                data={sportTypes}
-                                value={sportType}
-                                setValue={setSportType}
-                                placeholder={"Select Sport"}
-                            />
-                        </View>
                         <View style={styles.inputField}>
                             <Text fontWeight={400}>Tournament Name</Text>
                             <TextInput
@@ -306,7 +275,7 @@ export function Tournament() {
                         text={'Create Tournament'}
                         color={ProjectColors.Secondary}
                         backgroundColor={ProjectColors.Primary}
-                        fontSize={24}
+                        fontSize={20}
                         fontWeight={700}
                     />
                 </View>
@@ -323,7 +292,7 @@ const styles = StyleSheet.create({
     },
     groupInputField: {
         flexDirection: 'column',
-        flex: 1,
+        flexGrow: 1,
         gap: 30,
     },
     inputField: {

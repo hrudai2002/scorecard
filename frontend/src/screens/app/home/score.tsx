@@ -69,6 +69,7 @@ export function ScoreScreen() {
             setText(`${ matchData.teamA._id == matchData.winner ? matchData.teamA.name : matchData.teamB.name } wins`);
             setTimeout(() => {
                 setLoading(false);
+                setText("");
                 navigation.goBack();
             }, 2000);
             return;
@@ -80,6 +81,7 @@ export function ScoreScreen() {
             setText(`Set - ${res.completedSets} completed..`);
             setTimeout(() => {
                 setLoading(false)
+                setText("");
             }, 2000)
         }
     }
@@ -153,7 +155,7 @@ export function ScoreScreen() {
     return (
        <View style={{ flex: 1 }}>
            <LoadingComponent loading={loading} text={text} />
-           <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `${matchData.sport == Sport.BADMINTON ? 'Badminton' : 'Table Tennis'} ${matchData.matchType}` : ''} share={matchDetails?.status == MatchStatus.LIVE} /> 
+           <Header title={`Match - ${router.params.matchNo < 10 ? '0' : ''}${router.params.matchNo}`} subTitle={matchData ? `${matchData.sport == Sport.BADMINTON ? 'Badminton' : 'Table Tennis'} ${matchData.matchType}` : ''} /> 
            <View style={{ padding: 15, backgroundColor: ProjectColors.Primary }}>
                 {
                     matchData && 

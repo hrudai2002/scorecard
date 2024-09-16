@@ -9,7 +9,7 @@ interface response {
 
 export const registerUser = async (payload) => {
     try {
-        const res: response = await axios.post(`${environments.apiUrl}/user/register`, payload); 
+        const res: response = await axios.post(`${environments.apiUrl}/auth/register`, payload); 
         if (!res.data.success) {
             toast.error(res.data.error);
             return;
@@ -22,7 +22,7 @@ export const registerUser = async (payload) => {
 
 export const loginUser = async (payload) => {
     try {
-        const res: response = await axios.put(`${environments.apiUrl}/user/login`, payload);
+        const res: response = await axios.put(`${environments.apiUrl}/auth/login`, payload);
         if (!res.data.success) {
             toast.error(res.data.error);
             return;

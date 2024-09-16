@@ -1,5 +1,4 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "../../../components/text";
 import { Header } from "../../../components/header";
 import { NavigationProp, RouteProp, useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
@@ -23,7 +22,7 @@ export default function Matches() {
     const route: RouteProp<any> = useRoute(); 
 
     const fetchTournamentMatches = async (id) => {
-        const res = await getTournamentMatches({user: authData._id}, id);
+        const res = await getTournamentMatches({user: authData._id, sportType: route?.params?.sportType}, id);
         setMatches(res);
     }
 

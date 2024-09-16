@@ -29,6 +29,7 @@ export function ViewMatches() {
 
     useFocusEffect(
         useCallback(() => {
+            setSearchString(null);
             fetchData(route.params.status, route.params.sportType);
         }, [])
     );
@@ -59,7 +60,7 @@ export function ViewMatches() {
         <View style={{ flex: 1 }}>
             <Header title={`${route?.params?.status == MatchStatus.LIVE ? 'Live' : 'Finished' } Matches`} />
             <View style={styles.container}>
-                <SearchBar placeholder="Search Team Name" setSearchString={setSearchString} width={ route?.params?.status == MatchStatus.LIVE ?  '75%' : '100%' } />
+                <SearchBar placeholder="Search Team Name" searchString={searchString} setSearchString={setSearchString} width={ route?.params?.status == MatchStatus.LIVE ?  '75%' : '100%' } />
                 <TouchableOpacity onPress={() => navigate("Create-Match", { sportType: route.params.sportType })}>
                     {
                         route?.params?.status == MatchStatus.LIVE && <View style={styles.createBtn}>

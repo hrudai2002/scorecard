@@ -31,7 +31,7 @@ export function Header(props: IHeaderProps) {
                             props.subTitle ? <Text fontWeight={400} style={{ color: ProjectColors.Secondary }}>{props.subTitle}</Text> : null
                         }
                     </View>
-                    {props?.share ? <Feather name="share-2" size={24} color={ProjectColors.Secondary} /> : null }
+                    {/* {props?.share ? <Feather name="share-2" size={24} color={ProjectColors.Secondary} /> : null } */}
                     
                 </View>
             </SafeAreaView>

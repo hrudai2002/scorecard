@@ -6,6 +6,7 @@ import { Dispatch, SetStateAction } from 'react';
 
 interface ISearchBarProps {
     placeholder: string, 
+    searchString: string,
     width?: any,
     setSearchString: Dispatch<SetStateAction<any>>
 }
@@ -17,6 +18,7 @@ export function SearchBar(props: ISearchBarProps) {
             <TextInput
              style={styles.textInput}
              placeholder={props.placeholder}
+             value={props.searchString}
              onChangeText={(data) =>  props.setSearchString(data)}
             />
         </View>
@@ -26,6 +28,7 @@ export function SearchBar(props: ISearchBarProps) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
+        alignItems: "center",
         padding: 12,
         gap: 10,
         borderRadius: 10,

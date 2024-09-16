@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ProjectColors } from "../../constants/colors";
 import { AntDesign } from '@expo/vector-icons';
 import { Text } from "../../components/text";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { MatchCard } from "../../components/match-card";
 import { sports } from "../../constants/match-data";
@@ -18,23 +18,29 @@ import { getAllTournaments } from "../../services/tournament.service";
 import { StatusBar } from "react-native";
 import moment from "moment";
 
-export function HomePage() {
+export function RenderTab(props: {
+    sportType: string, 
+    setSportType: React.Dispatch<React.SetStateAction<string>>
+}) {
     const { width } = useDimensions();
     const [liveMatchData, setLiveMatchData] = useState([]); 
     const [finishedMatchesData, setFinishedMatchesData] = useState([]);
     const [tournamentsData, setTournamentsData] = useState([]);
     const [searchedTournamentsData, setSearchedTournamentsData] = useState([]);
     const [searchString, setSearchString] = useState<string>(null);
-    const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
     const [tab, setTab] = useState<Tabs>(Tabs.Home);
     const { navigate }: NavigationProp<any> = useNavigation();
     const { authData } = useAuth();
 
     // fetches data on the home screen
     useEffect(() => {
-        fetchLiveMatchesData();
-        fetchFinishedMatchesData();
-    }, [sportType]);
+        if(tab == Tabs.Home) {
+            fetchLiveMatchesData();
+            fetchFinishedMatchesData();
+        } else {
+            fetchTournamentsData();
+        }
+    }, [props.sportType]);
 
     useEffect(() => {
         if (tab == Tabs.Home) {
@@ -51,30 +57,35 @@ export function HomePage() {
 
     useFocusEffect( // called on back btn clicked
         useCallback(() => {
-            setSportType(Sport.BADMINTON);
-            if (tab == Tabs.Home) {
-                fetchLiveMatchesData();
-                fetchFinishedMatchesData();
-            } else {
-                fetchTournamentsData();
+            props.setSportType(Sport.BADMINTON);
+            setSearchString(null)
+            if(!searchString) {
+                console.log(searchString);
+                if (tab == Tabs.Home) {
+                    fetchLiveMatchesData(Sport.BADMINTON);
+                    fetchFinishedMatchesData(Sport.BADMINTON);
+                } else {
+                    fetchTournamentsData(Sport.BADMINTON);
+                }
             }
         }, [])
     )
 
     const formatString = (str: string) => str[0].toUpperCase() + str.slice(1).toLowerCase()
     
-    const fetchLiveMatchesData = async () => {
-        let data = await getLiveMatches({ user: authData._id, limit: true, sport: sportType });
+    const fetchLiveMatchesData = async (sport?: Sport) => {
+      
+        let data = await getLiveMatches({ user: authData._id, limit: true, sport: sport ?? props.sportType });
         setLiveMatchData(data);
     }
 
-    const fetchFinishedMatchesData = async () => {
-        let data = await getFinishedMatches({ user: authData._id, limit: true, sport: sportType });
+    const fetchFinishedMatchesData = async (sport?: Sport) => {
+        let data = await getFinishedMatches({ user: authData._id, limit: true, sport: sport ?? props.sportType });
         setFinishedMatchesData(data);
     }
 
-    const fetchTournamentsData = async () => {
-        let data = await getAllTournaments({ user: authData._id }); 
+    const fetchTournamentsData = async (sport?: Sport) => {
+        let data = await getAllTournaments({ user: authData._id, sportType: sport ?? props.sportType }); 
         setTournamentsData(data);
         setSearchedTournamentsData(data);
     }
@@ -89,25 +100,6 @@ export function HomePage() {
             doc.sport.toLowerCase().includes(searchString.toLowerCase()) || 
             doc.gameType.toLowerCase().includes(searchString.toLowerCase()));
         setSearchedTournamentsData([...result]);
-    }
-
-    const SportsIcon = (props) => {
-        return (
-            <TouchableOpacity onPress={() => {
-                setSportType(props.sport.sportType);
-            }}>
-                <View style={styles.sportsSlider}>
-                    <View style={[
-                        styles.circle, 
-                        { backgroundColor: props.sport.sportType === sportType ? ProjectColors.Primary : ProjectColors.Secondary },
-                        { opacity: props.sport.sportType === sportType ? 0.8 : 1 }
-                    ]}>
-                        <Image style={styles.sportIcon}  source={props.sport.src} />
-                    </View>
-                    <Text>{props.sport.name}</Text>
-                </View>
-            </TouchableOpacity>
-        )
     }
 
     const renderMatchesData = (data, status) => {
@@ -142,21 +134,22 @@ export function HomePage() {
     }
 
     const renderTabContent = () => {
+
+        // Renders Home 
         if(tab == Tabs.Home) {
             return (
                 <>
-                    <View style={styles.sportsContainer}>
-                        <Text fontWeight={600} style={{ fontSize: 15 }}>Sports</Text>
-                        <View style={{ flexDirection: 'row' }}>
-                            {sports.map((item, index) => <SportsIcon key={index} sport={item} />)}
-                        </View>
-                    </View>
                     <ScrollView style={styles.container}>
                         {/* Live Matches */}
                         <View style={styles.liveMatchContainer}>
                             <View style={styles.liveMatchesView}>
                                 <Text fontWeight={600} style={{ fontSize: 15 }}>Live Matches</Text>
-                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: MatchStatus.LIVE, sportType: sportType })} />
+                                <TouchableOpacity onPress={() => navigate("Matches", { status: MatchStatus.LIVE, sportType: props.sportType })}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                        <Text style={{ fontSize: 10, color: ProjectColors.Primary }}>see more</Text>
+                                        <AntDesign name="arrowright" size={18} color={ProjectColors.Primary}  />
+                                    </View>
+                                </TouchableOpacity>
                             </View>
                             {renderMatchesData(liveMatchData, MatchStatus.LIVE)}
                         </View>
@@ -164,7 +157,12 @@ export function HomePage() {
                         <View style={styles.finishedMatchContainer}>
                             <View style={styles.finishedMatchsView}>
                                 <Text fontWeight={600} style={{ fontSize: 15 }}>Finished Matches</Text>
-                                <AntDesign name="arrowright" size={24} color="black" onPress={() => navigate("Matches", { status: MatchStatus.COMPLETED, sportType: sportType })} />
+                                <TouchableOpacity onPress={() => navigate("Matches", { status: MatchStatus.COMPLETED, sportType: props.sportType })} >
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                        <Text style={{ fontSize: 10, color: ProjectColors.Primary }}>see more</Text>
+                                        <AntDesign name="arrowright" size={18} color={ProjectColors.Primary} />
+                                    </View>
+                                </TouchableOpacity>
                             </View>
                             {renderMatchesData(finishedMatchesData, MatchStatus.COMPLETED)}
                         </View>
@@ -172,11 +170,13 @@ export function HomePage() {
                 </>
             )
         }
+
+        // Renders Tournament Page
         return (
             <View style={styles.tournamentContainer}>
                 <View style={styles.tournamentHeader}>
-                    <SearchBar placeholder="Search Tournament" setSearchString={setSearchString} width={'75%'} />
-                    <TouchableOpacity onPress={() => navigate('Create-Tournament')}>
+                    <SearchBar placeholder="Search Tournament" searchString={searchString} setSearchString={setSearchString} width={'75%'} />
+                    <TouchableOpacity onPress={() => navigate('Create-Tournament', { sportType: props.sportType })}>
                         <View style={styles.createBtn}>
                             <AntDesign name="plus" size={20} color={ProjectColors.Secondary} />
                             <Text fontWeight={600} style={{ color: ProjectColors.Secondary }}>Create</Text>
@@ -184,20 +184,22 @@ export function HomePage() {
                     </TouchableOpacity>
                 </View>
                 {   searchedTournamentsData.length ? (
-                        <View style={{ padding: 10, flexDirection: 'column', gap: 10 }}>
-                            { searchedTournamentsData.map((doc, index) => (
-                                <TouchableOpacity key={index} onPress={() => navigate('Tournament-Matches', { tournament: doc._id })}>
-                                    <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary, borderRadius: 10, gap: 10 }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <Text style={{ opacity: 0.5 }}>{moment(doc.date).format('DD MMM')}</Text>
-                                            <Text style={{ fontSize: 13, color: doc.status == 'COMPLETED' ? ProjectColors.Primary : ProjectColors.Red }}>{formatString(doc.status)}</Text>
+                        <ScrollView style={{ flex: 1 }}>
+                            <View style={{ padding: 10, flexDirection: 'column', gap: 10 }}>
+                                { searchedTournamentsData.map((doc, index) => (
+                                    <TouchableOpacity key={index} onPress={() => navigate('Tournament-Matches', { tournament: doc._id, sportType: props.sportType})}>
+                                        <View style={{ padding: 15, backgroundColor: ProjectColors.Secondary, borderRadius: 10, gap: 10 }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <Text style={{ opacity: 0.5 }}>{moment(doc.date).format('DD MMM')}</Text>
+                                                <Text style={{ fontSize: 13, color: doc.status == 'COMPLETED' ? ProjectColors.Primary : ProjectColors.Red }}>{formatString(doc.status)}</Text>
+                                            </View>
+                                            <Text style={{ color: ProjectColors.LightBlack }}>{ doc.name }</Text>
+                                            <View><Text style={{ fontSize: 12, opacity: 0.7 }}>{doc.sport + " " + formatString(doc.gameType)}</Text></View>
                                         </View>
-                                        <Text style={{ color: ProjectColors.LightBlack }}>{ doc.name }</Text>
-                                        <View><Text style={{ fontSize: 12, opacity: 0.7 }}>{doc.sport + " " + formatString(doc.gameType)}</Text></View>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
-                        </View>) : (<View style={styles.tournamentView}>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </ScrollView>) : (<View style={styles.tournamentView}>
                         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
                             <Image style={styles.noData} source={require('../../../assets/nothing-here.png')} />
                             <Text>Nothing here</Text>
@@ -210,28 +212,72 @@ export function HomePage() {
 
     return (
         <>
-           <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1 }}>
+            { renderTabContent() }
+            <View style={styles.footer}>
+                <View style={styles.tab}>
+                    <TouchableOpacity onPress={() => setTab(Tabs.Home)}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                            <FontAwesome name="home" size={30} color={tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
+                            <Text style={{ color: ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.tab}>
+                    <TouchableOpacity onPress={() => setTab(Tabs.Tournament)}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                            <MaterialIcons name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} />
+                            <Text style={{ color: ProjectColors.LightBlack }}>Tournament</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View> 
+        </>
+    )
+}
+
+export function HomePage() {
+    const [sportType, setSportType] = useState<Sport>(Sport.BADMINTON);
+    const { navigate }: NavigationProp<any> = useNavigation();
+    const { authData } = useAuth();
+
+    const SportsIcon = (props: any) => {
+        return (
+            <TouchableOpacity onPress={() => {
+                setSportType(props.sport.sportType);
+            }}>
+                <View style={styles.sportsSlider}>
+                    <View style={[
+                        styles.circle,
+                        { backgroundColor: props.sport.sportType === sportType ? ProjectColors.Primary : ProjectColors.Secondary },
+                        { opacity: props.sport.sportType === sportType ? 0.8 : 1 }
+                    ]}>
+                        <Image style={styles.sportIcon} source={props.sport.src} />
+                    </View>
+                    <Text style={{ fontSize: 12 }}>{props.sport.name}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+    return (
+        <>
+            <SafeAreaView edges={['bottom', 'top']} style={{ flex: 1 }}>
                 <StatusBar translucent={false} backgroundColor={ProjectColors.Primary} />
                 <View style={styles.profileHeader}>
                     <View style={styles.profileText}>
-                        <Text fontWeight={700} style={{fontSize: 18, color: ProjectColors.Secondary, textTransform: 'capitalize'}}>Welcome, {authData.name}</Text> 
-                        <Text fontWeight={300} style={{fontSize: 10, color: ProjectColors.Secondary}}>What are you playing today?</Text>
+                        <Text fontWeight={700} style={styles.welcomeText}>Welcome, {authData.name}</Text>
+                        <Text fontWeight={300} style={{ fontSize: 10, color: ProjectColors.Secondary }}>What are you playing today?</Text>
                     </View>
                     <TouchableOpacity onPress={() => navigate('Profile')}>
                         <Image source={require('../../../assets/profile-dp.png')} style={styles.profileImg} />
                     </TouchableOpacity>
                 </View>
-                { renderTabContent() }
-                <View style={styles.footer}>
-                    <View style={styles.tab}>
-                        <FontAwesome onPress={() => setTab(Tabs.Home)} name="home" size={30} color={tab == Tabs.Home ? ProjectColors.Primary : ProjectColors.Grey} />
-                        <Text style={{ color: ProjectColors.LightBlack }} onPress={() => setTab(Tabs.Home)}>Home</Text>
+                <View style={styles.sportsContainer}>
+                    <Text fontWeight={600} style={{ fontSize: 15 }}>Sports</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        {sports.map((item, index) => <SportsIcon key={index} sport={item} />)}
                     </View>
-                    <View style={styles.tab}>
-                        <MaterialIcons onPress={() => setTab(Tabs.Tournament)} name="tour" size={30} color={tab == Tabs.Tournament ? ProjectColors.Primary : ProjectColors.Grey} />
-                        <Text style={{ color: ProjectColors.LightBlack }}>Tournament</Text>
-                    </View>
-                </View> 
+                </View>
+                <RenderTab sportType={sportType} setSportType={setSportType} />
             </SafeAreaView>
         </>
     )
@@ -255,6 +301,11 @@ const styles = StyleSheet.create({
         borderRadius: 25, 
         backgroundColor: ProjectColors.Grey
     }, 
+    welcomeText: {
+        fontSize: 18, 
+        color: ProjectColors.Secondary, 
+        textTransform: 'capitalize'
+    },
     noData: {
        width: 200,
        height: 200,
@@ -281,6 +332,7 @@ const styles = StyleSheet.create({
     liveMatchesView: {
         flexDirection: 'row', 
         justifyContent: 'space-between', 
+        alignItems: 'center',
         paddingRight: 10
     },
     finishedMatchContainer: {
@@ -293,6 +345,7 @@ const styles = StyleSheet.create({
     finishedMatchsView: {
         flexDirection: 'row', 
         justifyContent: 'space-between', 
+        alignItems: 'center',
         paddingRight: 10
     },
     circle: {

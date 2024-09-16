@@ -64,8 +64,8 @@ function AuthProvider({ children }) {
             password: authData.password
         });
         if(res) {
-            setAuthData(res.data.data);
-            AsyncStorage.setItem('@AuthData', JSON.stringify(res.data.data));
+            setAuthData(res);
+            AsyncStorage.setItem('@AuthData', JSON.stringify(res));
             toast.success('Logged In Successfully');
         }
     };
