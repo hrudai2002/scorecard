@@ -1,2 +1,2 @@
-# scorecard - under construction 🚧
+# scorecard
 Mobile app to track your score .
