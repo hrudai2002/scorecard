@@ -125,7 +125,7 @@ export function CreateMatch() {
                         text={'Save Details'}
                         color={ProjectColors.Secondary}
                         backgroundColor={ProjectColors.Primary}
-                        fontSize={24}
+                        fontSize={20}
                         fontWeight={700}
                     />
                 </View>
@@ -208,7 +208,7 @@ export function CreateMatch() {
                 text={'Create Match'} 
                 color={ProjectColors.Secondary} 
                 backgroundColor={ProjectColors.Primary} 
-                fontSize={24}
+                fontSize={20}
                 fontWeight={700}
             />
             </View>
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 15,
         paddingVertical: 20,
+        marginBottom: 10
     },
     groupInputField: {
         flexDirection: 'column', 

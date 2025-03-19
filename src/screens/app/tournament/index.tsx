@@ -318,5 +318,5 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10
     },
-    padding15: { padding: 15 }
+    padding15: { padding: 15, marginBottom: 15 }
 })
